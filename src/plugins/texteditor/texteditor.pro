@@ -18,6 +18,7 @@ SOURCES += texteditorplugin.cpp \
     displaysettingspage.cpp \
     fontsettings.cpp \
     linenumberfilter.cpp \
+    linkfinder.cpp \
     findinfiles.cpp \
     basefilefind.cpp \
     texteditorsettings.cpp \
@@ -120,6 +121,7 @@ HEADERS += texteditorplugin.h \
     displaysettingspage.h \
     fontsettings.h \
     linenumberfilter.h \
+    linkfinder.h \
     texteditor_global.h \
     findinfiles.h \
     basefilefind.h \

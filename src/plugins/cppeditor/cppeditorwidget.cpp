@@ -32,6 +32,7 @@
 #include "cppeditorplugin.h"
 #include "cppfunctiondecldeflink.h"
 #include "cpphighlighter.h"
+#include "cpplinkfinder.h"
 #include "cpplocalrenaming.h"
 #include "cppminimizableinfobars.h"
 #include "cpppreprocessordialog.h"
@@ -61,7 +62,6 @@
 #include <cpptools/cpptoolssettings.h>
 #include <cpptools/cppworkingcopy.h>
 #include <cpptools/refactoringengineinterface.h>
-#include <cpptools/followsymbolinterface.h>
 #include <cpptools/symbolfinder.h>
 
 #include <texteditor/behaviorsettings.h>
@@ -147,6 +147,8 @@ CppEditorWidget::CppEditorWidget()
     : d(new CppEditorWidgetPrivate(this))
 {
     qRegisterMetaType<SemanticInfo>("CppTools::SemanticInfo");
+
+    setLinkFinder(new CppLinkFinder(this, d->m_modelManager, &d->m_lastSemanticInfo));
 }
 
 void CppEditorWidget::finalizeInitialization()
@@ -277,6 +279,8 @@ void CppEditorWidget::finalizeInitializationAfterDuplication(TextEditorWidget *o
 CppEditorWidget::~CppEditorWidget()
 {
     // non-inline destructor, see section "Forward Declared Pointers" of QScopedPointer.
+
+    setLinkFinder(nullptr); // avoid dangling pointer to m_lastSemanticInfo
 }
 
 CppEditorDocument *CppEditorWidget::cppEditorDocument() const
@@ -640,23 +644,6 @@ void CppEditorWidget::switchDeclarationDefinition(bool inNextSplit)
     // Open Editor at link position
     if (symbolLink.hasValidTarget())
         openLink(symbolLink, inNextSplit != alwaysOpenLinksInNextSplit());
-}
-
-CppEditorWidget::Link CppEditorWidget::findLinkAt(const QTextCursor &cursor,
-                                                  bool resolveTarget,
-                                                  bool inNextSplit)
-{
-    if (!d->m_modelManager)
-        return Link();
-
-    const Utils::FileName &filePath = textDocument()->filePath();
-
-    return d->m_modelManager->followSymbolInterface().findLink(CppTools::CursorInEditor{cursor, filePath, this},
-                                             resolveTarget,
-                                             d->m_modelManager->snapshot(),
-                                             d->m_lastSemanticInfo.doc,
-                                             d->m_modelManager->symbolFinder(),
-                                             inNextSplit);
 }
 
 unsigned CppEditorWidget::documentRevision() const

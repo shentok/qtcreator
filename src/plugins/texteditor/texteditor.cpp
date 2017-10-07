@@ -40,6 +40,7 @@
 #include "highlighterutils.h"
 #include "icodestylepreferences.h"
 #include "indenter.h"
+#include "linkfinder.h"
 #include "snippets/snippet.h"
 #include "syntaxhighlighter.h"
 #include "tabsettings.h"
@@ -617,6 +618,7 @@ public:
     bool m_isMissingSyntaxDefinition = false;
 
     QScopedPointer<AutoCompleter> m_autoCompleter;
+    QScopedPointer<LinkFinder> m_linkFinder;
     CommentDefinition m_commentDefinition;
 
     QFutureWatcher<FileSearchResultList> *m_searchWatcher = nullptr;
@@ -639,7 +641,8 @@ TextEditorWidgetPrivate::TextEditorWidgetPrivate(TextEditorWidget *parent)
     m_maybeFakeTooltipEvent(false),
     m_hoverHandlerRunner(parent, m_hoverHandlers),
     m_clipboardAssistProvider(new ClipboardAssistProvider),
-    m_autoCompleter(new AutoCompleter)
+    m_autoCompleter(new AutoCompleter),
+    m_linkFinder(new LinkFinder)
 {
     Aggregation::Aggregate *aggregate = new Aggregation::Aggregate;
     BaseTextFind *baseTextFind = new BaseTextFind(q);
@@ -1688,14 +1691,14 @@ void TextEditorWidget::redo()
 void TextEditorWidget::openLinkUnderCursor()
 {
     const bool openInNextSplit = alwaysOpenLinksInNextSplit();
-    Link symbolLink = findLinkAt(textCursor(), true, openInNextSplit);
+    Link symbolLink = d->m_linkFinder->findLinkAt(textCursor(), true, openInNextSplit);
     openLink(symbolLink, openInNextSplit);
 }
 
 void TextEditorWidget::openLinkUnderCursorInNextSplit()
 {
     const bool openInNextSplit = !alwaysOpenLinksInNextSplit();
-    Link symbolLink = findLinkAt(textCursor(), true, openInNextSplit);
+    Link symbolLink = d->m_linkFinder->findLinkAt(textCursor(), true, openInNextSplit);
     openLink(symbolLink, openInNextSplit);
 }
 
@@ -3150,6 +3153,20 @@ void TextEditorWidget::setAutoCompleter(AutoCompleter *autoCompleter)
 AutoCompleter *TextEditorWidget::autoCompleter() const
 {
     return d->m_autoCompleter.data();
+}
+
+void TextEditorWidget::setLinkFinder(LinkFinder *linkFinder)
+{
+    if (!linkFinder) {
+        linkFinder = new LinkFinder();
+    }
+
+    d->m_linkFinder.reset(linkFinder);
+}
+
+LinkFinder *TextEditorWidget::linkFinder() const
+{
+    return d->m_linkFinder.data();
 }
 
 //
@@ -5299,7 +5316,7 @@ void TextEditorWidget::mouseReleaseEvent(QMouseEvent *e)
         EditorManager::addCurrentPositionToNavigationHistory();
         bool inNextSplit = ((e->modifiers() & Qt::AltModifier) && !alwaysOpenLinksInNextSplit())
                 || (alwaysOpenLinksInNextSplit() && !(e->modifiers() & Qt::AltModifier));
-        if (openLink(findLinkAt(cursorForPosition(e->pos())), inNextSplit)) {
+        if (openLink(d->m_linkFinder->findLinkAt(cursorForPosition(e->pos())), inNextSplit)) {
             d->clearLink();
             return;
         }
@@ -5847,11 +5864,6 @@ void TextEditorWidget::zoomReset()
     showZoomIndicator(this, 100);
 }
 
-TextEditorWidget::Link TextEditorWidget::findLinkAt(const QTextCursor &, bool, bool)
-{
-    return Link();
-}
-
 bool TextEditorWidget::openLink(const Link &link, bool inNextSplit)
 {
     if (!link.hasValidTarget())
@@ -5915,7 +5927,7 @@ void TextEditorWidgetPrivate::updateLink()
         return;
 
     m_lastLinkUpdate = m_pendingLinkUpdate;
-    const TextEditorWidget::Link link = q->findLinkAt(m_pendingLinkUpdate, false);
+    const TextEditorWidget::Link link = m_linkFinder->findLinkAt(m_pendingLinkUpdate, false);
     if (link.hasValidLinkText())
         showLink(link);
     else

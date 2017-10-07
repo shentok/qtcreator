@@ -11,6 +11,7 @@ HEADERS += \
     qmlexpressionundercursor.h \
     qmljshighlighter.h \
     qmljshoverhandler.h \
+    qmljslinkfinder.h \
     qmljspreviewrunner.h \
     qmljscomponentfromobjectdef.h \
     qmljsoutline.h \
@@ -38,6 +39,7 @@ SOURCES += \
     qmlexpressionundercursor.cpp \
     qmljshighlighter.cpp \
     qmljshoverhandler.cpp \
+    qmljslinkfinder.cpp \
     qmljspreviewrunner.cpp \
     qmljscomponentfromobjectdef.cpp \
     qmljsoutline.cpp \

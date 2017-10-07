@@ -19,6 +19,7 @@ HEADERS += \
     cppparsecontext.h \
     cppincludehierarchy.h \
     cppinsertvirtualmethods.h \
+    cpplinkfinder.h \
     cpplocalrenaming.h \
     cppminimizableinfobars.h \
     cppoutline.h \
@@ -45,6 +46,7 @@ SOURCES += \
     cppparsecontext.cpp \
     cppincludehierarchy.cpp \
     cppinsertvirtualmethods.cpp \
+    cpplinkfinder.cpp \
     cpplocalrenaming.cpp \
     cppminimizableinfobars.cpp \
     cppoutline.cpp \

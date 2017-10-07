@@ -70,6 +70,7 @@ class TextEditorOverlay;
 
 class AutoCompleter;
 class BaseTextEditor;
+class LinkFinder;
 class TextEditorFactory;
 class TextEditorWidget;
 class PlainTextEditorFactory;
@@ -196,6 +197,9 @@ public:
 
     void setAutoCompleter(AutoCompleter *autoCompleter);
     AutoCompleter *autoCompleter() const;
+
+    void setLinkFinder(LinkFinder *linkFinder);
+    LinkFinder *linkFinder() const;
 
     // Works only in conjunction with a syntax highlighter that puts
     // parentheses into text block user data
@@ -558,15 +562,6 @@ public:
     static TextEditorWidget *currentTextEditorWidget();
 
 protected:
-    /*!
-       Reimplement this function to enable code navigation.
-
-       \a resolveTarget is set to true when the target of the link is relevant
-       (it isn't until the link is used).
-     */
-    virtual Link findLinkAt(const QTextCursor &, bool resolveTarget = true,
-                            bool inNextSplit = false);
-
     /*!
        Returns whether the link was opened successfully.
      */

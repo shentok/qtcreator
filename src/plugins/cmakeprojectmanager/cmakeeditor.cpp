@@ -30,6 +30,7 @@
 #include "cmakeproject.h"
 #include "cmakeindenter.h"
 #include "cmakeautocompleter.h"
+#include "cmakelinkfinder.h"
 
 #include <coreplugin/actionmanager/actioncontainer.h>
 #include <coreplugin/actionmanager/actionmanager.h>
@@ -109,91 +110,22 @@ QString CMakeEditor::contextHelpId() const
 class CMakeEditorWidget : public TextEditorWidget
 {
 public:
+    CMakeEditorWidget();
     ~CMakeEditorWidget() final = default;
 
 private:
     bool save(const QString &fileName = QString());
-    Link findLinkAt(const QTextCursor &cursor, bool resolveTarget = true, bool inNextSplit = false) override;
     void contextMenuEvent(QContextMenuEvent *e) override;
 };
+
+CMakeEditorWidget::CMakeEditorWidget()
+{
+    setLinkFinder(new CMakeLinkFinder(this));
+}
 
 void CMakeEditorWidget::contextMenuEvent(QContextMenuEvent *e)
 {
     showDefaultContextMenu(e, Constants::M_CONTEXT);
-}
-
-static bool isValidFileNameChar(const QChar &c)
-{
-    return c.isLetterOrNumber()
-            || c == QLatin1Char('.')
-            || c == QLatin1Char('_')
-            || c == QLatin1Char('-')
-            || c == QLatin1Char('/')
-            || c == QLatin1Char('\\');
-}
-
-CMakeEditorWidget::Link CMakeEditorWidget::findLinkAt(const QTextCursor &cursor,
-                                                      bool/* resolveTarget*/, bool /*inNextSplit*/)
-{
-    Link link;
-
-    int lineNumber = 0, positionInBlock = 0;
-    convertPosition(cursor.position(), &lineNumber, &positionInBlock);
-
-    const QString block = cursor.block().text();
-
-    // check if the current position is commented out
-    const int hashPos = block.indexOf(QLatin1Char('#'));
-    if (hashPos >= 0 && hashPos < positionInBlock)
-        return link;
-
-    // find the beginning of a filename
-    QString buffer;
-    int beginPos = positionInBlock - 1;
-    while (beginPos >= 0) {
-        QChar c = block.at(beginPos);
-        if (isValidFileNameChar(c)) {
-            buffer.prepend(c);
-            beginPos--;
-        } else {
-            break;
-        }
-    }
-
-    // find the end of a filename
-    int endPos = positionInBlock;
-    while (endPos < block.count()) {
-        QChar c = block.at(endPos);
-        if (isValidFileNameChar(c)) {
-            buffer.append(c);
-            endPos++;
-        } else {
-            break;
-        }
-    }
-
-    if (buffer.isEmpty())
-        return link;
-
-    // TODO: Resolve variables
-
-    QDir dir(textDocument()->filePath().toFileInfo().absolutePath());
-    QString fileName = dir.filePath(buffer);
-    QFileInfo fi(fileName);
-    if (fi.exists()) {
-        if (fi.isDir()) {
-            QDir subDir(fi.absoluteFilePath());
-            QString subProject = subDir.filePath(QLatin1String("CMakeLists.txt"));
-            if (QFileInfo::exists(subProject))
-                fileName = subProject;
-            else
-                return link;
-        }
-        link.targetFileName = fileName;
-        link.linkTextStart = cursor.position() - positionInBlock + beginPos + 1;
-        link.linkTextEnd = cursor.position() - positionInBlock + endPos;
-    }
-    return link;
 }
 
 static TextDocument *createCMakeDocument()

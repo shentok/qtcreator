@@ -17,6 +17,7 @@ HEADERS = builddirmanager.h \
     cmakerunconfiguration.h \
     cmakebuildconfiguration.h \
     cmakeeditor.h \
+    cmakelinkfinder.h \
     cmakelocatorfilter.h \
     cmakefilecompletionassist.h \
     cmaketool.h \
@@ -51,6 +52,7 @@ SOURCES = builddirmanager.cpp \
     cmakerunconfiguration.cpp \
     cmakebuildconfiguration.cpp \
     cmakeeditor.cpp \
+    cmakelinkfinder.cpp \
     cmakelocatorfilter.cpp \
     cmakefilecompletionassist.cpp \
     cmaketool.cpp \
