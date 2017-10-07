@@ -30,12 +30,17 @@
 namespace CppEditor {
 namespace Internal {
 
+class CppEditorWidget;
+
 class CppHoverHandler : public TextEditor::BaseHoverHandler
 {
+public:
+    CppHoverHandler(CppEditorWidget *editorWidget);
+
 private:
-    void identifyMatch(TextEditor::TextEditorWidget *editorWidget, int pos) override;
+    void identifyMatch(int pos) override;
     void decorateToolTip() override;
-    void operateTooltip(TextEditor::TextEditorWidget *editorWidget, const QPoint &point) override;
+    void operateTooltip(const QPoint &point) override;
 
 private:
     int m_positionForEditorDocumentProcessor = -1;

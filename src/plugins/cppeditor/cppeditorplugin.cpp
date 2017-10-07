@@ -31,13 +31,11 @@
 #include "cppeditorwidget.h"
 #include "cppeditordocument.h"
 #include "cpphighlighter.h"
-#include "cpphoverhandler.h"
 #include "cppincludehierarchy.h"
 #include "cppoutline.h"
 #include "cppquickfixassistant.h"
 #include "cppquickfixes.h"
 #include "cpptypehierarchy.h"
-#include "resourcepreviewhoverhandler.h"
 
 #include <coreplugin/editormanager/editormanager.h>
 
@@ -56,7 +54,6 @@
 #include <cpptools/cpptoolsconstants.h>
 #include <texteditor/texteditoractionhandler.h>
 #include <texteditor/texteditorconstants.h>
-#include <texteditor/colorpreviewhoverhandler.h>
 #include <texteditor/snippets/snippetprovider.h>
 
 #include <utils/hostosinfo.h>
@@ -104,10 +101,6 @@ public:
                               | TextEditorActionHandler::UnCommentSelection
                               | TextEditorActionHandler::UnCollapseAll
                               | TextEditorActionHandler::FollowSymbolUnderCursor);
-
-        addHoverHandler(new CppHoverHandler);
-        addHoverHandler(new ColorPreviewHoverHandler);
-        addHoverHandler(new ResourcePreviewHoverHandler);
     }
 };
 

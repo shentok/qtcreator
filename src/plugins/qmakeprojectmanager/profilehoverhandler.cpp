@@ -39,19 +39,20 @@ using namespace Core;
 namespace QmakeProjectManager {
 namespace Internal {
 
-ProFileHoverHandler::ProFileHoverHandler()
-    : m_keywords(qmakeKeywords())
+ProFileHoverHandler::ProFileHoverHandler(TextEditor::TextEditorWidget *editorWidget)
+    : BaseHoverHandler(editorWidget)
+    , m_keywords(qmakeKeywords())
 {
 }
 
-void ProFileHoverHandler::identifyMatch(TextEditor::TextEditorWidget *editorWidget, int pos)
+void ProFileHoverHandler::identifyMatch(int pos)
 {
     m_docFragment.clear();
     m_manualKind = UnknownManual;
-    if (!editorWidget->extraSelectionTooltip(pos).isEmpty()) {
-        setToolTip(editorWidget->extraSelectionTooltip(pos));
+    if (!textEditorWidget()->extraSelectionTooltip(pos).isEmpty()) {
+        setToolTip(textEditorWidget()->extraSelectionTooltip(pos));
     } else {
-        QTextDocument *document = editorWidget->document();
+        QTextDocument *document = textEditorWidget()->document();
         QTextBlock block = document->findBlock(pos);
         identifyQMakeKeyword(block.text(), pos - block.position());
 

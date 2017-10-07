@@ -37,10 +37,10 @@ namespace Internal {
 class ProFileHoverHandler : public TextEditor::BaseHoverHandler
 {
 public:
-    ProFileHoverHandler();
+    ProFileHoverHandler(TextEditor::TextEditorWidget *editorWidget);
 
 private:
-    void identifyMatch(TextEditor::TextEditorWidget *editorWidget, int pos) override;
+    void identifyMatch(int pos) override;
     void identifyQMakeKeyword(const QString &text, int pos);
 
     enum ManualKind {

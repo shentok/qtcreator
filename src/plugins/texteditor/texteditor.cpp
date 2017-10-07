@@ -255,9 +255,8 @@ public:
 class HoverHandlerRunner
 {
 public:
-    HoverHandlerRunner(TextEditorWidget *widget, QList<BaseHoverHandler *> &handlers)
-        : m_widget(widget)
-        , m_handlers(handlers)
+    HoverHandlerRunner(QList<BaseHoverHandler *> &handlers)
+        : m_handlers(handlers)
     {
     }
 
@@ -270,7 +269,7 @@ public:
         const int documentRevision = textCursor.document()->revision();
         const int position = Text::wordStartCursor(textCursor).position();
         if (m_lastHandlerInfo.applies(documentRevision, position)) {
-            m_lastHandlerInfo.handler->operateTooltip(m_widget, point);
+            m_lastHandlerInfo.handler->operateTooltip(point);
             return;
         }
 
@@ -299,7 +298,7 @@ public:
         QTC_ASSERT(m_currentHandlerIndex < m_handlers.size(), return);
         BaseHoverHandler *currentHandler = m_handlers[m_currentHandlerIndex];
 
-        currentHandler->checkPriority(m_widget, m_position, [this](int priority) {
+        currentHandler->checkPriority(m_position, [this](int priority) {
             onHandlerFinished(m_documentRevision, m_position, priority);
         });
     }
@@ -331,7 +330,6 @@ public:
     }
 
 private:
-    TextEditorWidget *m_widget = nullptr;
     const QList<BaseHoverHandler *> &m_handlers;
 
     struct LastHandlerInfo {
@@ -590,7 +588,7 @@ public:
     CodeAssistant m_codeAssistant;
     bool m_assistRelevantContentAdded = false;
 
-    QList<BaseHoverHandler *> m_hoverHandlers; // Not owned
+    QList<BaseHoverHandler *> m_hoverHandlers;
     HoverHandlerRunner m_hoverHandlerRunner;
 
     QPointer<QSequentialAnimationGroup> m_navigationAnimation;
@@ -639,7 +637,7 @@ TextEditorWidgetPrivate::TextEditorWidgetPrivate(TextEditorWidget *parent)
     m_requestMarkEnabled(true),
     m_lineSeparatorsAllowed(false),
     m_maybeFakeTooltipEvent(false),
-    m_hoverHandlerRunner(parent, m_hoverHandlers),
+    m_hoverHandlerRunner(m_hoverHandlers),
     m_clipboardAssistProvider(new ClipboardAssistProvider),
     m_autoCompleter(new AutoCompleter),
     m_linkFinder(new LinkFinder)
@@ -676,6 +674,7 @@ TextEditorWidgetPrivate::TextEditorWidgetPrivate(TextEditorWidget *parent)
 
 TextEditorWidgetPrivate::~TextEditorWidgetPrivate()
 {
+    qDeleteAll(m_hoverHandlers);
     q->disconnect(this);
     delete m_toolBar;
 }
@@ -7672,7 +7671,7 @@ void BaseTextEditor::setContextHelpId(const QString &id)
 QString TextEditorWidget::contextHelpId()
 {
     if (d->m_contextHelpId.isEmpty() && !d->m_hoverHandlers.isEmpty())
-        d->m_contextHelpId = d->m_hoverHandlers.first()->contextHelpId(this, textCursor().position());
+        d->m_contextHelpId = d->m_hoverHandlers.first()->contextHelpId(textCursor().position());
     return d->m_contextHelpId;
 }
 
@@ -8241,7 +8240,6 @@ public:
     TextEditorFactory::IndenterCreator m_indenterCreator;
     TextEditorFactory::SyntaxHighLighterCreator m_syntaxHighlighterCreator;
     CommentDefinition m_commentDefinition;
-    QList<BaseHoverHandler *> m_hoverHandlers; // owned
     CompletionAssistProvider * m_completionAssistProvider = nullptr; // owned
     bool m_useGenericHighlighter = false;
     bool m_duplicatedSupported = true;
@@ -8258,7 +8256,6 @@ TextEditorFactory::TextEditorFactory(QObject *parent)
 
 TextEditorFactory::~TextEditorFactory()
 {
-    qDeleteAll(d->m_hoverHandlers);
     delete d->m_completionAssistProvider;
     delete d;
 }
@@ -8306,11 +8303,6 @@ void TextEditorFactory::setEditorActionHandlers(Id contextId, uint optionalActio
 void TextEditorFactory::setEditorActionHandlers(uint optionalActions)
 {
     new TextEditorActionHandler(this, id(), id(), optionalActions);
-}
-
-void TextEditorFactory::addHoverHandler(BaseHoverHandler *handler)
-{
-    d->m_hoverHandlers.append(handler);
 }
 
 void TextEditorFactory::setCompletionAssistProvider(CompletionAssistProvider *provider)
@@ -8380,7 +8372,6 @@ BaseTextEditor *TextEditorFactoryPrivate::createEditorHelper(const TextDocumentP
 
     widget->setTextDocument(document);
     widget->autoCompleter()->setTabSettings(document->tabSettings());
-    widget->d->m_hoverHandlers = m_hoverHandlers;
 
     widget->d->m_codeAssistant.configure(widget);
     widget->d->m_commentDefinition = m_commentDefinition;

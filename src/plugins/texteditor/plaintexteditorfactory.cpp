@@ -46,12 +46,17 @@ static PlainTextEditorFactory *m_instance = 0;
 class PlainTextEditorWidget : public TextEditorWidget
 {
 public:
-    PlainTextEditorWidget() {}
+    PlainTextEditorWidget();
     void finalizeInitialization() override
     {
         textDocument()->setMimeType(QLatin1String(Constants::C_TEXTEDITOR_MIMETYPE_TEXT));
     }
 };
+
+PlainTextEditorWidget::PlainTextEditorWidget()
+{
+    addHoverHandler(new BaseHoverHandler(this));
+}
 
 PlainTextEditorFactory::PlainTextEditorFactory()
 {
@@ -61,7 +66,6 @@ PlainTextEditorFactory::PlainTextEditorFactory()
     setDisplayName(QCoreApplication::translate("OpenWith::Editors", Core::Constants::K_DEFAULT_TEXT_EDITOR_DISPLAY_NAME));
     addMimeType(QLatin1String(TextEditor::Constants::C_TEXTEDITOR_MIMETYPE_TEXT));
     addMimeType(QLatin1String("text/css")); // for some reason freedesktop thinks css is text/x-csrc
-    addHoverHandler(new BaseHoverHandler);
 
     setDocumentCreator([]() { return new TextDocument(Core::Constants::K_DEFAULT_TEXT_EDITOR_ID); });
     setEditorWidgetCreator([]() { return new PlainTextEditorWidget; });

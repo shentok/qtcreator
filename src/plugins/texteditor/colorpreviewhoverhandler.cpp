@@ -355,10 +355,15 @@ static QColor colorFromFuncAndArgs(const QString &func, const QStringList &args)
     return colorFromArgs(args, spec);
 }
 
-void ColorPreviewHoverHandler::identifyMatch(TextEditorWidget *editorWidget, int pos)
+ColorPreviewHoverHandler::ColorPreviewHoverHandler(TextEditorWidget *widget) :
+    BaseHoverHandler(widget)
 {
-    if (editorWidget->extraSelectionTooltip(pos).isEmpty()) {
-        const QTextBlock tb = editorWidget->document()->findBlock(pos);
+}
+
+void ColorPreviewHoverHandler::identifyMatch(int pos)
+{
+    if (textEditorWidget()->extraSelectionTooltip(pos).isEmpty()) {
+        const QTextBlock tb = textEditorWidget()->document()->findBlock(pos);
         const int tbpos = pos - tb.position();
         const QString tbtext = tb.text();
 
@@ -376,10 +381,10 @@ void ColorPreviewHoverHandler::identifyMatch(TextEditorWidget *editorWidget, int
     }
 }
 
-void ColorPreviewHoverHandler::operateTooltip(TextEditorWidget *editorWidget, const QPoint &point)
+void ColorPreviewHoverHandler::operateTooltip(const QPoint &point)
 {
     if (m_colorTip.isValid())
-        Utils::ToolTip::show(point, m_colorTip, editorWidget);
+        Utils::ToolTip::show(point, m_colorTip, textEditorWidget());
     else
         Utils::ToolTip::hide();
 }

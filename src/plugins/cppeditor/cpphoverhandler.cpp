@@ -26,6 +26,7 @@
 #include "cpphoverhandler.h"
 
 #include "cppeditorconstants.h"
+#include "cppeditorwidget.h"
 #include "cppelementevaluator.h"
 
 #include <coreplugin/helpmanager.h>
@@ -92,20 +93,25 @@ void processWithEditorDocumentProcessor(TextEditorWidget *editorWidget,
 namespace CppEditor {
 namespace Internal {
 
-void CppHoverHandler::identifyMatch(TextEditorWidget *editorWidget, int pos)
+CppHoverHandler::CppHoverHandler(CppEditorWidget *editorWidget) :
+    BaseHoverHandler(editorWidget)
+{
+}
+
+void CppHoverHandler::identifyMatch(int pos)
 {
     m_positionForEditorDocumentProcessor = -1;
 
-    if (editorDocumentProcessorHasDiagnosticAt(editorWidget, pos)) {
+    if (editorDocumentProcessorHasDiagnosticAt(textEditorWidget(), pos)) {
         setPriority(Priority_Diagnostic);
         m_positionForEditorDocumentProcessor = pos;
-    } else if (!editorWidget->extraSelectionTooltip(pos).isEmpty()) {
-        setToolTip(editorWidget->extraSelectionTooltip(pos));
+    } else if (!textEditorWidget()->extraSelectionTooltip(pos).isEmpty()) {
+        setToolTip(textEditorWidget()->extraSelectionTooltip(pos));
     } else {
-        QTextCursor tc(editorWidget->document());
+        QTextCursor tc(textEditorWidget()->document());
         tc.setPosition(pos);
 
-        CppElementEvaluator evaluator(editorWidget);
+        CppElementEvaluator evaluator(textEditorWidget());
         evaluator.setTextCursor(tc);
         evaluator.execute();
         if (evaluator.hasDiagnosis()) {
@@ -174,17 +180,16 @@ void CppHoverHandler::decorateToolTip()
     }
 }
 
-void CppHoverHandler::operateTooltip(TextEditor::TextEditorWidget *editorWidget,
-                                     const QPoint &point)
+void CppHoverHandler::operateTooltip(const QPoint &point)
 {
     if (m_positionForEditorDocumentProcessor == -1) {
-        BaseHoverHandler::operateTooltip(editorWidget, point);
+        BaseHoverHandler::operateTooltip(point);
         return;
     }
 
     const HelpItem helpItem = lastHelpItemIdentified();
     const QString helpId = helpItem.isValid() ? helpItem.helpId() : QString();
-    processWithEditorDocumentProcessor(editorWidget, point, m_positionForEditorDocumentProcessor,
+    processWithEditorDocumentProcessor(textEditorWidget(), point, m_positionForEditorDocumentProcessor,
                                        helpId);
 }
 

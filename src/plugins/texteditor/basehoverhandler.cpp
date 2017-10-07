@@ -31,6 +31,11 @@
 
 namespace TextEditor {
 
+BaseHoverHandler::BaseHoverHandler(TextEditorWidget *widget) :
+    m_widget(widget)
+{
+}
+
 BaseHoverHandler::~BaseHoverHandler()
 {}
 
@@ -39,13 +44,12 @@ bool BaseHoverHandler::isAsyncHandler() const
     return m_isAsyncHandler;
 }
 
-void BaseHoverHandler::checkPriority(TextEditorWidget *widget,
-                                     int pos,
+void BaseHoverHandler::checkPriority(int pos,
                                      ReportPriority report)
 {
-    widget->setContextHelpId(QString());
+    m_widget->setContextHelpId(QString());
 
-    process(widget, pos, report);
+    process(pos, report);
 }
 
 void BaseHoverHandler::cancelAsyncCheck()
@@ -72,12 +76,12 @@ void BaseHoverHandler::setPriority(int priority)
     m_priority = priority;
 }
 
-QString BaseHoverHandler::contextHelpId(TextEditorWidget *widget, int pos)
+QString BaseHoverHandler::contextHelpId(int pos)
 {
     // If the tooltip is visible and there is a help match, this match is used to update
     // the help id. Otherwise, let the identification process happen.
     if (!Utils::ToolTip::isVisible() || !lastHelpItemIdentified().isValid())
-        process(widget, pos, [](int){});
+        process(pos, [](int){});
 
     if (lastHelpItemIdentified().isValid())
         return lastHelpItemIdentified().helpId();
@@ -104,16 +108,21 @@ const HelpItem &BaseHoverHandler::lastHelpItemIdentified() const
     return m_lastHelpItemIdentified;
 }
 
-void BaseHoverHandler::process(TextEditorWidget *widget, int pos, ReportPriority report)
+TextEditorWidget *BaseHoverHandler::textEditorWidget()
+{
+    return m_widget;
+}
+
+void BaseHoverHandler::process(int pos, ReportPriority report)
 {
     m_toolTip.clear();
     m_priority = -1;
     m_lastHelpItemIdentified = HelpItem();
 
     if (m_isAsyncHandler) {
-        identifyMatchAsync(widget, pos, report);
+        identifyMatchAsync(pos, report);
     } else {
-        identifyMatch(widget, pos);
+        identifyMatch(pos);
         report(priority());
     }
 }
@@ -123,14 +132,14 @@ void BaseHoverHandler::setIsAsyncHandler(bool isAsyncHandler)
     m_isAsyncHandler = isAsyncHandler;
 }
 
-void BaseHoverHandler::identifyMatch(TextEditorWidget *editorWidget, int pos)
+void BaseHoverHandler::identifyMatch(int pos)
 {
-    QString tooltip = editorWidget->extraSelectionTooltip(pos);
+    QString tooltip = m_widget->extraSelectionTooltip(pos);
     if (!tooltip.isEmpty())
         setToolTip(tooltip);
 }
 
-void BaseHoverHandler::identifyMatchAsync(TextEditorWidget *, int, BaseHoverHandler::ReportPriority)
+void BaseHoverHandler::identifyMatchAsync(int, BaseHoverHandler::ReportPriority)
 {
     QTC_CHECK(false && "BaseHoverHandler: Implement identifyMatchAsync() in derived class!");
 }
@@ -149,12 +158,12 @@ void BaseHoverHandler::decorateToolTip()
     }
 }
 
-void BaseHoverHandler::operateTooltip(TextEditorWidget *editorWidget, const QPoint &point)
+void BaseHoverHandler::operateTooltip(const QPoint &point)
 {
     if (m_toolTip.isEmpty())
         Utils::ToolTip::hide();
     else
-        Utils::ToolTip::show(point, m_toolTip, editorWidget, m_lastHelpItemIdentified.isValid()
+        Utils::ToolTip::show(point, m_toolTip, m_widget, m_lastHelpItemIdentified.isValid()
                              ? m_lastHelpItemIdentified.helpId()
                              : QString());
 }

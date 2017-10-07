@@ -650,7 +650,6 @@ public:
     void setEditorActionHandlers(Core::Id contextId, uint optionalActions);
     void setEditorActionHandlers(uint optionalActions);
 
-    void addHoverHandler(BaseHoverHandler *handler);
     void setCompletionAssistProvider(CompletionAssistProvider *provider);
 
     void setCommentDefinition(Utils::CommentDefinition definition);

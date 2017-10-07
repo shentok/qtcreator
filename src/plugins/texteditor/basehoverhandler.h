@@ -41,19 +41,20 @@ class TextEditorWidget;
 class TEXTEDITOR_EXPORT BaseHoverHandler
 {
 public:
+    BaseHoverHandler(TextEditorWidget *widget);
     virtual ~BaseHoverHandler();
 
     bool isAsyncHandler() const;
     void setIsAsyncHandler(bool isAsyncHandler);
 
-    QString contextHelpId(TextEditorWidget *widget, int pos);
+    QString contextHelpId(int pos);
 
     using ReportPriority = std::function<void(int priority)>;
-    void checkPriority(TextEditorWidget *widget, int pos, ReportPriority report);
+    void checkPriority(int pos, ReportPriority report);
     virtual void cancelAsyncCheck();
 
     virtual void decorateToolTip();
-    virtual void operateTooltip(TextEditorWidget *editorWidget, const QPoint &point);
+    virtual void operateTooltip(const QPoint &point);
 
 protected:
     enum {
@@ -71,12 +72,15 @@ protected:
     void setLastHelpItemIdentified(const HelpItem &help);
     const HelpItem &lastHelpItemIdentified() const;
 
-    virtual void identifyMatch(TextEditorWidget *editorWidget, int pos);
-    virtual void identifyMatchAsync(TextEditorWidget *editorWidget, int pos, ReportPriority report);
+    TextEditorWidget *textEditorWidget();
+
+    virtual void identifyMatch(int pos);
+    virtual void identifyMatchAsync(int pos, ReportPriority report);
 
 private:
-    void process(TextEditorWidget *widget, int pos, ReportPriority report);
+    void process(int pos, ReportPriority report);
 
+    TextEditorWidget *const m_widget;
     bool m_isAsyncHandler = false;
 
     QString m_toolTip;

@@ -38,9 +38,12 @@ class TextEditorWidget;
 
 class TEXTEDITOR_EXPORT ColorPreviewHoverHandler : public BaseHoverHandler
 {
+public:
+    ColorPreviewHoverHandler(TextEditorWidget *widget);
+
 private:
-    void identifyMatch(TextEditorWidget *editorWidget, int pos) override;
-    void operateTooltip(TextEditorWidget *editorWidget, const QPoint &point) override;
+    void identifyMatch(int pos) override;
+    void operateTooltip(const QPoint &point) override;
 
     QColor m_colorTip;
 };

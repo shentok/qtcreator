@@ -108,6 +108,7 @@ QmlJSEditorWidget::QmlJSEditorWidget()
 {
     m_findReferences = new FindReferences(this);
     setLanguageSettingsId(QmlJSTools::Constants::QML_JS_SETTINGS_ID);
+    addHoverHandler(new QmlJSHoverHandler(this));
     setLinkFinder(new QmlJSLinkFinder(this));
 }
 
@@ -963,7 +964,6 @@ QmlJSEditorFactory::QmlJSEditorFactory()
     setMarksVisible(true);
     setCodeFoldingSupported(true);
 
-    addHoverHandler(new QmlJSHoverHandler);
     setCompletionAssistProvider(new QmlJSCompletionAssistProvider);
 
     setEditorActionHandlers(TextEditorActionHandler::Format

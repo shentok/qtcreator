@@ -164,10 +164,15 @@ static QString findResourceInProject(const QString &resName)
     return QString();
 }
 
-void ResourcePreviewHoverHandler::identifyMatch(TextEditorWidget *editorWidget, int pos)
+ResourcePreviewHoverHandler::ResourcePreviewHoverHandler(TextEditor::TextEditorWidget *editorWidget) :
+    BaseHoverHandler(editorWidget)
 {
-    if (editorWidget->extraSelectionTooltip(pos).isEmpty()) {
-        const QTextBlock tb = editorWidget->document()->findBlock(pos);
+}
+
+void ResourcePreviewHoverHandler::identifyMatch(int pos)
+{
+    if (textEditorWidget()->extraSelectionTooltip(pos).isEmpty()) {
+        const QTextBlock tb = textEditorWidget()->document()->findBlock(pos);
         const int tbpos = pos - tb.position();
         const QString tbtext = tb.text();
 
@@ -178,11 +183,11 @@ void ResourcePreviewHoverHandler::identifyMatch(TextEditorWidget *editorWidget, 
     }
 }
 
-void ResourcePreviewHoverHandler::operateTooltip(TextEditorWidget *editorWidget, const QPoint &point)
+void ResourcePreviewHoverHandler::operateTooltip(const QPoint &point)
 {
     const QString tt = makeTooltip();
     if (!tt.isEmpty())
-        Utils::ToolTip::show(point, tt, editorWidget);
+        Utils::ToolTip::show(point, tt, textEditorWidget());
     else
         Utils::ToolTip::hide();
 }

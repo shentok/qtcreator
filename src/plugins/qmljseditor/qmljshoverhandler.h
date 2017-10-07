@@ -53,13 +53,13 @@ class QmlJSHoverHandler : public TextEditor::BaseHoverHandler
     Q_DECLARE_TR_FUNCTIONS(QmlJSHoverHandler)
 
 public:
-    QmlJSHoverHandler();
+    QmlJSHoverHandler(QmlJSEditorWidget *editorWidget);
 
 private:
     void reset();
 
-    void identifyMatch(TextEditor::TextEditorWidget *editorWidget, int pos) override;
-    void operateTooltip(TextEditor::TextEditorWidget *editorWidget, const QPoint &point) override;
+    void identifyMatch(int pos) override;
+    void operateTooltip(const QPoint &point) override;
 
     bool matchDiagnosticMessage(QmlJSEditorWidget *qmlEditor, int pos);
     bool matchColorItem(const QmlJS::ScopeChain &lookupContext,
@@ -80,6 +80,7 @@ private:
                         const QmlJS::Document::Ptr &qmlDocument,
                         QmlJS::AST::Node *node);
 
+    QmlJSEditorWidget *const m_editorWidget;
     QmlJS::ModelManagerInterface *m_modelManager;
     QColor m_colorTip;
 };

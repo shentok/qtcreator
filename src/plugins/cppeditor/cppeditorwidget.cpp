@@ -32,12 +32,14 @@
 #include "cppeditorplugin.h"
 #include "cppfunctiondecldeflink.h"
 #include "cpphighlighter.h"
+#include "cpphoverhandler.h"
 #include "cpplinkfinder.h"
 #include "cpplocalrenaming.h"
 #include "cppminimizableinfobars.h"
 #include "cpppreprocessordialog.h"
 #include "cppquickfixassistant.h"
 #include "cppuseselectionsupdater.h"
+#include "resourcepreviewhoverhandler.h"
 
 #include <clangsupport/sourcelocationscontainer.h>
 
@@ -68,6 +70,7 @@
 #include <texteditor/codeassist/assistproposalitem.h>
 #include <texteditor/codeassist/genericproposal.h>
 #include <texteditor/codeassist/genericproposalmodel.h>
+#include <texteditor/colorpreviewhoverhandler.h>
 #include <texteditor/completionsettings.h>
 #include <texteditor/fontsettings.h>
 #include <texteditor/refactoroverlay.h>
@@ -147,6 +150,10 @@ CppEditorWidget::CppEditorWidget()
     : d(new CppEditorWidgetPrivate(this))
 {
     qRegisterMetaType<SemanticInfo>("CppTools::SemanticInfo");
+
+    addHoverHandler(new CppHoverHandler(this));
+    addHoverHandler(new ColorPreviewHoverHandler(this));
+    addHoverHandler(new ResourcePreviewHoverHandler(this));
 
     setLinkFinder(new CppLinkFinder(this, d->m_modelManager, &d->m_lastSemanticInfo));
 }

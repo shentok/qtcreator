@@ -59,6 +59,7 @@ protected:
 
 ProFileEditorWidget::ProFileEditorWidget()
 {
+    addHoverHandler(new ProFileHoverHandler(this));
     setLinkFinder(new ProFileLinkFinder(this));
 }
 
@@ -102,7 +103,6 @@ ProFileEditorFactory::ProFileEditorFactory()
     setEditorActionHandlers(TextEditorActionHandler::UnCommentSelection
                 | TextEditorActionHandler::JumpToFileUnderCursor);
 
-    addHoverHandler(new ProFileHoverHandler);
     setSyntaxHighlighterCreator([]() { return new ProFileHighlighter; });
 
     const QString defaultOverlay = QLatin1String(ProjectExplorer::Constants::FILEOVERLAY_QT);

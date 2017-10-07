@@ -34,9 +34,12 @@ namespace Internal {
 
 class ResourcePreviewHoverHandler : public TextEditor::BaseHoverHandler
 {
+public:
+    ResourcePreviewHoverHandler(TextEditor::TextEditorWidget *editorWidget);
+
 private:
-    void identifyMatch(TextEditor::TextEditorWidget *editorWidget, int pos) override;
-    void operateTooltip(TextEditor::TextEditorWidget *editorWidget, const QPoint &point) override;
+    void identifyMatch(int pos) override;
+    void operateTooltip(const QPoint &point) override;
 
 private:
     QString makeTooltip() const;

@@ -91,9 +91,11 @@ namespace {
     }
 }
 
-QmlJSHoverHandler::QmlJSHoverHandler() : m_modelManager(0)
+QmlJSHoverHandler::QmlJSHoverHandler(QmlJSEditorWidget *editorWidget) :
+    BaseHoverHandler(editorWidget),
+    m_editorWidget(editorWidget),
+    m_modelManager(ModelManagerInterface::instance())
 {
-    m_modelManager = ModelManagerInterface::instance();
 }
 
 static inline QString getModuleName(const ScopeChain &scopeChain, const Document::Ptr &qmlDocument,
@@ -201,18 +203,15 @@ bool QmlJSHoverHandler::setQmlTypeHelp(const ScopeChain &scopeChain, const Docum
     return true;
 }
 
-void QmlJSHoverHandler::identifyMatch(TextEditorWidget *editorWidget, int pos)
+void QmlJSHoverHandler::identifyMatch(int pos)
 {
     reset();
 
     if (!m_modelManager)
         return;
 
-    QmlJSEditorWidget *qmlEditor = qobject_cast<QmlJSEditorWidget *>(editorWidget);
-    QTC_ASSERT(qmlEditor, return);
-
-    const QmlJSTools::SemanticInfo &semanticInfo = qmlEditor->qmlJsEditorDocument()->semanticInfo();
-    if (!semanticInfo.isValid() || qmlEditor->qmlJsEditorDocument()->isSemanticInfoOutdated())
+    const QmlJSTools::SemanticInfo &semanticInfo = m_editorWidget->qmlJsEditorDocument()->semanticInfo();
+    if (!semanticInfo.isValid() || m_editorWidget->qmlJsEditorDocument()->isSemanticInfoOutdated())
         return;
 
     QList<AST::Node *> rangePath = semanticInfo.rangePath(pos);
@@ -239,7 +238,7 @@ void QmlJSHoverHandler::identifyMatch(TextEditorWidget *editorWidget, int pos)
         i = j = pos;
         QString nameAtt;
         for (;;) {
-            QChar c = qmlEditor->document()->characterAt(j);
+            QChar c = m_editorWidget->document()->characterAt(j);
             if (!c.isLetterOrNumber()) break;
             nameAtt.append(c);
             ++j;
@@ -247,7 +246,7 @@ void QmlJSHoverHandler::identifyMatch(TextEditorWidget *editorWidget, int pos)
         QStringList qName;
         while (i>0) {
             --i;
-            QChar c = qmlEditor->document()->characterAt(i);
+            QChar c = m_editorWidget->document()->characterAt(i);
             if (c.isLetterOrNumber()) {
                 nameAtt.prepend(c);
             } else if (c == QLatin1Char('.')) {
@@ -260,10 +259,10 @@ void QmlJSHoverHandler::identifyMatch(TextEditorWidget *editorWidget, int pos)
         }
         const ObjectValue *value = scopeChain.context()->lookupType(qmlDocument.data(), qName);
         setQmlTypeHelp(scopeChain, qmlDocument, value, qName);
-        matchDiagnosticMessage(qmlEditor, pos);
+        matchDiagnosticMessage(m_editorWidget, pos);
         return;
     }
-    if (matchDiagnosticMessage(qmlEditor, pos))
+    if (matchDiagnosticMessage(m_editorWidget, pos))
         return;
     if (matchColorItem(scopeChain, qmlDocument, rangePath, pos))
         return;
@@ -393,14 +392,14 @@ void QmlJSHoverHandler::reset()
     m_colorTip = QColor();
 }
 
-void QmlJSHoverHandler::operateTooltip(TextEditorWidget *editorWidget, const QPoint &point)
+void QmlJSHoverHandler::operateTooltip(const QPoint &point)
 {
     if (toolTip().isEmpty())
         Utils::ToolTip::hide();
     else if (m_colorTip.isValid())
-        Utils::ToolTip::show(point, m_colorTip, editorWidget);
+        Utils::ToolTip::show(point, m_colorTip, textEditorWidget());
     else
-        BaseHoverHandler::operateTooltip(editorWidget, point);
+        BaseHoverHandler::operateTooltip(point);
 }
 
 void QmlJSHoverHandler::prettyPrintTooltip(const Value *value,
