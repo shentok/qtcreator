@@ -175,12 +175,12 @@ public:
 
     static QSet<QString> timeStampModifiedFiles(const QList<Document::Ptr> &documentsToCheck);
 
-    static Internal::CppSourceProcessor *createSourceProcessor();
+    Internal::CppSourceProcessor *createSourceProcessor();
     static QString configurationFileName();
     static QString editorConfigurationFileName();
 
-    static void setRefactoringEngine(RefactoringEngineInterface *refactoringEngine);
-    static RefactoringEngineInterface &refactoringEngine();
+    void setRefactoringEngine(RefactoringEngineInterface *refactoringEngine);
+    RefactoringEngineInterface &refactoringEngine();
 
     void renameIncludes(const QString &oldFileName, const QString &newFileName);
 

@@ -100,13 +100,13 @@ bool ClangRefactoringPlugin::initialize(const QStringList & /*arguments*/, QStri
 
 void ClangRefactoringPlugin::extensionsInitialized()
 {
-    CppTools::CppModelManager::setRefactoringEngine(&refactoringEngine());
+    CppTools::CppModelManager::instance()->setRefactoringEngine(&refactoringEngine());
 }
 
 ExtensionSystem::IPlugin::ShutdownFlag ClangRefactoringPlugin::aboutToShutdown()
 {
     ExtensionSystem::PluginManager::removeObject(&d->qtCreatorfindFilter);
-    CppTools::CppModelManager::setRefactoringEngine(nullptr);
+    CppTools::CppModelManager::instance()->setRefactoringEngine(nullptr);
     d->refactoringClient.setRefactoringConnectionClient(nullptr);
     d->refactoringClient.setRefactoringEngine(nullptr);
 

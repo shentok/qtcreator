@@ -182,7 +182,7 @@ void index(QFutureInterface<void> &indexingFuture,
            const QFutureInterface<void> &superFuture,
            const ParseParams params)
 {
-    QScopedPointer<CppSourceProcessor> sourceProcessor(CppModelManager::createSourceProcessor());
+    QScopedPointer<CppSourceProcessor> sourceProcessor(CppModelManager::instance()->createSourceProcessor());
     sourceProcessor->setFileSizeLimitInMb(params.indexerFileSizeLimitInMb);
     sourceProcessor->setHeaderPaths(params.headerPaths);
     sourceProcessor->setWorkingCopy(params.workingCopy);

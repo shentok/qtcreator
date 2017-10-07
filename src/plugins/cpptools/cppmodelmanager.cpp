@@ -250,14 +250,13 @@ QSet<QString> CppModelManager::timeStampModifiedFiles(const QList<Document::Ptr>
  */
 CppSourceProcessor *CppModelManager::createSourceProcessor()
 {
-    CppModelManager *that = instance();
-    return new CppSourceProcessor(that->snapshot(), [that](const Document::Ptr &doc) {
-        const Document::Ptr previousDocument = that->document(doc->fileName());
+    return new CppSourceProcessor(this->snapshot(), [this](const Document::Ptr &doc) {
+        const Document::Ptr previousDocument = this->document(doc->fileName());
         const unsigned newRevision = previousDocument.isNull()
                 ? 1U
                 : previousDocument->revision() + 1;
         doc->setRevision(newRevision);
-        that->emitDocumentUpdated(doc);
+        this->emitDocumentUpdated(doc);
         doc->releaseSourceAndAST();
     });
 }
@@ -270,14 +269,14 @@ QString CppModelManager::editorConfigurationFileName()
 void CppModelManager::setRefactoringEngine(RefactoringEngineInterface *refactoringEngine)
 {
     if (refactoringEngine)
-        instance()->d->m_refactoringEngine = refactoringEngine;
+        d->m_refactoringEngine = refactoringEngine;
     else
-        instance()->d->m_refactoringEngine = &instance()->d->m_builtInRefactoringEngine;
+        d->m_refactoringEngine = &d->m_builtInRefactoringEngine;
 }
 
 RefactoringEngineInterface &CppModelManager::refactoringEngine()
 {
-    return *instance()->d->m_refactoringEngine;
+    return *d->m_refactoringEngine;
 }
 
 FollowSymbolInterface &CppModelManager::followSymbolInterface() const

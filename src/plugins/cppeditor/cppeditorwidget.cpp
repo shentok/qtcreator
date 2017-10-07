@@ -528,7 +528,7 @@ void CppEditorWidget::renameSymbolUnderCursor()
     using ClangBackEnd::SourceLocationsContainer;
 
     ProjectPart *projPart = projectPart();
-    if (!refactoringEngine().isUsable() || !projPart)
+    if (!d->m_modelManager->refactoringEngine().isUsable() || !projPart)
         return;
 
     d->m_useSelectionsUpdater.abortSchedule();
@@ -552,14 +552,14 @@ void CppEditorWidget::renameSymbolUnderCursor()
                 d->m_localRenaming.updateSelectionsForVariableUnderCursor(selections);
             }
             if (!d->m_localRenaming.start()) {
-                refactoringEngine().startGlobalRenaming(
+                d->m_modelManager->refactoringEngine().startGlobalRenaming(
                     CppTools::CursorInEditor{textCursor(), textDocument()->filePath(), this});
             }
         }
     };
 
     viewport()->setCursor(Qt::BusyCursor);
-    refactoringEngine().startLocalRenaming(CppTools::CursorInEditor{textCursor(),
+    d->m_modelManager->refactoringEngine().startLocalRenaming(CppTools::CursorInEditor{textCursor(),
                                                                      textDocument()->filePath(),
                                                                      this},
                                             projPart,
@@ -669,11 +669,6 @@ RefactorMarkers CppEditorWidget::refactorMarkersWithoutClangMarkers() const
     }
 
     return clearedRefactorMarkers;
-}
-
-RefactoringEngineInterface &CppEditorWidget::refactoringEngine() const
-{
-    return CppTools::CppModelManager::refactoringEngine();
 }
 
 bool CppEditorWidget::isSemanticInfoValidExceptLocalUses() const

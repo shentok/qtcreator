@@ -33,7 +33,6 @@
 
 namespace CppTools {
 class CppEditorOutline;
-class RefactoringEngineInterface;
 class SemanticInfo;
 class ProjectPart;
 }
@@ -133,8 +132,6 @@ private:
     QMenu *createRefactorMenu(QWidget *parent) const;
 
     TextEditor::RefactorMarkers refactorMarkersWithoutClangMarkers() const;
-
-    CppTools::RefactoringEngineInterface &refactoringEngine() const;
 
     CppTools::ProjectPart *projectPart() const;
 
