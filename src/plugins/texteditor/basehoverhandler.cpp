@@ -39,13 +39,6 @@ bool BaseHoverHandler::isAsyncHandler() const
     return m_isAsyncHandler;
 }
 
-void BaseHoverHandler::showToolTip(TextEditorWidget *widget, const QPoint &point, bool decorate)
-{
-    if (decorate)
-        decorateToolTip();
-    operateTooltip(widget, point);
-}
-
 void BaseHoverHandler::checkPriority(TextEditorWidget *widget,
                                      int pos,
                                      ReportPriority report)

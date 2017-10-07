@@ -52,7 +52,8 @@ public:
     void checkPriority(TextEditorWidget *widget, int pos, ReportPriority report);
     virtual void cancelAsyncCheck();
 
-    void showToolTip(TextEditorWidget *widget, const QPoint &point, bool decorate = true);
+    virtual void decorateToolTip();
+    virtual void operateTooltip(TextEditorWidget *editorWidget, const QPoint &point);
 
 protected:
     enum {
@@ -72,8 +73,6 @@ protected:
 
     virtual void identifyMatch(TextEditorWidget *editorWidget, int pos);
     virtual void identifyMatchAsync(TextEditorWidget *editorWidget, int pos, ReportPriority report);
-    virtual void decorateToolTip();
-    virtual void operateTooltip(TextEditorWidget *editorWidget, const QPoint &point);
 
 private:
     void process(TextEditorWidget *widget, int pos, ReportPriority report);
