@@ -91,8 +91,9 @@ public:
 };
 
 
-BackendCommunicator::BackendCommunicator()
-    : m_connection(&m_receiver)
+BackendCommunicator::BackendCommunicator(CppTools::CppModelManager *modelManager)
+    : m_modelManager(modelManager)
+    , m_connection(&m_receiver)
     , m_sender(new DummyBackendSender())
 {
     m_backendStartTimeOut.setSingleShot(true);

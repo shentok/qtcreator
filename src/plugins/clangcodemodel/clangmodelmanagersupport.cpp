@@ -60,13 +60,10 @@ static bool useClangFollowSymbol()
     return use;
 }
 
-static CppTools::CppModelManager *cppModelManager()
-{
-    return CppTools::CppModelManager::instance();
-}
-
 ModelManagerSupportClang::ModelManagerSupportClang()
-    : m_completionAssistProvider(m_communicator)
+    : m_modelManager(CppTools::CppModelManager::instance())
+    , m_communicator(m_modelManager)
+    , m_completionAssistProvider(m_communicator)
 {
     QTC_CHECK(!m_instance);
     m_instance = this;
@@ -86,14 +83,13 @@ ModelManagerSupportClang::ModelManagerSupportClang()
             this, &ModelManagerSupportClang::onEditorClosed,
             Qt::QueuedConnection);
 
-    CppTools::CppModelManager *modelManager = cppModelManager();
-    connect(modelManager, &CppTools::CppModelManager::abstractEditorSupportContentsUpdated,
+    connect(m_modelManager, &CppTools::CppModelManager::abstractEditorSupportContentsUpdated,
             this, &ModelManagerSupportClang::onAbstractEditorSupportContentsUpdated);
-    connect(modelManager, &CppTools::CppModelManager::abstractEditorSupportRemoved,
+    connect(m_modelManager, &CppTools::CppModelManager::abstractEditorSupportRemoved,
             this, &ModelManagerSupportClang::onAbstractEditorSupportRemoved);
-    connect(modelManager, &CppTools::CppModelManager::projectPartsUpdated,
+    connect(m_modelManager, &CppTools::CppModelManager::projectPartsUpdated,
             this, &ModelManagerSupportClang::onProjectPartsUpdated);
-    connect(modelManager, &CppTools::CppModelManager::projectPartsRemoved,
+    connect(m_modelManager, &CppTools::CppModelManager::projectPartsRemoved,
             this, &ModelManagerSupportClang::onProjectPartsRemoved);
 
     m_communicator.registerFallbackProjectPart();
@@ -185,7 +181,7 @@ void ModelManagerSupportClang::onEditorOpened(Core::IEditor *editor)
     QTC_ASSERT(document, return);
     TextEditor::TextDocument *textDocument = qobject_cast<TextEditor::TextDocument *>(document);
 
-    if (textDocument && cppModelManager()->isCppEditor(editor)) {
+    if (textDocument && m_modelManager->isCppEditor(editor)) {
         connectTextDocumentToTranslationUnit(textDocument);
         connectToWidgetsMarkContextMenuRequested(editor->widget());
 
@@ -271,7 +267,7 @@ void ModelManagerSupportClang::onAbstractEditorSupportRemoved(const QString &fil
 {
     QTC_ASSERT(!filePath.isEmpty(), return);
 
-    if (!cppModelManager()->cppEditorDocument(filePath)) {
+    if (!m_modelManager->cppEditorDocument(filePath)) {
         const QString mappedPath = m_uiHeaderOnDiskManager.remove(filePath);
         const QString projectPartId = Utils::projectPartIdForFile(filePath);
         m_communicator.unregisterUnsavedFilesForEditor({{mappedPath, projectPartId}});
@@ -325,7 +321,7 @@ void ModelManagerSupportClang::onTextMarkContextMenuRequested(TextEditor::TextEd
 void ModelManagerSupportClang::onProjectPartsUpdated(ProjectExplorer::Project *project)
 {
     QTC_ASSERT(project, return);
-    const CppTools::ProjectInfo projectInfo = cppModelManager()->projectInfo(project);
+    const CppTools::ProjectInfo projectInfo = m_modelManager->projectInfo(project);
     QTC_ASSERT(projectInfo.isValid(), return);
 
     m_communicator.registerProjectsParts(projectInfo.projectParts());
@@ -342,11 +338,11 @@ void ModelManagerSupportClang::onProjectPartsRemoved(const QStringList &projectP
 }
 
 static QVector<ClangEditorDocumentProcessor *>
-clangProcessorsWithProjectParts(const QStringList &projectPartIds)
+clangProcessorsWithProjectParts(const QStringList &projectPartIds, const CppTools::CppModelManager &modelManager)
 {
     QVector<ClangEditorDocumentProcessor *> result;
 
-    foreach (auto *editorDocument, cppModelManager()->cppEditorDocuments()) {
+    foreach (auto *editorDocument, modelManager.cppEditorDocuments()) {
         auto *processor = editorDocument->processor();
         auto *clangProcessor = qobject_cast<ClangEditorDocumentProcessor *>(processor);
         if (clangProcessor && clangProcessor->hasProjectPart()) {
@@ -361,7 +357,7 @@ clangProcessorsWithProjectParts(const QStringList &projectPartIds)
 void ModelManagerSupportClang::unregisterTranslationUnitsWithProjectParts(
         const QStringList &projectPartIds)
 {
-    const auto processors = clangProcessorsWithProjectParts(projectPartIds);
+    const auto processors = clangProcessorsWithProjectParts(projectPartIds, *m_modelManager);
     foreach (ClangEditorDocumentProcessor *processor, processors) {
         m_communicator.unregisterTranslationUnitsForEditor({processor->fileContainerWithArguments()});
         processor->clearProjectPart();

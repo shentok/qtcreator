@@ -102,6 +102,7 @@ private:
 
 private:
     UiHeaderOnDiskManager m_uiHeaderOnDiskManager;
+    const QPointer<CppTools::CppModelManager> m_modelManager;
     BackendCommunicator m_communicator;
     ClangCompletionAssistProvider m_completionAssistProvider;
     std::unique_ptr<CppTools::FollowSymbolInterface> m_followSymbol;

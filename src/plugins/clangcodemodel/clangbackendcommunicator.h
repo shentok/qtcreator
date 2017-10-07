@@ -44,6 +44,10 @@ class IEditor;
 class IDocument;
 }
 
+namespace CppTools {
+class CppModelManager;
+}
+
 namespace ClangCodeModel {
 namespace Internal {
 
@@ -59,7 +63,7 @@ public:
     using ProjectPartContainers = QVector<ClangBackEnd::ProjectPartContainer>;
 
 public:
-    BackendCommunicator();
+    BackendCommunicator(CppTools::CppModelManager *modelManager);
     ~BackendCommunicator();
 
     void registerTranslationUnitsForEditor(const FileContainers &fileContainers);
@@ -136,6 +140,7 @@ private:
                                         const Utf8StringVector &visibleEditorsFilePaths);
 
 private:
+    const QPointer<CppTools::CppModelManager> m_modelManager;
     BackendReceiver m_receiver;
     ClangBackEnd::ClangCodeModelConnectionClient m_connection;
     QTimer m_backendStartTimeOut;
