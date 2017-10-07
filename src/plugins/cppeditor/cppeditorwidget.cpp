@@ -350,7 +350,7 @@ void CppEditorWidget::findUsages()
         return;
 
     SemanticInfo info = d->m_lastSemanticInfo;
-    info.snapshot = CppModelManager::instance()->snapshot();
+    info.snapshot = d->m_modelManager->snapshot();
     info.snapshot.insert(info.doc);
 
     if (const Macro *macro = CppTools::findCanonicalMacro(textCursor(), info.doc)) {
@@ -369,7 +369,7 @@ void CppEditorWidget::renameUsagesInternal(const QString &replacement)
         return;
 
     SemanticInfo info = d->m_lastSemanticInfo;
-    info.snapshot = CppModelManager::instance()->snapshot();
+    info.snapshot = d->m_modelManager->snapshot();
     info.snapshot.insert(info.doc);
 
     if (const Macro *macro = CppTools::findCanonicalMacro(textCursor(), info.doc)) {
@@ -651,7 +651,7 @@ CppEditorWidget::Link CppEditorWidget::findLinkAt(const QTextCursor &cursor,
 
     const Utils::FileName &filePath = textDocument()->filePath();
 
-    return followSymbolInterface().findLink(CppTools::CursorInEditor{cursor, filePath, this},
+    return d->m_modelManager->followSymbolInterface().findLink(CppTools::CursorInEditor{cursor, filePath, this},
                                              resolveTarget,
                                              d->m_modelManager->snapshot(),
                                              d->m_lastSemanticInfo.doc,
@@ -687,11 +687,6 @@ RefactorMarkers CppEditorWidget::refactorMarkersWithoutClangMarkers() const
 RefactoringEngineInterface &CppEditorWidget::refactoringEngine() const
 {
     return CppTools::CppModelManager::refactoringEngine();
-}
-
-CppTools::FollowSymbolInterface &CppEditorWidget::followSymbolInterface() const
-{
-    return CppTools::CppModelManager::instance()->followSymbolInterface();
 }
 
 bool CppEditorWidget::isSemanticInfoValidExceptLocalUses() const
@@ -1004,7 +999,7 @@ void CppEditorWidget::updateFunctionDeclDefLinkNow()
     if (!isSemanticInfoValidExceptLocalUses())
         return;
 
-    Snapshot snapshot = CppModelManager::instance()->snapshot();
+    Snapshot snapshot = d->m_modelManager->snapshot();
     snapshot.insert(semanticDoc);
 
     d->m_declDefLinkFinder->startFindLinkAt(textCursor(), semanticDoc, snapshot);
