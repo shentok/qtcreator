@@ -391,7 +391,7 @@ public:
         connect(m_importBuild, &QPushButton::clicked,
                 this, &ProjectWindowPrivate::handleImportBuild);
         connect(sessionManager, &SessionManager::startupProjectChanged, this, [this](Project *project) {
-            m_importBuild->setEnabled(project && project->projectImporter());
+            m_importBuild->setEnabled(project && static_cast<bool>(project->importerCreator()));
         });
 
         m_manageKits = new QPushButton(ProjectWindow::tr("Manage Kits..."));
@@ -515,7 +515,7 @@ public:
             menu.addSeparator();
 
         QAction *importBuild = menu.addAction(ProjectWindow::tr("Import Existing Build..."));
-        importBuild->setEnabled(project && project->projectImporter());
+        importBuild->setEnabled(project && static_cast<bool>(project->importerCreator()));
         QAction *manageKits = menu.addAction(ProjectWindow::tr("Manage Kits..."));
 
         QAction *act = menu.exec(m_selectorTree->mapToGlobal(pos));
@@ -539,7 +539,8 @@ public:
     {
         ProjectItem *projectItem = m_projectsModel.rootItem()->childAt(0);
         Project *project = projectItem ? projectItem->project() : nullptr;
-        ProjectImporter *projectImporter = project ? project->projectImporter() : nullptr;
+        auto createImporter = project ? project->importerCreator() : ProjectImporterCreator();
+        std::unique_ptr<ProjectImporter> projectImporter = createImporter ? createImporter() : nullptr;
         QTC_ASSERT(projectImporter, return);
 
         QString dir = project->projectDirectory().toString();

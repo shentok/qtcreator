@@ -99,7 +99,7 @@ public:
     void emitBuildDirectoryInitialized();
     static void proFileParseError(const QString &errorMessage);
 
-    ProjectExplorer::ProjectImporter *projectImporter() const final;
+    ProjectExplorer::ProjectImporterCreator importerCreator() const final;
 
     enum AsyncUpdateState { Base, AsyncFullUpdatePending, AsyncPartialUpdatePending, AsyncUpdateInProgress, ShuttingDown };
     AsyncUpdateState asyncUpdateState() const;
@@ -175,7 +175,6 @@ private:
     Internal::CentralizedFolderWatcher *m_centralizedFolderWatcher = nullptr;
 
     ProjectExplorer::Target *m_activeTarget = nullptr;
-    mutable ProjectExplorer::ProjectImporter *m_projectImporter = nullptr;
 };
 
 } // namespace QmakeProjectManager

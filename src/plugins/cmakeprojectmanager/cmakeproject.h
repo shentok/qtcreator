@@ -75,7 +75,7 @@ public:
     // Context menu actions:
     void buildCMakeTarget(const QString &buildTarget);
 
-    ProjectExplorer::ProjectImporter *projectImporter() const final;
+    ProjectExplorer::ProjectImporterCreator importerCreator() const final;
 
     bool persistCMakeState();
     void clearCMakeCache();
@@ -117,7 +117,6 @@ private:
 
     QHash<QString, bool> m_mimeBinaryCache;
     QList<const ProjectExplorer::FileNode *> m_allFiles;
-    mutable std::unique_ptr<Internal::CMakeProjectImporter> m_projectImporter;
 
     QTimer m_delayedParsingTimer;
     int m_delayedParsingParameters = 0;

@@ -132,4 +132,6 @@ private:
     friend class UpdateGuard;
 };
 
+using ProjectImporterCreator = std::function<std::unique_ptr<ProjectImporter> ()>;
+
 } // namespace ProjectExplorer

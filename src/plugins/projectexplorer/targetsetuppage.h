@@ -37,6 +37,8 @@
 #include <QString>
 #include <QMap>
 
+#include <memory>
+
 QT_FORWARD_DECLARE_CLASS(QSpacerItem)
 
 namespace Core { class Id; }
@@ -69,7 +71,7 @@ public:
     void setRequiredKitPredicate(const ProjectExplorer::Kit::Predicate &predicate);
     void setPreferredKitPredicate(const ProjectExplorer::Kit::Predicate &predicate);
     void setProjectPath(const QString &dir);
-    void setProjectImporter(ProjectImporter *importer);
+    void setProjectImporter(std::unique_ptr<ProjectImporter> &&importer);
 
     /// Sets whether the targetsetupage uses a scrollarea
     /// to host the widgets from the factories
@@ -117,7 +119,7 @@ private:
 
     ProjectExplorer::Kit::Predicate m_requiredPredicate;
     ProjectExplorer::Kit::Predicate m_preferredPredicate;
-    QPointer<ProjectImporter> m_importer;
+    std::unique_ptr<ProjectImporter> m_importer;
     QLayout *m_baseLayout = nullptr;
     QString m_projectPath;
     QString m_defaultShadowBuildLocation;

@@ -192,8 +192,6 @@ QmakeProject::QmakeProject(const FileName &fileName) :
 QmakeProject::~QmakeProject()
 {
     s_projects.removeOne(this);
-    delete m_projectImporter;
-    m_projectImporter = nullptr;
     delete m_cppCodeModelUpdater;
     m_cppCodeModelUpdater = nullptr;
     m_asyncUpdateState = ShuttingDown;
@@ -1336,11 +1334,11 @@ void QmakeProject::emitBuildDirectoryInitialized()
     emit buildDirectoryInitialized();
 }
 
-ProjectImporter *QmakeProject::projectImporter() const
+ProjectExplorer::ProjectImporterCreator QmakeProject::importerCreator() const
 {
-    if (!m_projectImporter)
-        m_projectImporter = new QmakeProjectImporter(projectFilePath());
-    return m_projectImporter;
+    return [this]() {
+        return std::make_unique<QmakeProjectImporter>(projectFilePath());
+    };
 }
 
 QmakeProject::AsyncUpdateState QmakeProject::asyncUpdateState() const

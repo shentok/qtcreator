@@ -161,7 +161,6 @@ QbsProject::~QbsProject()
 {
     delete m_cppCodeModelUpdater;
     delete m_qbsProjectParser;
-    delete m_importer;
     if (m_qbsUpdateFutureInterface) {
         m_qbsUpdateFutureInterface->reportCanceled();
         m_qbsUpdateFutureInterface->reportFinished();
@@ -178,11 +177,11 @@ void QbsProject::projectLoaded()
     m_parsingDelay.start(0);
 }
 
-ProjectImporter *QbsProject::projectImporter() const
+ProjectExplorer::ProjectImporterCreator QbsProject::importerCreator() const
 {
-    if (!m_importer)
-        m_importer = new QbsProjectImporter(projectFilePath());
-    return m_importer;
+    return [this]() {
+        return std::make_unique<QbsProjectImporter>(projectFilePath());
+    };
 }
 
 QVariant QbsProject::additionalData(Id id, const Target *target) const

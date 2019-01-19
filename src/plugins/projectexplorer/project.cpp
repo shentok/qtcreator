@@ -885,9 +885,9 @@ ProjectNode *Project::findNodeForBuildKey(const QString &buildKey) const
     });
 }
 
-ProjectImporter *Project::projectImporter() const
+ProjectImporterCreator Project::importerCreator() const
 {
-    return nullptr;
+    return {};
 }
 
 Kit::Predicate Project::requiredKitPredicate() const

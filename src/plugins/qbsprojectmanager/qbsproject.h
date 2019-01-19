@@ -131,7 +131,7 @@ private:
     Utils::FileName installRoot();
 
     void projectLoaded() override;
-    ProjectExplorer::ProjectImporter *projectImporter() const override;
+    ProjectExplorer::ProjectImporterCreator importerCreator() const override;
     QVariant additionalData(Core::Id id, const ProjectExplorer::Target *target) const final;
 
     static bool ensureWriteableQbsFile(const QString &file);
@@ -156,8 +156,6 @@ private:
     } m_cancelStatus = CancelStatusNone;
 
     CppTools::CppProjectUpdater *m_cppCodeModelUpdater = nullptr;
-
-    mutable ProjectExplorer::ProjectImporter *m_importer = nullptr;
 
     QTimer m_parsingDelay;
     QList<ProjectExplorer::ExtraCompiler *> m_extraCompilers;

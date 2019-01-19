@@ -28,6 +28,7 @@
 #include "projectexplorer_export.h"
 
 #include "kit.h"
+#include "projectimporter.h"
 #include "subscription.h"
 
 #include <coreplugin/id.h>
@@ -52,7 +53,6 @@ class FolderNode;
 class NamedWidget;
 class Node;
 class ProjectConfiguration;
-class ProjectImporter;
 class ProjectNode;
 class ProjectPrivate;
 class Target;
@@ -153,7 +153,7 @@ public:
     virtual bool needsBuildConfigurations() const;
     virtual void configureAsExampleProject(const QSet<Core::Id> &platforms);
 
-    virtual ProjectImporter *projectImporter() const;
+    virtual ProjectImporterCreator importerCreator() const;
 
     Kit::Predicate requiredKitPredicate() const;
     Kit::Predicate preferredKitPredicate() const;

@@ -444,11 +444,11 @@ void CMakeProject::buildCMakeTarget(const QString &buildTarget)
         bc->buildTarget(buildTarget);
 }
 
-ProjectImporter *CMakeProject::projectImporter() const
+ProjectExplorer::ProjectImporterCreator CMakeProject::importerCreator() const
 {
-    if (!m_projectImporter)
-        m_projectImporter = std::make_unique<CMakeProjectImporter>(projectFilePath());
-    return m_projectImporter.get();
+    return [this]() {
+        return std::make_unique<CMakeProjectImporter>(projectFilePath());
+    };
 }
 
 bool CMakeProject::persistCMakeState()
