@@ -342,7 +342,7 @@ Utils::LanguageVersion ToolChain::cxxLanguageVersion(const QByteArray &cplusplus
     if (version == 201103L)
         return LanguageVersion::CXX11;
 
-    return LanguageVersion::CXX03;
+    return LanguageVersion::LatestCxx;
 }
 
 Utils::LanguageVersion ToolChain::languageVersion(const Utils::Id &language, const Macros &macros)
