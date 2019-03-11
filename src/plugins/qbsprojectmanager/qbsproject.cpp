@@ -179,8 +179,8 @@ void QbsProject::projectLoaded()
 
 ProjectExplorer::ProjectImporterCreator QbsProject::importerCreator() const
 {
-    return [this]() {
-        return std::make_unique<QbsProjectImporter>(projectFilePath());
+    return [](auto projectFilePath) {
+        return std::make_unique<QbsProjectImporter>(projectFilePath);
     };
 }
 

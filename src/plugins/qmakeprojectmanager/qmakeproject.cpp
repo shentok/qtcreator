@@ -1336,8 +1336,8 @@ void QmakeProject::emitBuildDirectoryInitialized()
 
 ProjectExplorer::ProjectImporterCreator QmakeProject::importerCreator() const
 {
-    return [this]() {
-        return std::make_unique<QmakeProjectImporter>(projectFilePath());
+    return [](auto projectFilePath) {
+        return std::make_unique<QmakeProjectImporter>(projectFilePath);
     };
 }
 

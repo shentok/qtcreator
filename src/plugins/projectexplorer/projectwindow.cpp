@@ -540,7 +540,7 @@ public:
         ProjectItem *projectItem = m_projectsModel.rootItem()->childAt(0);
         Project *project = projectItem ? projectItem->project() : nullptr;
         auto createImporter = project ? project->importerCreator() : ProjectImporterCreator();
-        std::unique_ptr<ProjectImporter> projectImporter = createImporter ? createImporter() : nullptr;
+        std::unique_ptr<ProjectImporter> projectImporter = createImporter ? createImporter(project->projectFilePath()) : nullptr;
         QTC_ASSERT(projectImporter, return);
 
         QString dir = project->projectDirectory().toString();

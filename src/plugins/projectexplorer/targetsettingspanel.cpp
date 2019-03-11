@@ -133,7 +133,7 @@ TargetSetupPageWrapper::TargetSetupPageWrapper(Project *project)
     m_targetSetupPage->setProjectPath(project->projectFilePath().toString());
     m_targetSetupPage->setRequiredKitPredicate(project->requiredKitPredicate());
     m_targetSetupPage->setPreferredKitPredicate(project->preferredKitPredicate());
-    m_targetSetupPage->setProjectImporter(project->importerCreator() ? project->importerCreator()() : nullptr);
+    m_targetSetupPage->setProjectImporter(project->importerCreator() ? project->importerCreator()(project->projectFilePath()) : nullptr);
     m_targetSetupPage->initializePage();
     m_targetSetupPage->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     updateNoteText();

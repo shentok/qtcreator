@@ -446,8 +446,8 @@ void CMakeProject::buildCMakeTarget(const QString &buildTarget)
 
 ProjectExplorer::ProjectImporterCreator CMakeProject::importerCreator() const
 {
-    return [this]() {
-        return std::make_unique<CMakeProjectImporter>(projectFilePath());
+    return [](auto projectFilePath) {
+        return std::make_unique<CMakeProjectImporter>(projectFilePath);
     };
 }
 
