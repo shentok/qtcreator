@@ -182,20 +182,6 @@ void BuildConfiguration::addConfigWidgets(const std::function<void(NamedWidget *
         adder(subConfigWidget);
 }
 
-void BuildConfiguration::doInitialize(const BuildInfo &info)
-{
-    setDisplayName(info.displayName);
-    setDefaultDisplayName(info.displayName);
-    setBuildDirectory(info.buildDirectory);
-
-    d->m_initialBuildType = info.buildType;
-
-    acquaintAspects();
-
-    if (d->m_initializer)
-        d->m_initializer(info);
-}
-
 void BuildConfiguration::setInitializer(const std::function<void(const BuildInfo &)> &initializer)
 {
     d->m_initializer = initializer;
@@ -571,8 +557,18 @@ BuildConfiguration *BuildConfigurationFactory::create(Target *parent, const Buil
     QTC_ASSERT(m_creator, return nullptr);
 
     BuildConfiguration *bc = m_creator(parent);
-    if (bc)
-        bc->doInitialize(info);
+    if (bc) {
+        bc->setDisplayName(info.displayName);
+        bc->setDefaultDisplayName(info.displayName);
+        bc->setBuildDirectory(info.buildDirectory);
+
+        bc->d->m_initialBuildType = info.buildType;
+
+        bc->acquaintAspects();
+
+        if (bc->d->m_initializer)
+            bc->d->m_initializer(info);
+    }
 
     return bc;
 }
