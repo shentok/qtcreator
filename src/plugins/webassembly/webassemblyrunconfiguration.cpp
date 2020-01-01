@@ -65,9 +65,9 @@ public:
     EmrunRunConfiguration(Target *target, Core::Id id)
             : RunConfiguration(target, id)
     {
-        auto webBrowserAspect = addAspect<WebBrowserSelectionAspect>(target);
+        auto webBrowserAspect = m_aspects.addAspect<WebBrowserSelectionAspect>(target);
 
-        auto effectiveEmrunCall = addAspect<BaseStringAspect>();
+        auto effectiveEmrunCall = m_aspects.addAspect<BaseStringAspect>();
         effectiveEmrunCall->setLabelText(EmrunRunConfigurationFactory::tr("Effective emrun call:"));
         effectiveEmrunCall->setDisplayStyle(BaseStringAspect::TextEditDisplay);
         effectiveEmrunCall->setReadOnly(true);

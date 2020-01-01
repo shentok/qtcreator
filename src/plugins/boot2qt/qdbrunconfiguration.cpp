@@ -68,7 +68,7 @@ FullCommandLineAspect::FullCommandLineAspect(RunConfiguration *rc)
 QdbRunConfiguration::QdbRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
 {
-    auto exeAspect = addAspect<ExecutableAspect>();
+    auto exeAspect = m_aspects.addAspect<ExecutableAspect>();
     exeAspect->setSettingsKey("QdbRunConfig.RemoteExecutable");
     exeAspect->setLabelText(tr("Executable on device:"));
     exeAspect->setExecutablePathStyle(OsTypeLinux);
@@ -76,15 +76,15 @@ QdbRunConfiguration::QdbRunConfiguration(Target *target, Core::Id id)
     exeAspect->makeOverridable("QdbRunConfig.AlternateRemoteExecutable",
                                "QdbRunCofig.UseAlternateRemoteExecutable");
 
-    auto symbolsAspect = addAspect<SymbolFileAspect>();
+    auto symbolsAspect = m_aspects.addAspect<SymbolFileAspect>();
     symbolsAspect->setSettingsKey("QdbRunConfig.LocalExecutable");
     symbolsAspect->setLabelText(tr("Executable on host:"));
     symbolsAspect->setDisplayStyle(SymbolFileAspect::LabelDisplay);
 
-    addAspect<RemoteLinux::RemoteLinuxEnvironmentAspect>(target);
-    addAspect<ArgumentsAspect>();
-    addAspect<WorkingDirectoryAspect>();
-    addAspect<FullCommandLineAspect>(this);
+    m_aspects.addAspect<RemoteLinux::RemoteLinuxEnvironmentAspect>(target);
+    m_aspects.addAspect<ArgumentsAspect>();
+    m_aspects.addAspect<WorkingDirectoryAspect>();
+    m_aspects.addAspect<FullCommandLineAspect>(this);
 
     setUpdater([this, target, exeAspect, symbolsAspect] {
         const BuildTargetInfo bti = buildTargetInfo();

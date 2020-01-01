@@ -49,7 +49,7 @@ namespace Internal {
 RemoteLinuxRunConfiguration::RemoteLinuxRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
 {
-    auto exeAspect = addAspect<ExecutableAspect>();
+    auto exeAspect = m_aspects.addAspect<ExecutableAspect>();
     exeAspect->setLabelText(tr("Executable on device:"));
     exeAspect->setExecutablePathStyle(OsTypeLinux);
     exeAspect->setPlaceHolderText(tr("Remote path not set"));
@@ -57,17 +57,17 @@ RemoteLinuxRunConfiguration::RemoteLinuxRunConfiguration(Target *target, Core::I
                                "RemoteLinux.RunConfig.UseAlternateRemoteExecutable");
     exeAspect->setHistoryCompleter("RemoteLinux.AlternateExecutable.History");
 
-    auto symbolsAspect = addAspect<SymbolFileAspect>();
+    auto symbolsAspect = m_aspects.addAspect<SymbolFileAspect>();
     symbolsAspect->setLabelText(tr("Executable on host:"));
     symbolsAspect->setDisplayStyle(SymbolFileAspect::LabelDisplay);
 
-    addAspect<ArgumentsAspect>();
-    addAspect<WorkingDirectoryAspect>();
+    m_aspects.addAspect<ArgumentsAspect>();
+    m_aspects.addAspect<WorkingDirectoryAspect>();
     if (HostOsInfo::isAnyUnixHost())
-        addAspect<TerminalAspect>();
-    addAspect<RemoteLinuxEnvironmentAspect>(target);
+        m_aspects.addAspect<TerminalAspect>();
+    m_aspects.addAspect<RemoteLinuxEnvironmentAspect>(target);
     if (HostOsInfo::isAnyUnixHost())
-        addAspect<X11ForwardingAspect>();
+        m_aspects.addAspect<X11ForwardingAspect>();
 
     setUpdater([this, target, exeAspect, symbolsAspect] {
         BuildTargetInfo bti = buildTargetInfo();

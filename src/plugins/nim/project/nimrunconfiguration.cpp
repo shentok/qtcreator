@@ -44,11 +44,11 @@ namespace Nim {
 NimRunConfiguration::NimRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
 {
-    addAspect<LocalEnvironmentAspect>(target);
-    addAspect<ExecutableAspect>();
-    addAspect<ArgumentsAspect>();
-    addAspect<WorkingDirectoryAspect>();
-    addAspect<TerminalAspect>();
+    m_aspects.addAspect<LocalEnvironmentAspect>(target);
+    m_aspects.addAspect<ExecutableAspect>();
+    m_aspects.addAspect<ArgumentsAspect>();
+    m_aspects.addAspect<WorkingDirectoryAspect>();
+    m_aspects.addAspect<TerminalAspect>();
 
     setDisplayName(tr("Current Build Target"));
     setDefaultDisplayName(tr("Current Build Target"));

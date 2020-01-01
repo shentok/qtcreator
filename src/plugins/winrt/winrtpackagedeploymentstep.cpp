@@ -57,7 +57,7 @@ WinRtPackageDeploymentStep::WinRtPackageDeploymentStep(BuildStepList *bsl)
 {
     setDisplayName(tr("Run windeployqt"));
 
-    m_argsAspect = addAspect<BaseStringAspect>();
+    m_argsAspect = m_aspects.addAspect<BaseStringAspect>();
     m_argsAspect->setDisplayStyle(BaseStringAspect::LineEditDisplay);
     m_argsAspect->setSettingsKey("WinRt.BuildStep.Deploy.Arguments");
     m_argsAspect->setValue(defaultWinDeployQtArguments());

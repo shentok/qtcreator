@@ -121,23 +121,23 @@ QbsBuildConfiguration::QbsBuildConfiguration(Target *target, Core::Id id)
         emit qbsConfigurationChanged();
     });
 
-    m_configurationName = addAspect<BaseStringAspect>();
+    m_configurationName = m_aspects.addAspect<BaseStringAspect>();
     m_configurationName->setLabelText(tr("Configuration name:"));
     m_configurationName->setSettingsKey("Qbs.configName");
     m_configurationName->setDisplayStyle(BaseStringAspect::LineEditDisplay);
     connect(m_configurationName, &BaseStringAspect::changed,
             this, &BuildConfiguration::buildDirectoryChanged);
 
-    const auto separateDebugInfoAspect = addAspect<SeparateDebugInfoAspect>();
+    const auto separateDebugInfoAspect = m_aspects.addAspect<SeparateDebugInfoAspect>();
     connect(separateDebugInfoAspect, &SeparateDebugInfoAspect::changed,
             this, &QbsBuildConfiguration::qbsConfigurationChanged);
 
-    const auto qmlDebuggingAspect = addAspect<QtSupport::QmlDebuggingAspect>();
+    const auto qmlDebuggingAspect = m_aspects.addAspect<QtSupport::QmlDebuggingAspect>();
     qmlDebuggingAspect->setKit(target->kit());
     connect(qmlDebuggingAspect, &QtSupport::QmlDebuggingAspect::changed,
             this, &QbsBuildConfiguration::qbsConfigurationChanged);
 
-    const auto qtQuickCompilerAspect = addAspect<QtSupport::QtQuickCompilerAspect>();
+    const auto qtQuickCompilerAspect = m_aspects.addAspect<QtSupport::QtQuickCompilerAspect>();
     qtQuickCompilerAspect->setKit(target->kit());
     connect(qtQuickCompilerAspect, &QtSupport::QtQuickCompilerAspect::changed,
             this, &QbsBuildConfiguration::qbsConfigurationChanged);

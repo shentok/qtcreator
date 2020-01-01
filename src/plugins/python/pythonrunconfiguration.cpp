@@ -248,7 +248,7 @@ public:
 PythonRunConfiguration::PythonRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
 {
-    auto interpreterAspect = addAspect<InterpreterAspect>();
+    auto interpreterAspect = m_aspects.addAspect<InterpreterAspect>();
     interpreterAspect->setSettingsKey("PythonEditor.RunConfiguation.Interpreter");
     connect(interpreterAspect, &InterpreterAspect::changed,
             this, &PythonRunConfiguration::updateLanguageServer);
@@ -261,17 +261,17 @@ PythonRunConfiguration::PythonRunConfiguration(Target *target, Core::Id id)
     aspect<InterpreterAspect>()->setDefaultInterpreter(
         interpreters.isEmpty() ? PythonSettings::defaultInterpreter() : interpreters.first());
 
-    auto scriptAspect = addAspect<MainScriptAspect>();
+    auto scriptAspect = m_aspects.addAspect<MainScriptAspect>();
     scriptAspect->setSettingsKey("PythonEditor.RunConfiguation.Script");
     scriptAspect->setLabelText(tr("Script:"));
     scriptAspect->setDisplayStyle(BaseStringAspect::LabelDisplay);
 
-    addAspect<LocalEnvironmentAspect>(target);
+    m_aspects.addAspect<LocalEnvironmentAspect>(target);
 
-    auto argumentsAspect = addAspect<ArgumentsAspect>();
+    auto argumentsAspect = m_aspects.addAspect<ArgumentsAspect>();
 
-    addAspect<WorkingDirectoryAspect>();
-    addAspect<TerminalAspect>();
+    m_aspects.addAspect<WorkingDirectoryAspect>();
+    m_aspects.addAspect<TerminalAspect>();
 
     setCommandLineGetter([this, interpreterAspect, argumentsAspect] {
         CommandLine cmd{interpreterAspect->currentInterpreter().command, {mainScript()}};

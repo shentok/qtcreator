@@ -198,12 +198,6 @@ public:
 
     static QString settingsIdKey();
 
-    template<class Aspect, typename ...Args>
-    Aspect *addAspect(Args && ...args)
-    {
-        return m_aspects.addAspect<Aspect>(std::forward<Args>(args)...);
-    }
-
     const ProjectConfigurationAspects &aspects() const { return m_aspects; }
 
     ProjectConfigurationAspect *aspect(Core::Id id) const;

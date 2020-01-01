@@ -105,12 +105,12 @@ public:
 IosRunConfiguration::IosRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
 {
-    auto executableAspect = addAspect<ExecutableAspect>();
+    auto executableAspect = m_aspects.addAspect<ExecutableAspect>();
     executableAspect->setDisplayStyle(BaseStringAspect::LabelDisplay);
 
-    addAspect<ArgumentsAspect>();
+    m_aspects.addAspect<ArgumentsAspect>();
 
-    m_deviceTypeAspect = addAspect<IosDeviceTypeAspect>(this);
+    m_deviceTypeAspect = m_aspects.addAspect<IosDeviceTypeAspect>(this);
 
     setUpdater([this, target, executableAspect] {
         IDevice::ConstPtr dev = DeviceKitAspect::device(target->kit());

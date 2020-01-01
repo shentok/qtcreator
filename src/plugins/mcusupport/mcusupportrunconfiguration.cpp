@@ -65,7 +65,7 @@ static QStringList flashAndRunArgs(const Target *target)
 FlashAndRunConfiguration::FlashAndRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
 {
-    auto flashAndRunParameters = addAspect<BaseStringAspect>();
+    auto flashAndRunParameters = m_aspects.addAspect<BaseStringAspect>();
     flashAndRunParameters->setLabelText("Flash and run CMake parameters:");
     flashAndRunParameters->setDisplayStyle(BaseStringAspect::TextEditDisplay);
     flashAndRunParameters->setSettingsKey("FlashAndRunConfiguration.Parameters");

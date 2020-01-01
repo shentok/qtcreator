@@ -52,19 +52,19 @@ ProcessStep::ProcessStep(BuildStepList *bsl)
     //: Default ProcessStep display name
     setDefaultDisplayName(tr("Custom Process Step"));
 
-    m_command = addAspect<BaseStringAspect>();
+    m_command = m_aspects.addAspect<BaseStringAspect>();
     m_command->setSettingsKey(PROCESS_COMMAND_KEY);
     m_command->setDisplayStyle(BaseStringAspect::PathChooserDisplay);
     m_command->setLabelText(tr("Command:"));
     m_command->setExpectedKind(Utils::PathChooser::Command);
     m_command->setHistoryCompleter("PE.ProcessStepCommand.History");
 
-    m_arguments = addAspect<BaseStringAspect>();
+    m_arguments = m_aspects.addAspect<BaseStringAspect>();
     m_arguments->setSettingsKey(PROCESS_ARGUMENTS_KEY);
     m_arguments->setDisplayStyle(BaseStringAspect::LineEditDisplay);
     m_arguments->setLabelText(tr("Arguments:"));
 
-    m_workingDirectory = addAspect<BaseStringAspect>();
+    m_workingDirectory = m_aspects.addAspect<BaseStringAspect>();
     m_workingDirectory->setSettingsKey(PROCESS_WORKINGDIRECTORY_KEY);
     m_workingDirectory->setValue(Constants::DEFAULT_WORKING_DIR);
     m_workingDirectory->setDisplayStyle(BaseStringAspect::PathChooserDisplay);

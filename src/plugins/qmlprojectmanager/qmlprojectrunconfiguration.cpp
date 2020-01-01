@@ -282,7 +282,7 @@ void MainQmlFileAspect::changeCurrentFile(IEditor *editor)
 QmlProjectRunConfiguration::QmlProjectRunConfiguration(Target *target, Id id)
     : RunConfiguration(target, id)
 {
-    auto envAspect = addAspect<EnvironmentAspect>();
+    auto envAspect = m_aspects.addAspect<EnvironmentAspect>();
 
     auto envModifier = [this](Environment env) {
         if (auto bs = dynamic_cast<const QmlBuildSystem *>(activeBuildSystem()))
@@ -301,20 +301,20 @@ QmlProjectRunConfiguration::QmlProjectRunConfiguration(Target *target, Id id)
         return envModifier(Environment());
     });
 
-    m_qmlViewerAspect = addAspect<BaseStringAspect>();
+    m_qmlViewerAspect = m_aspects.addAspect<BaseStringAspect>();
     m_qmlViewerAspect->setLabelText(tr("QML Viewer:"));
     m_qmlViewerAspect->setPlaceHolderText(commandLine().executable().toString());
     m_qmlViewerAspect->setDisplayStyle(BaseStringAspect::LineEditDisplay);
     m_qmlViewerAspect->setHistoryCompleter("QmlProjectManager.viewer.history");
 
-    auto argumentAspect = addAspect<ArgumentsAspect>();
+    auto argumentAspect = m_aspects.addAspect<ArgumentsAspect>();
     argumentAspect->setSettingsKey(Constants::QML_VIEWER_ARGUMENTS_KEY);
 
     setCommandLineGetter([this] {
         return CommandLine(qmlScenePath(), commandLineArguments(), CommandLine::Raw);
     });
 
-    m_mainQmlFileAspect = addAspect<MainQmlFileAspect>(target);
+    m_mainQmlFileAspect = m_aspects.addAspect<MainQmlFileAspect>(target);
     connect(m_mainQmlFileAspect, &MainQmlFileAspect::changed, this, &RunConfiguration::update);
 
     connect(target, &Target::kitChanged, this, &RunConfiguration::update);

@@ -69,14 +69,14 @@ WinRtRunConfiguration::WinRtRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
 {
     setDisplayName(tr("Run App Package"));
-    addAspect<ArgumentsAspect>();
-    addAspect<UninstallAfterStopAspect>();
+    m_aspects.addAspect<ArgumentsAspect>();
+    m_aspects.addAspect<UninstallAfterStopAspect>();
 
     const QtSupport::BaseQtVersion *qt
             = QtSupport::QtKitAspect::qtVersion(target->kit());
     if (qt && qt->qtVersion() >= QtSupport::QtVersionNumber(5, 12, 0)) {
-        addAspect<LoopbackExemptClientAspect>();
-        addAspect<LoopbackExemptServerAspect>();
+        m_aspects.addAspect<LoopbackExemptClientAspect>();
+        m_aspects.addAspect<LoopbackExemptServerAspect>();
     }
 }
 

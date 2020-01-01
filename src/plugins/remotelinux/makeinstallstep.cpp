@@ -57,7 +57,7 @@ MakeInstallStep::MakeInstallStep(BuildStepList *parent) : MakeStep(parent, stepI
 {
     setDefaultDisplayName(displayName());
 
-    const auto makeAspect = addAspect<ExecutableAspect>();
+    const auto makeAspect = m_aspects.addAspect<ExecutableAspect>();
     makeAspect->setId(MakeAspectId);
     makeAspect->setSettingsKey(MakeAspectId);
     makeAspect->setDisplayStyle(BaseStringAspect::PathChooserDisplay);
@@ -65,7 +65,7 @@ MakeInstallStep::MakeInstallStep(BuildStepList *parent) : MakeStep(parent, stepI
     connect(makeAspect, &ExecutableAspect::changed,
             this, &MakeInstallStep::updateCommandFromAspect);
 
-    const auto installRootAspect = addAspect<BaseStringAspect>();
+    const auto installRootAspect = m_aspects.addAspect<BaseStringAspect>();
     installRootAspect->setId(InstallRootAspectId);
     installRootAspect->setSettingsKey(InstallRootAspectId);
     installRootAspect->setDisplayStyle(BaseStringAspect::PathChooserDisplay);
@@ -74,19 +74,19 @@ MakeInstallStep::MakeInstallStep(BuildStepList *parent) : MakeStep(parent, stepI
     connect(installRootAspect, &BaseStringAspect::changed,
             this, &MakeInstallStep::updateArgsFromAspect);
 
-    const auto cleanInstallRootAspect = addAspect<BaseBoolAspect>();
+    const auto cleanInstallRootAspect = m_aspects.addAspect<BaseBoolAspect>();
     cleanInstallRootAspect->setId(CleanInstallRootAspectId);
     cleanInstallRootAspect->setSettingsKey(CleanInstallRootAspectId);
     cleanInstallRootAspect->setLabel(tr("Clean install root first:"),
                                      BaseBoolAspect::LabelPlacement::InExtraLabel);
     cleanInstallRootAspect->setValue(false);
 
-    const auto commandLineAspect = addAspect<BaseStringAspect>();
+    const auto commandLineAspect = m_aspects.addAspect<BaseStringAspect>();
     commandLineAspect->setId(FullCommandLineAspectId);
     commandLineAspect->setDisplayStyle(BaseStringAspect::LabelDisplay);
     commandLineAspect->setLabelText(tr("Full command line:"));
 
-    const auto customCommandLineAspect = addAspect<BaseStringAspect>();
+    const auto customCommandLineAspect = m_aspects.addAspect<BaseStringAspect>();
     customCommandLineAspect->setId(CustomCommandLineAspectId);
     customCommandLineAspect->setSettingsKey(CustomCommandLineAspectId);
     customCommandLineAspect->setDisplayStyle(BaseStringAspect::LineEditDisplay);
