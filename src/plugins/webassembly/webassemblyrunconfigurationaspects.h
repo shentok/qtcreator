@@ -37,7 +37,7 @@ class WebBrowserSelectionAspect : public ProjectExplorer::ProjectConfigurationAs
     Q_OBJECT
 
 public:
-    WebBrowserSelectionAspect(ProjectExplorer::Target *target);
+    WebBrowserSelectionAspect(ProjectExplorer::ProjectConfiguration *parent, ProjectExplorer::Target *target);
 
     void addToLayout(ProjectExplorer::LayoutBuilder &builder) override;
 

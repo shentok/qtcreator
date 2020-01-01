@@ -54,14 +54,14 @@ namespace Internal {
 
 WinRtPackageDeploymentStep::WinRtPackageDeploymentStep(BuildStepList *bsl)
     : AbstractProcessStep(bsl, Constants::WINRT_BUILD_STEP_DEPLOY)
+    , m_argsAspect(this)
 {
     setDisplayName(tr("Run windeployqt"));
 
-    m_argsAspect = m_aspects.addAspect<BaseStringAspect>();
-    m_argsAspect->setDisplayStyle(BaseStringAspect::LineEditDisplay);
-    m_argsAspect->setSettingsKey("WinRt.BuildStep.Deploy.Arguments");
-    m_argsAspect->setValue(defaultWinDeployQtArguments());
-    m_argsAspect->setLabelText(tr("Arguments:"));
+    m_argsAspect.setDisplayStyle(BaseStringAspect::LineEditDisplay);
+    m_argsAspect.setSettingsKey("WinRt.BuildStep.Deploy.Arguments");
+    m_argsAspect.setValue(defaultWinDeployQtArguments());
+    m_argsAspect.setLabelText(tr("Arguments:"));
 }
 
 bool WinRtPackageDeploymentStep::init()
@@ -95,7 +95,7 @@ bool WinRtPackageDeploymentStep::init()
 
     CommandLine windeployqt{windeployqtPath};
     windeployqt.addArg(QDir::toNativeSeparators(m_targetFilePath));
-    windeployqt.addArgs(m_argsAspect->value(), CommandLine::Raw);
+    windeployqt.addArgs(m_argsAspect.value(), CommandLine::Raw);
 
     if (qt->type() == Constants::WINRT_WINPHONEQT) {
         m_createMappingFile = true;
@@ -228,7 +228,7 @@ BuildStepConfigWidget *WinRtPackageDeploymentStep::createConfigWidget()
     auto restoreDefaultButton = new QToolButton(widget);
     restoreDefaultButton->setText(tr("Restore Default Arguments"));
     connect(restoreDefaultButton, &QToolButton::clicked, this, [this] {
-        m_argsAspect->setValue(defaultWinDeployQtArguments());
+        m_argsAspect.setValue(defaultWinDeployQtArguments());
     });
 
     // Smuggle in the extra button. We know that there's exactly one aspect.

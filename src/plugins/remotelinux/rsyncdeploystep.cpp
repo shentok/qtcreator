@@ -179,26 +179,26 @@ void RsyncDeployService::setFinished()
 
 RsyncDeployStep::RsyncDeployStep(BuildStepList *bsl)
     : AbstractRemoteLinuxDeployStep(bsl, stepId())
+    , m_flags(this)
+    , m_ignoreMissingFiles(this)
 {
     auto service = createDeployService<Internal::RsyncDeployService>();
 
-    auto flags = m_aspects.addAspect<BaseStringAspect>();
-    flags->setDisplayStyle(BaseStringAspect::LineEditDisplay);
-    flags->setSettingsKey("RemoteLinux.RsyncDeployStep.Flags");
-    flags->setLabelText(tr("Flags:"));
-    flags->setValue(defaultFlags());
+    m_flags.setDisplayStyle(BaseStringAspect::LineEditDisplay);
+    m_flags.setSettingsKey("RemoteLinux.RsyncDeployStep.Flags");
+    m_flags.setLabelText(tr("Flags:"));
+    m_flags.setValue(defaultFlags());
 
-    auto ignoreMissingFiles = m_aspects.addAspect<BaseBoolAspect>();
-    ignoreMissingFiles->setSettingsKey("RemoteLinux.RsyncDeployStep.IgnoreMissingFiles");
-    ignoreMissingFiles->setLabel(tr("Ignore missing files:"),
+    m_ignoreMissingFiles.setSettingsKey("RemoteLinux.RsyncDeployStep.IgnoreMissingFiles");
+    m_ignoreMissingFiles.setLabel(tr("Ignore missing files:"),
                                  BaseBoolAspect::LabelPlacement::InExtraLabel);
-    ignoreMissingFiles->setValue(false);
+    m_ignoreMissingFiles.setValue(false);
 
     setDefaultDisplayName(displayName());
 
-    setInternalInitializer([service, flags, ignoreMissingFiles] {
-        service->setIgnoreMissingFiles(ignoreMissingFiles->value());
-        service->setFlags(flags->value());
+    setInternalInitializer([this, service] {
+        service->setIgnoreMissingFiles(m_ignoreMissingFiles.value());
+        service->setFlags(m_flags.value());
         return service->isDeploymentPossible();
     });
 

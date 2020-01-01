@@ -28,6 +28,8 @@
 #include "abstractremotelinuxdeploystep.h"
 #include "remotelinux_export.h"
 
+#include <projectexplorer/projectconfigurationaspects.h>
+
 namespace RemoteLinux {
 
 class REMOTELINUX_EXPORT GenericDirectUploadStep : public AbstractRemoteLinuxDeployStep
@@ -40,6 +42,10 @@ public:
 
     static Core::Id stepId();
     static QString displayName();
+
+private:
+    ProjectExplorer::BaseBoolAspect m_incremental;
+    ProjectExplorer::BaseBoolAspect m_ignoreMissingFiles;
 };
 
 } //namespace RemoteLinux

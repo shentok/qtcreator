@@ -140,8 +140,9 @@ public:
     \class ProjectExplorer::BaseStringAspect
 */
 
-BaseStringAspect::BaseStringAspect()
-    : d(new Internal::BaseStringAspectPrivate)
+BaseStringAspect::BaseStringAspect(ProjectConfiguration *parent)
+    : ProjectConfigurationAspect(parent)
+    , d(new Internal::BaseStringAspectPrivate)
 {}
 
 BaseStringAspect::~BaseStringAspect() = default;
@@ -405,7 +406,7 @@ void BaseStringAspect::makeCheckable(CheckBoxPlacement checkBoxPlacement,
 {
     QTC_ASSERT(!d->m_checker, return);
     d->m_checkBoxPlacement = checkBoxPlacement;
-    d->m_checker.reset(new BaseBoolAspect);
+    d->m_checker.reset(new BaseBoolAspect(0));
     d->m_checker->setLabel(checkerLabel, checkBoxPlacement == CheckBoxPlacement::Top
                            ? BaseBoolAspect::LabelPlacement::InExtraLabel
                            : BaseBoolAspect::LabelPlacement::AtCheckBox);
@@ -422,8 +423,9 @@ void BaseStringAspect::makeCheckable(CheckBoxPlacement checkBoxPlacement,
     \class ProjectExplorer::BaseBoolAspect
 */
 
-BaseBoolAspect::BaseBoolAspect(const QString &settingsKey)
-    : d(new Internal::BaseBoolAspectPrivate)
+BaseBoolAspect::BaseBoolAspect(ProjectConfiguration *parent, const QString &settingsKey)
+    : ProjectConfigurationAspect(parent)
+    , d(new Internal::BaseBoolAspectPrivate)
 {
     setSettingsKey(settingsKey);
 }
@@ -497,8 +499,9 @@ void BaseBoolAspect::setToolTip(const QString &tooltip)
     \class ProjectExplorer::BaseSelectionAspect
 */
 
-BaseSelectionAspect::BaseSelectionAspect()
-    : d(new Internal::BaseSelectionAspectPrivate)
+BaseSelectionAspect::BaseSelectionAspect(ProjectConfiguration *parent)
+    : ProjectConfigurationAspect(parent)
+    , d(new Internal::BaseSelectionAspectPrivate)
 {}
 
 BaseSelectionAspect::~BaseSelectionAspect() = default;
@@ -601,8 +604,9 @@ void BaseSelectionAspect::addOption(const QString &displayName, const QString &t
 
 // BaseIntegerAspect
 
-BaseIntegerAspect::BaseIntegerAspect()
-    : d(new Internal::BaseIntegerAspectPrivate)
+BaseIntegerAspect::BaseIntegerAspect(ProjectConfiguration *parent)
+    : ProjectConfigurationAspect(parent)
+    , d(new Internal::BaseIntegerAspectPrivate)
 {}
 
 BaseIntegerAspect::~BaseIntegerAspect() = default;
@@ -679,7 +683,8 @@ void BaseIntegerAspect::setDisplayScaleFactor(qint64 factor)
     d->m_displayScaleFactor = factor;
 }
 
-BaseTriStateAspect::BaseTriStateAspect()
+BaseTriStateAspect::BaseTriStateAspect(ProjectConfiguration *parent)
+    : BaseSelectionAspect(parent)
 {
     setDisplayStyle(DisplayStyle::ComboBox);
     setDefaultValue(2);

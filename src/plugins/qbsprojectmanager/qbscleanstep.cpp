@@ -50,26 +50,26 @@ namespace Internal {
 // --------------------------------------------------------------------
 
 QbsCleanStep::QbsCleanStep(ProjectExplorer::BuildStepList *bsl) :
-    ProjectExplorer::BuildStep(bsl, Constants::QBS_CLEANSTEP_ID)
+    ProjectExplorer::BuildStep(bsl, Constants::QBS_CLEANSTEP_ID),
+    m_dryRunAspect(this),
+    m_keepGoingAspect(this),
+    m_effectiveCommandAspect(this)
 {
     setDisplayName(tr("Qbs Clean"));
 
-    m_dryRunAspect = m_aspects.addAspect<BaseBoolAspect>();
-    m_dryRunAspect->setSettingsKey("Qbs.DryRun");
-    m_dryRunAspect->setLabel(tr("Dry run:"), BaseBoolAspect::LabelPlacement::InExtraLabel);
+    m_dryRunAspect.setSettingsKey("Qbs.DryRun");
+    m_dryRunAspect.setLabel(tr("Dry run:"), BaseBoolAspect::LabelPlacement::InExtraLabel);
 
-    m_keepGoingAspect = m_aspects.addAspect<BaseBoolAspect>();
-    m_keepGoingAspect->setSettingsKey("Qbs.DryKeepGoing");
-    m_keepGoingAspect->setLabel(tr("Keep going:"), BaseBoolAspect::LabelPlacement::InExtraLabel);
+    m_keepGoingAspect.setSettingsKey("Qbs.DryKeepGoing");
+    m_keepGoingAspect.setLabel(tr("Keep going:"), BaseBoolAspect::LabelPlacement::InExtraLabel);
 
-    auto effectiveCommandAspect = m_aspects.addAspect<BaseStringAspect>();
-    effectiveCommandAspect->setDisplayStyle(BaseStringAspect::TextEditDisplay);
-    effectiveCommandAspect->setLabelText(tr("Equivalent command line:"));
+    m_effectiveCommandAspect.setDisplayStyle(BaseStringAspect::TextEditDisplay);
+    m_effectiveCommandAspect.setLabelText(tr("Equivalent command line:"));
 
-    setSummaryUpdater([this, effectiveCommandAspect] {
+    setSummaryUpdater([this] {
         QString command = static_cast<QbsBuildConfiguration *>(buildConfiguration())
                  ->equivalentCommandLine(this);
-        effectiveCommandAspect->setValue(command);
+        m_effectiveCommandAspect.setValue(command);
         return tr("<b>Qbs:</b> %1").arg(command);
     });
 }
@@ -105,8 +105,8 @@ void QbsCleanStep::doRun()
     request.insert("type", "clean-project");
     if (!m_products.isEmpty())
         request.insert("products", QJsonArray::fromStringList(m_products));
-    request.insert("dry-run", m_dryRunAspect->value());
-    request.insert("keep-going", m_keepGoingAspect->value());
+    request.insert("dry-run", m_dryRunAspect.value());
+    request.insert("keep-going", m_keepGoingAspect.value());
     m_session->sendRequest(request);
     m_maxProgress = 0;
     connect(m_session, &QbsSession::projectCleaned, this, &QbsCleanStep::cleaningDone);

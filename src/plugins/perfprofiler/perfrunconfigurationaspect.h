@@ -37,7 +37,7 @@ class PERFPROFILER_EXPORT PerfRunConfigurationAspect :
         public ProjectExplorer::GlobalOrProjectAspect
 {
 public:
-    PerfRunConfigurationAspect(ProjectExplorer::Target *target);
+    PerfRunConfigurationAspect(ProjectExplorer::ProjectConfiguration *parent, ProjectExplorer::Target *target);
 };
 
 } // namespace PerfProfiler

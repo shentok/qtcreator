@@ -91,7 +91,10 @@ private:
     QStringList m_changedFiles;
     QStringList m_activeFileTags;
     QStringList m_products;
-    ProjectExplorer::BaseStringAspect *m_configurationName = nullptr;
+    ProjectExplorer::BaseStringAspect m_configurationName;
+    ProjectExplorer::SeparateDebugInfoAspect m_separateDebugInfoAspect;
+    QtSupport::QmlDebuggingAspect m_qmlDebuggingAspect;
+    QtSupport::QtQuickCompilerAspect m_qtQuickCompilerAspect;
     QbsBuildSystem *m_buildSystem = nullptr;
 };
 

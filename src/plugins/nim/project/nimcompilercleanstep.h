@@ -27,6 +27,7 @@
 
 #include <projectexplorer/buildstep.h>
 #include <projectexplorer/buildsteplist.h>
+#include <projectexplorer/projectconfigurationaspects.h>
 #include <utils/fileutils.h>
 
 namespace Nim {
@@ -46,6 +47,7 @@ private:
     bool removeCacheDirectory();
     bool removeOutFilePath();
 
+    ProjectExplorer::BaseStringAspect m_workingDirectoryAspect;
     Utils::FilePath m_buildDir;
 };
 

@@ -25,7 +25,9 @@
 
 #pragma once
 
+#include <projectexplorer/localenvironmentaspect.h>
 #include <projectexplorer/runconfiguration.h>
+#include <projectexplorer/runconfigurationaspects.h>
 
 namespace Nim {
 
@@ -39,6 +41,12 @@ public:
     QString disabledReason() const override;
 
 private:
+    ProjectExplorer::LocalEnvironmentAspect m_envAspect;
+    ProjectExplorer::ExecutableAspect m_exeAspect;
+    ProjectExplorer::ArgumentsAspect m_argumentsAspect;
+    ProjectExplorer::WorkingDirectoryAspect m_workingDirectoryAspect;
+    ProjectExplorer::TerminalAspect m_terminalAspect;
+
     bool isBuildTargetValid() const;
 };
 
@@ -57,6 +65,12 @@ class NimbleTestConfiguration : public ProjectExplorer::RunConfiguration
 
 public:
     NimbleTestConfiguration(ProjectExplorer::Target *target, Core::Id id);
+
+private:
+    ProjectExplorer::ExecutableAspect m_exeAspect;
+    ProjectExplorer::ArgumentsAspect m_argumentsAspect;
+    ProjectExplorer::WorkingDirectoryAspect m_workingDirectoryAspect;
+    ProjectExplorer::TerminalAspect m_terminalAspect;
 };
 
 class NimbleTestConfigurationFactory : public ProjectExplorer::FixedRunConfigurationFactory

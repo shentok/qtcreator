@@ -36,9 +36,7 @@
 #include <languageclient/languageclientmanager.h>
 
 #include <projectexplorer/buildsystem.h>
-#include <projectexplorer/localenvironmentaspect.h>
 #include <projectexplorer/projectconfigurationaspects.h>
-#include <projectexplorer/runconfigurationaspects.h>
 #include <projectexplorer/target.h>
 #include <projectexplorer/taskhub.h>
 
@@ -150,7 +148,7 @@ class InterpreterAspect : public ProjectConfigurationAspect
     Q_OBJECT
 
 public:
-    InterpreterAspect() = default;
+    InterpreterAspect(ProjectConfiguration *parent);
 
     Interpreter currentInterpreter() const;
     void updateInterpreters(const QList<Interpreter> &interpreters);
@@ -168,6 +166,11 @@ private:
     QString m_defaultId;
     QString m_currentId;
 };
+
+InterpreterAspect::InterpreterAspect(ProjectConfiguration *parent)
+    : ProjectConfigurationAspect(parent)
+{
+}
 
 Interpreter InterpreterAspect::currentInterpreter() const
 {
@@ -242,52 +245,51 @@ class MainScriptAspect : public BaseStringAspect
     Q_OBJECT
 
 public:
-    MainScriptAspect() = default;
+    explicit MainScriptAspect(ProjectConfiguration *parent);
 };
 
 PythonRunConfiguration::PythonRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
+    , m_interpreterAspect(new InterpreterAspect(this))
+    , m_scriptAspect(new MainScriptAspect(this))
+    , m_envAspect(this, target)
+    , m_argumentsAspect(this)
+    , m_workingDirectoryAspect(this)
+    , m_terminalAspect(this)
 {
-    auto interpreterAspect = m_aspects.addAspect<InterpreterAspect>();
-    interpreterAspect->setSettingsKey("PythonEditor.RunConfiguation.Interpreter");
-    connect(interpreterAspect, &InterpreterAspect::changed,
+    m_interpreterAspect->setSettingsKey("PythonEditor.RunConfiguation.Interpreter");
+    connect(m_interpreterAspect.get(), &InterpreterAspect::changed,
             this, &PythonRunConfiguration::updateLanguageServer);
 
     connect(PythonSettings::instance(), &PythonSettings::interpretersChanged,
-            interpreterAspect, &InterpreterAspect::updateInterpreters);
+            m_interpreterAspect.get(), &InterpreterAspect::updateInterpreters);
 
     QList<Interpreter> interpreters = PythonSettings::detectPythonVenvs(project()->projectDirectory());
-    aspect<InterpreterAspect>()->updateInterpreters(PythonSettings::interpreters());
-    aspect<InterpreterAspect>()->setDefaultInterpreter(
+    m_interpreterAspect->updateInterpreters(PythonSettings::interpreters());
+    m_interpreterAspect->setDefaultInterpreter(
         interpreters.isEmpty() ? PythonSettings::defaultInterpreter() : interpreters.first());
 
-    auto scriptAspect = m_aspects.addAspect<MainScriptAspect>();
-    scriptAspect->setSettingsKey("PythonEditor.RunConfiguation.Script");
-    scriptAspect->setLabelText(tr("Script:"));
-    scriptAspect->setDisplayStyle(BaseStringAspect::LabelDisplay);
+    m_scriptAspect->setSettingsKey("PythonEditor.RunConfiguation.Script");
+    m_scriptAspect->setLabelText(tr("Script:"));
+    m_scriptAspect->setDisplayStyle(BaseStringAspect::LabelDisplay);
 
-    m_aspects.addAspect<LocalEnvironmentAspect>(target);
-
-    auto argumentsAspect = m_aspects.addAspect<ArgumentsAspect>();
-
-    m_aspects.addAspect<WorkingDirectoryAspect>();
-    m_aspects.addAspect<TerminalAspect>();
-
-    setCommandLineGetter([this, interpreterAspect, argumentsAspect] {
-        CommandLine cmd{interpreterAspect->currentInterpreter().command, {mainScript()}};
-        cmd.addArgs(argumentsAspect->arguments(macroExpander()), CommandLine::Raw);
+    setCommandLineGetter([this] {
+        CommandLine cmd{m_interpreterAspect->currentInterpreter().command, {mainScript()}};
+        cmd.addArgs(m_argumentsAspect.arguments(macroExpander()), CommandLine::Raw);
         return cmd;
     });
 
-    setUpdater([this, scriptAspect] {
+    setUpdater([this] {
         const BuildTargetInfo bti = buildTargetInfo();
         const QString script = bti.targetFilePath.toUserOutput();
         setDefaultDisplayName(tr("Run %1").arg(script));
-        scriptAspect->setValue(script);
+        m_scriptAspect->setValue(script);
     });
 
     connect(target, &Target::buildSystemUpdated, this, &RunConfiguration::update);
 }
+
+PythonRunConfiguration::~PythonRunConfiguration() = default;
 
 void PythonRunConfiguration::updateLanguageServer()
 {
@@ -302,7 +304,7 @@ void PythonRunConfiguration::updateLanguageServer()
         }
     }
 
-    aspect<WorkingDirectoryAspect>()->setDefaultWorkingDirectory(
+    m_workingDirectoryAspect.setDefaultWorkingDirectory(
         Utils::FilePath::fromString(mainScript()).parentDir());
 }
 
@@ -313,17 +315,17 @@ bool PythonRunConfiguration::supportsDebugger() const
 
 QString PythonRunConfiguration::mainScript() const
 {
-    return aspect<MainScriptAspect>()->value();
+    return m_scriptAspect->value();
 }
 
 QString PythonRunConfiguration::arguments() const
 {
-    return aspect<ArgumentsAspect>()->arguments(macroExpander());
+    return m_argumentsAspect.arguments(macroExpander());
 }
 
 QString PythonRunConfiguration::interpreter() const
 {
-    return aspect<InterpreterAspect>()->currentInterpreter().command.toString();
+    return m_interpreterAspect->currentInterpreter().command.toString();
 }
 
 PythonRunConfigurationFactory::PythonRunConfigurationFactory()
@@ -339,6 +341,11 @@ PythonOutputFormatterFactory::PythonOutputFormatterFactory()
             return new PythonOutputFormatter;
         return nullptr;
     });
+}
+
+MainScriptAspect::MainScriptAspect(ProjectConfiguration *parent)
+    : BaseStringAspect(parent)
+{
 }
 
 } // namespace Internal

@@ -125,7 +125,7 @@ IosBuildSettingsWidget::IosBuildSettingsWidget(IosBuildConfiguration *bc)
     m_autoSignCheckbox->setSizePolicy(sizePolicy2);
     m_autoSignCheckbox->setChecked(true);
     m_autoSignCheckbox->setText(IosBuildConfiguration::tr("Automatically manage signing"));
-    m_autoSignCheckbox->setChecked(bc->m_autoManagedSigning->value());
+    m_autoSignCheckbox->setChecked(bc->m_autoManagedSigning.value());
     m_autoSignCheckbox->setEnabled(m_isDevice);
 
     m_signEntityLabel = new QLabel(container);
@@ -153,7 +153,7 @@ IosBuildSettingsWidget::IosBuildSettingsWidget(IosBuildConfiguration *bc)
         connect(m_autoSignCheckbox, &QCheckBox::toggled,
                 this, &IosBuildSettingsWidget::configureSigningUi);
         configureSigningUi(m_autoSignCheckbox->isChecked());
-        setDefaultSigningIdentfier(bc->m_signingIdentifier->value());
+        setDefaultSigningIdentfier(bc->m_signingIdentifier.value());
     }
 
     m_signEntityCombo->setEnabled(m_isDevice);
@@ -240,10 +240,10 @@ void IosBuildSettingsWidget::configureSigningUi(bool autoManageSigning)
 
 void IosBuildSettingsWidget::announceSigningChanged(bool autoManagedSigning, QString identifier)
 {
-    if (m_bc->m_signingIdentifier->value().compare(identifier) != 0
-            || m_bc->m_autoManagedSigning->value() != autoManagedSigning) {
-        m_bc->m_autoManagedSigning->setValue(autoManagedSigning);
-        m_bc->m_signingIdentifier->setValue(identifier);
+    if (m_bc->m_signingIdentifier.value().compare(identifier) != 0
+            || m_bc->m_autoManagedSigning.value() != autoManagedSigning) {
+        m_bc->m_autoManagedSigning.setValue(autoManagedSigning);
+        m_bc->m_signingIdentifier.setValue(identifier);
         m_bc->updateQmakeCommand();
     }
 }
@@ -377,13 +377,13 @@ void IosBuildSettingsWidget::updateWarningText()
 
 IosBuildConfiguration::IosBuildConfiguration(Target *target, Core::Id id)
     : QmakeBuildConfiguration(target, id)
+    , m_signingIdentifier(this)
+    , m_autoManagedSigning(this)
 {
-    m_signingIdentifier = m_aspects.addAspect<BaseStringAspect>();
-    m_signingIdentifier->setSettingsKey(signingIdentifierKey);
+    m_signingIdentifier.setSettingsKey(signingIdentifierKey);
 
-    m_autoManagedSigning = m_aspects.addAspect<BaseBoolAspect>();
-    m_autoManagedSigning->setDefaultValue(true);
-    m_autoManagedSigning->setSettingsKey(autoManagedSigningKey);
+    m_autoManagedSigning.setDefaultValue(true);
+    m_autoManagedSigning.setSettingsKey(autoManagedSigningKey);
 }
 
 QList<NamedWidget *> IosBuildConfiguration::createSubConfigWidgets()
@@ -418,13 +418,13 @@ void IosBuildConfiguration::updateQmakeCommand()
         });
 
         // Set force ovveride qmake switch
-        const QString signingIdentifier =  m_signingIdentifier->value();
+        const QString signingIdentifier =  m_signingIdentifier.value();
         if (signingIdentifier.isEmpty() )
             extraArgs << forceOverrideArg;
 
         Core::Id devType = DeviceTypeKitAspect::deviceTypeId(target()->kit());
         if (devType == Constants::IOS_DEVICE_TYPE && !signingIdentifier.isEmpty()) {
-            if (m_autoManagedSigning->value()) {
+            if (m_autoManagedSigning.value()) {
                 extraArgs << qmakeIosTeamSettings + signingIdentifier;
             } else {
                 // Get the team id from provisioning profile

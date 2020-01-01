@@ -72,17 +72,17 @@ ConfigureStepFactory::ConfigureStepFactory()
 
 ConfigureStep::ConfigureStep(BuildStepList *bsl)
     : AbstractProcessStep(bsl, Constants::CONFIGURE_STEP_ID)
+    , m_additionalArgumentsAspect(this)
 {
     setDefaultDisplayName(tr("Configure"));
 
-    m_additionalArgumentsAspect = m_aspects.addAspect<BaseStringAspect>();
-    m_additionalArgumentsAspect->setDisplayStyle(BaseStringAspect::LineEditDisplay);
-    m_additionalArgumentsAspect->setSettingsKey(
+    m_additionalArgumentsAspect.setDisplayStyle(BaseStringAspect::LineEditDisplay);
+    m_additionalArgumentsAspect.setSettingsKey(
                 "AutotoolsProjectManager.ConfigureStep.AdditionalArguments");
-    m_additionalArgumentsAspect->setLabelText(tr("Arguments:"));
-    m_additionalArgumentsAspect->setHistoryCompleter("AutotoolsPM.History.ConfigureArgs");
+    m_additionalArgumentsAspect.setLabelText(tr("Arguments:"));
+    m_additionalArgumentsAspect.setHistoryCompleter("AutotoolsPM.History.ConfigureArgs");
 
-    connect(m_additionalArgumentsAspect, &ProjectConfigurationAspect::changed, this, [this] {
+    connect(&m_additionalArgumentsAspect, &ProjectConfigurationAspect::changed, this, [this] {
         m_runConfigure = true;
     });
 
@@ -94,7 +94,7 @@ ConfigureStep::ConfigureStep(BuildStepList *bsl)
         param.setEnvironment(bc->environment());
         param.setWorkingDirectory(bc->buildDirectory());
         param.setCommandLine({FilePath::fromString(projectDirRelativeToBuildDir(bc) + "configure"),
-                              m_additionalArgumentsAspect->value(),
+                              m_additionalArgumentsAspect.value(),
                               CommandLine::Raw});
 
         return param.summaryInWorkdir(displayName());
@@ -110,7 +110,7 @@ bool ConfigureStep::init()
     pp->setEnvironment(bc->environment());
     pp->setWorkingDirectory(bc->buildDirectory());
     pp->setCommandLine({FilePath::fromString(projectDirRelativeToBuildDir(bc) + "configure"),
-                        m_additionalArgumentsAspect->value(),
+                        m_additionalArgumentsAspect.value(),
                         CommandLine::Raw});
 
     return AbstractProcessStep::init();

@@ -26,11 +26,6 @@
 #include "baremetalcustomrunconfiguration.h"
 #include "baremetalconstants.h"
 
-#include <projectexplorer/runconfigurationaspects.h>
-#include <projectexplorer/target.h>
-
-#include <qtsupport/qtoutputformatter.h>
-
 using namespace Utils;
 using namespace ProjectExplorer;
 
@@ -41,16 +36,15 @@ namespace Internal {
 
 BareMetalCustomRunConfiguration::BareMetalCustomRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
+    , m_exeAspect(this)
+    , m_argumentsAspect(this)
+    , m_workingDirectoryAspect(this)
 {
-    const auto exeAspect = m_aspects.addAspect<ExecutableAspect>();
-    exeAspect->setSettingsKey("BareMetal.CustomRunConfig.Executable");
-    exeAspect->setPlaceHolderText(tr("Unknown"));
-    exeAspect->setDisplayStyle(BaseStringAspect::PathChooserDisplay);
-    exeAspect->setHistoryCompleter("BareMetal.CustomRunConfig.History");
-    exeAspect->setExpectedKind(PathChooser::Any);
-
-    m_aspects.addAspect<ArgumentsAspect>();
-    m_aspects.addAspect<WorkingDirectoryAspect>();
+    m_exeAspect.setSettingsKey("BareMetal.CustomRunConfig.Executable");
+    m_exeAspect.setPlaceHolderText(tr("Unknown"));
+    m_exeAspect.setDisplayStyle(BaseStringAspect::PathChooserDisplay);
+    m_exeAspect.setHistoryCompleter("BareMetal.CustomRunConfig.History");
+    m_exeAspect.setExpectedKind(PathChooser::Any);
 
     setDefaultDisplayName(RunConfigurationFactory::decoratedTargetName(tr("Custom Executable"), target));
 }
@@ -58,7 +52,7 @@ BareMetalCustomRunConfiguration::BareMetalCustomRunConfiguration(Target *target,
 Tasks BareMetalCustomRunConfiguration::checkForIssues() const
 {
     Tasks tasks;
-    if (aspect<ExecutableAspect>()->executable().isEmpty()) {
+    if (m_exeAspect.executable().isEmpty()) {
         tasks << createConfigurationIssue(tr("The remote executable must be set in order to run "
                                              "a custom remote run configuration."));
     }

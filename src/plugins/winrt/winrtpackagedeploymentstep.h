@@ -52,7 +52,7 @@ private:
 
     bool parseIconsAndExecutableFromManifest(QString manifestFileName, QStringList *items, QString *executable);
 
-    ProjectExplorer::BaseStringAspect *m_argsAspect = nullptr;
+    ProjectExplorer::BaseStringAspect m_argsAspect;
     QString m_targetFilePath;
     QString m_targetDirPath;
     QString m_executablePathInManifest;

@@ -31,10 +31,7 @@
 #include <projectexplorer/buildtargetinfo.h>
 #include <projectexplorer/deploymentdata.h>
 #include <projectexplorer/project.h>
-#include <projectexplorer/runconfigurationaspects.h>
 #include <projectexplorer/target.h>
-
-#include <remotelinux/remotelinuxenvironmentaspect.h>
 
 using namespace ProjectExplorer;
 using namespace Utils;
@@ -45,6 +42,7 @@ namespace Internal {
 // FullCommandLineAspect
 
 FullCommandLineAspect::FullCommandLineAspect(RunConfiguration *rc)
+    : ProjectExplorer::BaseStringAspect(rc)
 {
     setLabelText(QdbRunConfiguration::tr("Full command line:"));
 
@@ -67,32 +65,31 @@ FullCommandLineAspect::FullCommandLineAspect(RunConfiguration *rc)
 
 QdbRunConfiguration::QdbRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
+    , m_envAspect(this, target)
+    , m_exeAspect(this)
+    , m_argumentsAspect(this)
+    , m_workingDirectoryAspect(this)
+    , m_symbolsAspect(this)
+    , m_commandLineAspect(this)
 {
-    auto exeAspect = m_aspects.addAspect<ExecutableAspect>();
-    exeAspect->setSettingsKey("QdbRunConfig.RemoteExecutable");
-    exeAspect->setLabelText(tr("Executable on device:"));
-    exeAspect->setExecutablePathStyle(OsTypeLinux);
-    exeAspect->setPlaceHolderText(tr("Remote path not set"));
-    exeAspect->makeOverridable("QdbRunConfig.AlternateRemoteExecutable",
+    m_exeAspect.setSettingsKey("QdbRunConfig.RemoteExecutable");
+    m_exeAspect.setLabelText(tr("Executable on device:"));
+    m_exeAspect.setExecutablePathStyle(OsTypeLinux);
+    m_exeAspect.setPlaceHolderText(tr("Remote path not set"));
+    m_exeAspect.makeOverridable("QdbRunConfig.AlternateRemoteExecutable",
                                "QdbRunCofig.UseAlternateRemoteExecutable");
 
-    auto symbolsAspect = m_aspects.addAspect<SymbolFileAspect>();
-    symbolsAspect->setSettingsKey("QdbRunConfig.LocalExecutable");
-    symbolsAspect->setLabelText(tr("Executable on host:"));
-    symbolsAspect->setDisplayStyle(SymbolFileAspect::LabelDisplay);
+    m_symbolsAspect.setSettingsKey("QdbRunConfig.LocalExecutable");
+    m_symbolsAspect.setLabelText(tr("Executable on host:"));
+    m_symbolsAspect.setDisplayStyle(SymbolFileAspect::LabelDisplay);
 
-    m_aspects.addAspect<RemoteLinux::RemoteLinuxEnvironmentAspect>(target);
-    m_aspects.addAspect<ArgumentsAspect>();
-    m_aspects.addAspect<WorkingDirectoryAspect>();
-    m_aspects.addAspect<FullCommandLineAspect>(this);
-
-    setUpdater([this, target, exeAspect, symbolsAspect] {
+    setUpdater([this, target] {
         const BuildTargetInfo bti = buildTargetInfo();
         const FilePath localExecutable = bti.targetFilePath;
         const DeployableFile depFile = target->deploymentData().deployableForLocalFile(localExecutable);
 
-        exeAspect->setExecutable(FilePath::fromString(depFile.remoteFilePath()));
-        symbolsAspect->setFilePath(localExecutable);
+        m_exeAspect.setExecutable(FilePath::fromString(depFile.remoteFilePath()));
+        m_symbolsAspect.setFilePath(localExecutable);
     });
 
     connect(target, &Target::buildSystemUpdated, this, &RunConfiguration::update);
@@ -103,7 +100,7 @@ QdbRunConfiguration::QdbRunConfiguration(Target *target, Core::Id id)
 Tasks QdbRunConfiguration::checkForIssues() const
 {
     Tasks tasks;
-    if (aspect<ExecutableAspect>()->executable().toString().isEmpty()) {
+    if (m_exeAspect.executable().toString().isEmpty()) {
         tasks << createConfigurationIssue(tr("The remote executable must be set "
                                              "in order to run on a Boot2Qt device."));
     }

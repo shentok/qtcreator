@@ -41,7 +41,6 @@
 #include <coreplugin/documentmanager.h>
 #include <coreplugin/icore.h>
 
-#include <projectexplorer/buildaspects.h>
 #include <projectexplorer/buildinfo.h>
 #include <projectexplorer/buildmanager.h>
 #include <projectexplorer/buildpropertiessettings.h>
@@ -53,7 +52,6 @@
 #include <projectexplorer/target.h>
 #include <projectexplorer/toolchain.h>
 
-#include <qtsupport/qtbuildaspects.h>
 #include <qtsupport/qtkitinformation.h>
 #include <qtsupport/qtversionmanager.h>
 
@@ -105,6 +103,9 @@ const char BUILD_CONFIGURATION_KEY[] = "Qt4ProjectManager.Qt4BuildConfiguration.
 
 QmakeBuildConfiguration::QmakeBuildConfiguration(Target *target, Core::Id id)
     : BuildConfiguration(target, id)
+    , m_separateDebugInfoAspect(this)
+    , m_qmlDebuggingAspect(this)
+    , m_qtQuickCompilerAspect(this)
 {
     setConfigWidgetDisplayName(tr("General"));
     setConfigWidgetHasFrame(true);
@@ -130,9 +131,9 @@ QmakeBuildConfiguration::QmakeBuildConfiguration(Target *target, Core::Id id)
         if (!additionalArguments.isEmpty())
             qmakeStep->setUserArguments(additionalArguments);
 
-        aspect<SeparateDebugInfoAspect>()->setSetting(qmakeExtra.config.separateDebugInfo);
-        aspect<QmlDebuggingAspect>()->setSetting(qmakeExtra.config.linkQmlDebuggingQQ2);
-        aspect<QtQuickCompilerAspect>()->setSetting(qmakeExtra.config.useQtQuickCompiler);
+        m_separateDebugInfoAspect.setSetting(qmakeExtra.config.separateDebugInfo);
+        m_qmlDebuggingAspect.setSetting(qmakeExtra.config.linkQmlDebuggingQQ2);
+        m_qtQuickCompilerAspect.setSetting(qmakeExtra.config.useQtQuickCompiler);
 
         setQMakeBuildConfiguration(config);
 
@@ -174,24 +175,21 @@ QmakeBuildConfiguration::QmakeBuildConfiguration(Target *target, Core::Id id)
     connect(target, &Target::parsingFinished, this, &QmakeBuildConfiguration::updateProblemLabel);
     connect(target, &Target::kitChanged, this, &QmakeBuildConfiguration::updateProblemLabel);
 
-    const auto separateDebugInfoAspect = m_aspects.addAspect<SeparateDebugInfoAspect>();
-    connect(separateDebugInfoAspect, &SeparateDebugInfoAspect::changed, this, [this] {
+    connect(&m_separateDebugInfoAspect, &SeparateDebugInfoAspect::changed, this, [this] {
         emit separateDebugInfoChanged();
         emit qmakeBuildConfigurationChanged();
         qmakeBuildSystem()->scheduleUpdateAllNowOrLater();
     });
 
-    const auto qmlDebuggingAspect = m_aspects.addAspect<QmlDebuggingAspect>();
-    qmlDebuggingAspect->setKit(target->kit());
-    connect(qmlDebuggingAspect, &QmlDebuggingAspect::changed, this, [this] {
+    m_qmlDebuggingAspect.setKit(target->kit());
+    connect(&m_qmlDebuggingAspect, &QmlDebuggingAspect::changed, this, [this] {
         emit qmlDebuggingChanged();
         emit qmakeBuildConfigurationChanged();
         qmakeBuildSystem()->scheduleUpdateAllNowOrLater();
     });
 
-    const auto qtQuickCompilerAspect = m_aspects.addAspect<QtQuickCompilerAspect>();
-    qtQuickCompilerAspect->setKit(target->kit());
-    connect(qtQuickCompilerAspect, &QtQuickCompilerAspect::changed, this, [this] {
+    m_qtQuickCompilerAspect.setKit(target->kit());
+    connect(&m_qtQuickCompilerAspect, &QtQuickCompilerAspect::changed, this, [this] {
         emit useQtQuickCompilerChanged();
         emit qmakeBuildConfigurationChanged();
         qmakeBuildSystem()->scheduleUpdateAllNowOrLater();
@@ -408,19 +406,19 @@ bool QmakeBuildConfiguration::isBuildDirAtSafeLocation() const
 
 TriState QmakeBuildConfiguration::separateDebugInfo() const
 {
-    return aspect<SeparateDebugInfoAspect>()->setting();
+    return m_separateDebugInfoAspect.setting();
 }
 
 void QmakeBuildConfiguration::forceSeparateDebugInfo(bool sepDebugInfo)
 {
-    aspect<SeparateDebugInfoAspect>()->setSetting(sepDebugInfo
+    m_separateDebugInfoAspect.setSetting(sepDebugInfo
                                                   ? TriState::Enabled
                                                   : TriState::Disabled);
 }
 
 TriState QmakeBuildConfiguration::qmlDebugging() const
 {
-    return aspect<QmlDebuggingAspect>()->setting();
+    return m_qmlDebuggingAspect.setting();
 }
 
 bool QmakeBuildConfiguration::linkQmlDebuggingLibrary() const
@@ -430,17 +428,17 @@ bool QmakeBuildConfiguration::linkQmlDebuggingLibrary() const
 
 void QmakeBuildConfiguration::forceQmlDebugging(bool enable)
 {
-    aspect<QmlDebuggingAspect>()->setSetting(enable ? TriState::Enabled : TriState::Disabled);
+    m_qmlDebuggingAspect.setSetting(enable ? TriState::Enabled : TriState::Disabled);
 }
 
 TriState QmakeBuildConfiguration::useQtQuickCompiler() const
 {
-    return aspect<QtQuickCompilerAspect>()->setting();
+    return m_qtQuickCompilerAspect.setting();
 }
 
 void QmakeBuildConfiguration::forceQtQuickCompiler(bool enable)
 {
-    aspect<QtQuickCompilerAspect>()->setSetting(enable ? TriState::Enabled : TriState::Disabled);
+    m_qtQuickCompilerAspect.setSetting(enable ? TriState::Enabled : TriState::Disabled);
 }
 
 QStringList QmakeBuildConfiguration::configCommandLineArguments() const

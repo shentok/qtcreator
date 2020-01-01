@@ -40,6 +40,7 @@ class QMLPROJECTMANAGER_EXPORT QmlProjectRunConfiguration : public ProjectExplor
 
 public:
     QmlProjectRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
+    ~QmlProjectRunConfiguration() override;
 
 private:
     ProjectExplorer::Runnable runnable() const final;
@@ -50,8 +51,10 @@ private:
     Utils::FilePath qmlScenePath() const;
     QString commandLineArguments() const;
 
-    ProjectExplorer::BaseStringAspect *m_qmlViewerAspect;
-    MainQmlFileAspect *m_mainQmlFileAspect;
+    ProjectExplorer::EnvironmentAspect m_envAspect;
+    ProjectExplorer::BaseStringAspect m_qmlViewerAspect;
+    ProjectExplorer::ArgumentsAspect m_argumentAspect;
+    std::unique_ptr<MainQmlFileAspect> m_mainQmlFileAspect;
 };
 
 namespace Internal {

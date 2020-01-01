@@ -26,6 +26,7 @@
 #pragma once
 
 #include <projectexplorer/runconfigurationaspects.h>
+#include <remotelinux/remotelinuxrunconfiguration.h>
 
 namespace Qdb {
 namespace Internal {
@@ -48,6 +49,13 @@ public:
 private:
     ProjectExplorer::Tasks checkForIssues() const override;
     QString defaultDisplayName() const;
+
+    RemoteLinux::RemoteLinuxEnvironmentAspect m_envAspect;
+    ProjectExplorer::ExecutableAspect m_exeAspect;
+    ProjectExplorer::ArgumentsAspect m_argumentsAspect;
+    ProjectExplorer::WorkingDirectoryAspect m_workingDirectoryAspect;
+    ProjectExplorer::SymbolFileAspect m_symbolsAspect;
+    FullCommandLineAspect m_commandLineAspect;
 };
 
 class QdbRunConfigurationFactory : public ProjectExplorer::RunConfigurationFactory

@@ -26,9 +26,7 @@
 #include "desktoprunconfiguration.h"
 
 #include "buildsystem.h"
-#include "localenvironmentaspect.h"
 #include "project.h"
-#include "runconfigurationaspects.h"
 #include "target.h"
 
 #include <cmakeprojectmanager/cmakeprojectconstants.h>
@@ -48,40 +46,40 @@ namespace ProjectExplorer {
 namespace Internal {
 
 DesktopRunConfiguration::DesktopRunConfiguration(Target *target, Core::Id id, Kind kind)
-    : RunConfiguration(target, id), m_kind(kind)
+    : RunConfiguration(target, id)
+    , m_envAspect(this, target)
+    , m_executableAspect(this)
+    , m_argumentsAspect(this)
+    , m_workingDirectoryAspect(this)
+    , m_terminalAspect(this)
+    , m_libAspect(this)
+    , m_dyldAspect()
+    , m_kind(kind)
 {
-    auto envAspect = m_aspects.addAspect<LocalEnvironmentAspect>(target);
-
-    m_aspects.addAspect<ExecutableAspect>();
-    m_aspects.addAspect<ArgumentsAspect>();
-    m_aspects.addAspect<WorkingDirectoryAspect>();
-    m_aspects.addAspect<TerminalAspect>();
-
-    auto libAspect = m_aspects.addAspect<UseLibraryPathsAspect>();
-    connect(libAspect, &UseLibraryPathsAspect::changed,
-            envAspect, &EnvironmentAspect::environmentChanged);
+    connect(&m_libAspect, &UseLibraryPathsAspect::changed,
+            &m_envAspect, &EnvironmentAspect::environmentChanged);
 
     if (HostOsInfo::isMacHost()) {
-        auto dyldAspect = m_aspects.addAspect<UseDyldSuffixAspect>();
-        connect(dyldAspect, &UseLibraryPathsAspect::changed,
-                envAspect, &EnvironmentAspect::environmentChanged);
-        envAspect->addModifier([dyldAspect](Environment &env) {
-            if (dyldAspect->value())
+        m_dyldAspect.reset(new UseDyldSuffixAspect(this));
+        connect(m_dyldAspect.get(), &UseLibraryPathsAspect::changed,
+                &m_envAspect, &EnvironmentAspect::environmentChanged);
+        m_envAspect.addModifier([this](Environment &env) {
+            if (m_dyldAspect->value())
                 env.set(QLatin1String("DYLD_IMAGE_SUFFIX"), QLatin1String("_debug"));
         });
     }
 
-    envAspect->addModifier([this, libAspect](Environment &env) {
+    m_envAspect.addModifier([this](Environment &env) {
         BuildTargetInfo bti = buildTargetInfo();
         if (bti.runEnvModifier)
-            bti.runEnvModifier(env, libAspect->value());
+            bti.runEnvModifier(env, m_libAspect.value());
     });
 
 
     setUpdater([this] { updateTargetInformation(); });
 
     if (m_kind == CMake)
-        libAspect->setVisible(false);
+        m_libAspect.setVisible(false);
 
     connect(target, &Target::buildSystemUpdated, this, &RunConfiguration::update);
 }
@@ -93,8 +91,7 @@ void DesktopRunConfiguration::updateTargetInformation()
 
     BuildTargetInfo bti = buildTargetInfo();
 
-    auto terminalAspect = aspect<TerminalAspect>();
-    terminalAspect->setUseTerminalHint(bti.usesTerminal);
+    m_terminalAspect.setUseTerminalHint(bti.usesTerminal);
 
     if (m_kind == Qmake) {
 
@@ -104,31 +101,30 @@ void DesktopRunConfiguration::updateTargetInformation()
         else
             setDefaultDisplayName(profile.toFileInfo().completeBaseName());
 
-        aspect<EnvironmentAspect>()->environmentChanged();
+        m_envAspect.environmentChanged();
 
-        auto wda = aspect<WorkingDirectoryAspect>();
-        wda->setDefaultWorkingDirectory(bti.workingDirectory);
+        m_workingDirectoryAspect.setDefaultWorkingDirectory(bti.workingDirectory);
 
-        aspect<ExecutableAspect>()->setExecutable(bti.targetFilePath);
+        m_executableAspect.setExecutable(bti.targetFilePath);
 
     }  else if (m_kind == Qbs) {
 
         setDefaultDisplayName(bti.displayName);
         const FilePath executable = executableToRun(bti);
 
-        aspect<ExecutableAspect>()->setExecutable(executable);
+        m_executableAspect.setExecutable(executable);
 
         if (!executable.isEmpty()) {
             const FilePath defaultWorkingDir = executable.absolutePath();
             if (!defaultWorkingDir.isEmpty())
-                aspect<WorkingDirectoryAspect>()->setDefaultWorkingDirectory(defaultWorkingDir);
+                m_workingDirectoryAspect.setDefaultWorkingDirectory(defaultWorkingDir);
         }
 
     } else if (m_kind == CMake) {
 
-        aspect<ExecutableAspect>()->setExecutable(bti.targetFilePath);
-        aspect<WorkingDirectoryAspect>()->setDefaultWorkingDirectory(bti.workingDirectory);
-        aspect<LocalEnvironmentAspect>()->environmentChanged();
+        m_executableAspect.setExecutable(bti.targetFilePath);
+        m_workingDirectoryAspect.setDefaultWorkingDirectory(bti.workingDirectory);
+        m_envAspect.environmentChanged();
 
     }
 }

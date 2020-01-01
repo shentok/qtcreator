@@ -48,28 +48,28 @@ const char PROCESS_ARGUMENTS_KEY[] = "ProjectExplorer.ProcessStep.Arguments";
 
 ProcessStep::ProcessStep(BuildStepList *bsl)
     : AbstractProcessStep(bsl, Constants::PROCESS_STEP_ID)
+    , m_command(this)
+    , m_arguments(this)
+    , m_workingDirectory(this)
 {
     //: Default ProcessStep display name
     setDefaultDisplayName(tr("Custom Process Step"));
 
-    m_command = m_aspects.addAspect<BaseStringAspect>();
-    m_command->setSettingsKey(PROCESS_COMMAND_KEY);
-    m_command->setDisplayStyle(BaseStringAspect::PathChooserDisplay);
-    m_command->setLabelText(tr("Command:"));
-    m_command->setExpectedKind(Utils::PathChooser::Command);
-    m_command->setHistoryCompleter("PE.ProcessStepCommand.History");
+    m_command.setSettingsKey(PROCESS_COMMAND_KEY);
+    m_command.setDisplayStyle(BaseStringAspect::PathChooserDisplay);
+    m_command.setLabelText(tr("Command:"));
+    m_command.setExpectedKind(Utils::PathChooser::Command);
+    m_command.setHistoryCompleter("PE.ProcessStepCommand.History");
 
-    m_arguments = m_aspects.addAspect<BaseStringAspect>();
-    m_arguments->setSettingsKey(PROCESS_ARGUMENTS_KEY);
-    m_arguments->setDisplayStyle(BaseStringAspect::LineEditDisplay);
-    m_arguments->setLabelText(tr("Arguments:"));
+    m_arguments.setSettingsKey(PROCESS_ARGUMENTS_KEY);
+    m_arguments.setDisplayStyle(BaseStringAspect::LineEditDisplay);
+    m_arguments.setLabelText(tr("Arguments:"));
 
-    m_workingDirectory = m_aspects.addAspect<BaseStringAspect>();
-    m_workingDirectory->setSettingsKey(PROCESS_WORKINGDIRECTORY_KEY);
-    m_workingDirectory->setValue(Constants::DEFAULT_WORKING_DIR);
-    m_workingDirectory->setDisplayStyle(BaseStringAspect::PathChooserDisplay);
-    m_workingDirectory->setLabelText(tr("Working directory:"));
-    m_workingDirectory->setExpectedKind(Utils::PathChooser::Directory);
+    m_workingDirectory.setSettingsKey(PROCESS_WORKINGDIRECTORY_KEY);
+    m_workingDirectory.setValue(Constants::DEFAULT_WORKING_DIR);
+    m_workingDirectory.setDisplayStyle(BaseStringAspect::PathChooserDisplay);
+    m_workingDirectory.setLabelText(tr("Working directory:"));
+    m_workingDirectory.setExpectedKind(Utils::PathChooser::Directory);
 
     setSummaryUpdater([this] {
         QString display = displayName();
@@ -94,7 +94,7 @@ void ProcessStep::setupProcessParameters(ProcessParameters *pp)
 {
     BuildConfiguration *bc = buildConfiguration();
 
-    QString workingDirectory = m_workingDirectory->value();
+    QString workingDirectory = m_workingDirectory.value();
     if (workingDirectory.isEmpty()) {
         if (bc)
             workingDirectory = Constants::DEFAULT_WORKING_DIR;
@@ -105,7 +105,7 @@ void ProcessStep::setupProcessParameters(ProcessParameters *pp)
     pp->setMacroExpander(bc ? bc->macroExpander() : Utils::globalMacroExpander());
     pp->setEnvironment(bc ? bc->environment() : Utils::Environment::systemEnvironment());
     pp->setWorkingDirectory(Utils::FilePath::fromString(workingDirectory));
-    pp->setCommandLine({m_command->filePath(), m_arguments->value(), CommandLine::Raw});
+    pp->setCommandLine({m_command.filePath(), m_arguments.value(), CommandLine::Raw});
     pp->resolveAll();
 }
 

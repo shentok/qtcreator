@@ -73,7 +73,7 @@ private:
     bool init() override;
     void doRun() override;
 
-    ProjectExplorer::BaseStringAspect *m_additionalArgumentsAspect = nullptr;
+    ProjectExplorer::BaseStringAspect m_additionalArgumentsAspect;
     bool m_runConfigure = false;
 };
 

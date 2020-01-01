@@ -26,6 +26,7 @@
 #pragma once
 
 #include <projectexplorer/runconfiguration.h>
+#include <projectexplorer/runconfigurationaspects.h>
 
 namespace BareMetal {
 namespace Internal {
@@ -38,6 +39,11 @@ class BareMetalRunConfiguration final : public ProjectExplorer::RunConfiguration
 
 public:
     explicit BareMetalRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
+
+private:
+    ProjectExplorer::ExecutableAspect m_exeAspect;
+    ProjectExplorer::ArgumentsAspect m_argumentsAspect;
+    ProjectExplorer::WorkingDirectoryAspect m_workingDirectoryAspect;
 };
 
 // BareMetalRunConfigurationFactory

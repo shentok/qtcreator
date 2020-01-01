@@ -73,7 +73,7 @@ static bool caseInsensitiveLessThan(const QString &s1, const QString &s2)
 class MainQmlFileAspect : public ProjectConfigurationAspect
 {
 public:
-    explicit MainQmlFileAspect(Target *target);
+    explicit MainQmlFileAspect(ProjectConfiguration *parent, Target *target);
     ~MainQmlFileAspect() override { delete m_fileListCombo; }
 
     enum MainScriptSource {
@@ -112,8 +112,9 @@ public:
     QString m_mainScriptFilename;
 };
 
-MainQmlFileAspect::MainQmlFileAspect(Target *target)
-    : m_target(target)
+MainQmlFileAspect::MainQmlFileAspect(ProjectConfiguration *parent, Target *target)
+    : ProjectConfigurationAspect(parent)
+    , m_target(target)
     , m_scriptFile(M_CURRENT_FILE)
 {
     connect(EditorManager::instance(), &EditorManager::currentEditorChanged,
@@ -281,9 +282,11 @@ void MainQmlFileAspect::changeCurrentFile(IEditor *editor)
 
 QmlProjectRunConfiguration::QmlProjectRunConfiguration(Target *target, Id id)
     : RunConfiguration(target, id)
+    , m_envAspect(this)
+    , m_qmlViewerAspect(this)
+    , m_argumentAspect(this)
+    , m_mainQmlFileAspect(new MainQmlFileAspect(this, target))
 {
-    auto envAspect = m_aspects.addAspect<EnvironmentAspect>();
-
     auto envModifier = [this](Environment env) {
         if (auto bs = dynamic_cast<const QmlBuildSystem *>(activeBuildSystem()))
             env.modify(bs->environment());
@@ -292,30 +295,27 @@ QmlProjectRunConfiguration::QmlProjectRunConfiguration(Target *target, Id id)
 
     const Id deviceTypeId = DeviceTypeKitAspect::deviceTypeId(target->kit());
     if (deviceTypeId == ProjectExplorer::Constants::DESKTOP_DEVICE_TYPE) {
-        envAspect->addPreferredBaseEnvironment(tr("System Environment"), [envModifier] {
+        m_envAspect.addPreferredBaseEnvironment(tr("System Environment"), [envModifier] {
             return envModifier(Environment::systemEnvironment());
         });
     }
 
-    envAspect->addSupportedBaseEnvironment(tr("Clean Environment"), [envModifier] {
+    m_envAspect.addSupportedBaseEnvironment(tr("Clean Environment"), [envModifier] {
         return envModifier(Environment());
     });
 
-    m_qmlViewerAspect = m_aspects.addAspect<BaseStringAspect>();
-    m_qmlViewerAspect->setLabelText(tr("QML Viewer:"));
-    m_qmlViewerAspect->setPlaceHolderText(commandLine().executable().toString());
-    m_qmlViewerAspect->setDisplayStyle(BaseStringAspect::LineEditDisplay);
-    m_qmlViewerAspect->setHistoryCompleter("QmlProjectManager.viewer.history");
+    m_qmlViewerAspect.setLabelText(tr("QML Viewer:"));
+    m_qmlViewerAspect.setPlaceHolderText(commandLine().executable().toString());
+    m_qmlViewerAspect.setDisplayStyle(BaseStringAspect::LineEditDisplay);
+    m_qmlViewerAspect.setHistoryCompleter("QmlProjectManager.viewer.history");
 
-    auto argumentAspect = m_aspects.addAspect<ArgumentsAspect>();
-    argumentAspect->setSettingsKey(Constants::QML_VIEWER_ARGUMENTS_KEY);
+    m_argumentAspect.setSettingsKey(Constants::QML_VIEWER_ARGUMENTS_KEY);
 
     setCommandLineGetter([this] {
         return CommandLine(qmlScenePath(), commandLineArguments(), CommandLine::Raw);
     });
 
-    m_mainQmlFileAspect = m_aspects.addAspect<MainQmlFileAspect>(target);
-    connect(m_mainQmlFileAspect, &MainQmlFileAspect::changed, this, &RunConfiguration::update);
+    connect(m_mainQmlFileAspect.get(), &MainQmlFileAspect::changed, this, &RunConfiguration::update);
 
     connect(target, &Target::kitChanged, this, &RunConfiguration::update);
 
@@ -323,11 +323,13 @@ QmlProjectRunConfiguration::QmlProjectRunConfiguration(Target *target, Id id)
     update();
 }
 
+QmlProjectRunConfiguration::~QmlProjectRunConfiguration() = default;
+
 Runnable QmlProjectRunConfiguration::runnable() const
 {
     Runnable r;
     r.setCommandLine(commandLine());
-    r.environment = aspect<EnvironmentAspect>()->environment();
+    r.environment = m_envAspect.environment();
     const QmlBuildSystem *bs = static_cast<QmlBuildSystem *>(activeBuildSystem());
     r.workingDirectory = bs->targetDirectory().toString();
     return r;
@@ -351,7 +353,7 @@ QString QmlProjectRunConfiguration::disabledReason() const
 
 FilePath QmlProjectRunConfiguration::qmlScenePath() const
 {
-    const QString qmlViewer = m_qmlViewerAspect->value();
+    const QString qmlViewer = m_qmlViewerAspect.value();
     if (!qmlViewer.isEmpty())
         return FilePath::fromString(qmlViewer);
 
@@ -379,7 +381,7 @@ FilePath QmlProjectRunConfiguration::qmlScenePath() const
 QString QmlProjectRunConfiguration::commandLineArguments() const
 {
     // arguments in .user file
-    QString args = aspect<ArgumentsAspect>()->arguments(macroExpander());
+    QString args = m_argumentAspect.arguments(macroExpander());
     const IDevice::ConstPtr device = DeviceKitAspect::device(target()->kit());
     const OsType osType = device ? device->osType() : HostOsInfo::hostOs();
 

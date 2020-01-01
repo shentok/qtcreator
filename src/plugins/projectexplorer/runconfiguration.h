@@ -94,7 +94,7 @@ class PROJECTEXPLORER_EXPORT GlobalOrProjectAspect : public ProjectConfiguration
     Q_OBJECT
 
 public:
-    GlobalOrProjectAspect();
+    explicit GlobalOrProjectAspect(ProjectConfiguration *parent);
     ~GlobalOrProjectAspect() override;
 
     void setProjectSettings(ISettingsAspect *settings);
@@ -160,10 +160,10 @@ public:
         return nullptr;
     }
 
-    using AspectFactory = std::function<ProjectConfigurationAspect *(Target *)>;
+    using AspectFactory = std::function<void (ProjectConfiguration *, Target *)>;
     template <class T> static void registerAspect()
     {
-        addAspectFactory([](Target *target) { return new T(target); });
+        addAspectFactory([](ProjectConfiguration *parent, Target *target) { new T(parent, target); });
     }
 
     QMap<Core::Id, QVariantMap> aspectData() const;

@@ -79,12 +79,14 @@ private:
     QList<LayoutItem> m_pendingItems;
 };
 
+class ProjectConfiguration;
+
 class PROJECTEXPLORER_EXPORT ProjectConfigurationAspect : public QObject
 {
     Q_OBJECT
 
 public:
-    ProjectConfigurationAspect();
+    explicit ProjectConfigurationAspect(ProjectConfiguration *parent);
     ~ProjectConfigurationAspect() override;
 
     void setId(Core::Id id) { m_id = id; }
@@ -131,14 +133,6 @@ public:
     ProjectConfigurationAspects(const ProjectConfigurationAspects &) = delete;
     ProjectConfigurationAspects &operator=(const ProjectConfigurationAspects &) = delete;
     ~ProjectConfigurationAspects();
-
-    template <class Aspect, typename ...Args>
-    Aspect *addAspect(Args && ...args)
-    {
-        auto aspect = new Aspect(args...);
-        append(aspect);
-        return aspect;
-    }
 
     ProjectConfigurationAspect *aspect(Core::Id id) const;
 
@@ -209,10 +203,9 @@ signals:
     void displayNameChanged();
     void toolTipChanged();
 
-protected:
-    ProjectConfigurationAspects m_aspects;
-
 private:
+    friend class ProjectConfigurationAspect;
+    ProjectConfigurationAspects m_aspects;
     QPointer<Target> m_target;
     const Core::Id m_id;
     Utils::DisplayName m_displayName;

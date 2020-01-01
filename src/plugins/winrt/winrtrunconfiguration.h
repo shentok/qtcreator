@@ -27,6 +27,8 @@
 
 #include <projectexplorer/runconfigurationaspects.h>
 
+#include <memory>
+
 namespace WinRt {
 namespace Internal {
 
@@ -35,7 +37,7 @@ class UninstallAfterStopAspect : public ProjectExplorer::BaseBoolAspect
     Q_OBJECT
 
 public:
-    UninstallAfterStopAspect();
+    explicit UninstallAfterStopAspect(ProjectExplorer::ProjectConfiguration *parent);
 };
 
 class LoopbackExemptClientAspect : public ProjectExplorer::BaseBoolAspect
@@ -43,7 +45,7 @@ class LoopbackExemptClientAspect : public ProjectExplorer::BaseBoolAspect
     Q_OBJECT
 
 public:
-    LoopbackExemptClientAspect();
+    explicit LoopbackExemptClientAspect(ProjectExplorer::ProjectConfiguration *parent);
 };
 
 class LoopbackExemptServerAspect : public ProjectExplorer::BaseBoolAspect
@@ -51,7 +53,7 @@ class LoopbackExemptServerAspect : public ProjectExplorer::BaseBoolAspect
     Q_OBJECT
 
 public:
-    LoopbackExemptServerAspect();
+    explicit LoopbackExemptServerAspect(ProjectExplorer::ProjectConfiguration *parent);
 };
 
 class WinRtRunConfiguration : public ProjectExplorer::RunConfiguration
@@ -60,6 +62,12 @@ class WinRtRunConfiguration : public ProjectExplorer::RunConfiguration
 
 public:
     WinRtRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
+
+private:
+    ProjectExplorer::ArgumentsAspect m_argumentsAspect;
+    UninstallAfterStopAspect m_uninstallAfterStopAspect;
+    std::unique_ptr<LoopbackExemptClientAspect> m_loopbackExemptClientAspect;
+    std::unique_ptr<LoopbackExemptServerAspect> m_loopbackExemptServerAspect;
 };
 
 class WinRtRunConfigurationFactory  : public ProjectExplorer::RunConfigurationFactory

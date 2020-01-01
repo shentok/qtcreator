@@ -48,7 +48,9 @@ public:
     QPointer<QLabel> problemLabel;
 };
 
-BuildDirectoryAspect::BuildDirectoryAspect() : d(new Private)
+BuildDirectoryAspect::BuildDirectoryAspect(ProjectConfiguration *parent)
+    : BaseStringAspect(parent)
+    , d(new Private)
 {
     setSettingsKey("ProjectExplorer.BuildConfiguration.BuildDirectory");
     setLabelText(tr("Build directory:"));
@@ -130,7 +132,8 @@ void BuildDirectoryAspect::updateProblemLabel()
     d->warningLabel->setVisible(!d->problem.isEmpty());
 }
 
-SeparateDebugInfoAspect::SeparateDebugInfoAspect()
+SeparateDebugInfoAspect::SeparateDebugInfoAspect(ProjectConfiguration *parent)
+    : BaseTriStateAspect(parent)
 {
     setDisplayName(tr("Separate Debug Info:"));
     setSettingsKey("SeparateDebugInfo");

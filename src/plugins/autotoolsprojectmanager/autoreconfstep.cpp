@@ -53,17 +53,17 @@ AutoreconfStepFactory::AutoreconfStepFactory()
 
 AutoreconfStep::AutoreconfStep(BuildStepList *bsl)
     : AbstractProcessStep(bsl, Constants::AUTORECONF_STEP_ID)
+    , m_additionalArgumentsAspect(this)
 {
     setDefaultDisplayName(tr("Autoreconf"));
 
-    m_additionalArgumentsAspect = m_aspects.addAspect<BaseStringAspect>();
-    m_additionalArgumentsAspect->setSettingsKey("AutotoolsProjectManager.AutoreconfStep.AdditionalArguments");
-    m_additionalArgumentsAspect->setLabelText(tr("Arguments:"));
-    m_additionalArgumentsAspect->setValue("--force --install");
-    m_additionalArgumentsAspect->setDisplayStyle(BaseStringAspect::LineEditDisplay);
-    m_additionalArgumentsAspect->setHistoryCompleter("AutotoolsPM.History.AutoreconfStepArgs");
+    m_additionalArgumentsAspect.setSettingsKey("AutotoolsProjectManager.AutoreconfStep.AdditionalArguments");
+    m_additionalArgumentsAspect.setLabelText(tr("Arguments:"));
+    m_additionalArgumentsAspect.setValue("--force --install");
+    m_additionalArgumentsAspect.setDisplayStyle(BaseStringAspect::LineEditDisplay);
+    m_additionalArgumentsAspect.setHistoryCompleter("AutotoolsPM.History.AutoreconfStepArgs");
 
-    connect(m_additionalArgumentsAspect, &ProjectConfigurationAspect::changed, this, [this] {
+    connect(&m_additionalArgumentsAspect, &ProjectConfigurationAspect::changed, this, [this] {
         m_runAutoreconf = true;
     });
 
@@ -75,7 +75,7 @@ AutoreconfStep::AutoreconfStep(BuildStepList *bsl)
         param.setEnvironment(bc->environment());
         param.setWorkingDirectory(bc->target()->project()->projectDirectory());
         param.setCommandLine({Utils::FilePath::fromString("autoreconf"),
-                              m_additionalArgumentsAspect->value(),
+                              m_additionalArgumentsAspect.value(),
                               Utils::CommandLine::Raw});
 
         return param.summary(displayName());
@@ -91,7 +91,7 @@ bool AutoreconfStep::init()
     pp->setEnvironment(bc->environment());
     pp->setWorkingDirectory(bc->target()->project()->projectDirectory());
     pp->setCommandLine({Utils::FilePath::fromString("autoreconf"),
-                        m_additionalArgumentsAspect->value(), Utils::CommandLine::Raw});
+                        m_additionalArgumentsAspect.value(), Utils::CommandLine::Raw});
 
     return AbstractProcessStep::init();
 }

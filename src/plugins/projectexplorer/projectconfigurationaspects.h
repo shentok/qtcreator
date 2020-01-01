@@ -52,7 +52,7 @@ class PROJECTEXPLORER_EXPORT BaseBoolAspect : public ProjectConfigurationAspect
     Q_OBJECT
 
 public:
-    explicit BaseBoolAspect(const QString &settingsKey = QString());
+    explicit BaseBoolAspect(ProjectConfiguration *parent, const QString &settingsKey = QString());
     ~BaseBoolAspect() override;
 
     void addToLayout(LayoutBuilder &builder) override;
@@ -79,7 +79,7 @@ class PROJECTEXPLORER_EXPORT BaseSelectionAspect : public ProjectConfigurationAs
     Q_OBJECT
 
 public:
-    BaseSelectionAspect();
+    explicit BaseSelectionAspect(ProjectConfiguration *parent);
     ~BaseSelectionAspect() override;
 
     void addToLayout(LayoutBuilder &builder) override;
@@ -110,7 +110,7 @@ class PROJECTEXPLORER_EXPORT BaseStringAspect : public ProjectConfigurationAspec
     Q_OBJECT
 
 public:
-    BaseStringAspect();
+    explicit BaseStringAspect(ProjectConfiguration *parent);
     ~BaseStringAspect() override;
 
     void addToLayout(LayoutBuilder &builder) override;
@@ -168,7 +168,7 @@ class PROJECTEXPLORER_EXPORT BaseIntegerAspect : public ProjectConfigurationAspe
     Q_OBJECT
 
 public:
-    BaseIntegerAspect();
+    explicit BaseIntegerAspect(ProjectConfiguration *parent);
     ~BaseIntegerAspect() override;
 
     void addToLayout(LayoutBuilder &builder) override;
@@ -216,7 +216,7 @@ class PROJECTEXPLORER_EXPORT BaseTriStateAspect : public BaseSelectionAspect
 {
     Q_OBJECT
 public:
-    BaseTriStateAspect();
+    explicit BaseTriStateAspect(ProjectConfiguration *parent);
 
     TriState setting() const;
     void setSetting(TriState setting);

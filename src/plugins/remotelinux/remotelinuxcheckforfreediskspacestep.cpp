@@ -27,8 +27,6 @@
 
 #include "remotelinuxcheckforfreediskspaceservice.h"
 
-#include <projectexplorer/projectconfigurationaspects.h>
-
 #include <limits>
 
 using namespace ProjectExplorer;
@@ -37,28 +35,28 @@ namespace RemoteLinux {
 
 RemoteLinuxCheckForFreeDiskSpaceStep::RemoteLinuxCheckForFreeDiskSpaceStep(BuildStepList *bsl)
         : AbstractRemoteLinuxDeployStep(bsl, stepId())
+        , m_pathToCheckAspect(this)
+        , m_requiredSpaceAspect(this)
 {
     setDefaultDisplayName(displayName());
 
     auto service = createDeployService<RemoteLinuxCheckForFreeDiskSpaceService>();
 
-    auto pathToCheckAspect = m_aspects.addAspect<BaseStringAspect>();
-    pathToCheckAspect->setSettingsKey("RemoteLinux.CheckForFreeDiskSpaceStep.PathToCheck");
-    pathToCheckAspect->setDisplayStyle(BaseStringAspect::LineEditDisplay);
-    pathToCheckAspect->setValue("/");
-    pathToCheckAspect->setLabelText(tr("Remote path to check for free space:"));
+    m_pathToCheckAspect.setSettingsKey("RemoteLinux.CheckForFreeDiskSpaceStep.PathToCheck");
+    m_pathToCheckAspect.setDisplayStyle(BaseStringAspect::LineEditDisplay);
+    m_pathToCheckAspect.setValue("/");
+    m_pathToCheckAspect.setLabelText(tr("Remote path to check for free space:"));
 
-    auto requiredSpaceAspect = m_aspects.addAspect<BaseIntegerAspect>();
-    requiredSpaceAspect->setSettingsKey("RemoteLinux.CheckForFreeDiskSpaceStep.RequiredSpace");
-    requiredSpaceAspect->setLabel(tr("Required disk space:"));
-    requiredSpaceAspect->setDisplayScaleFactor(1024*1024);
-    requiredSpaceAspect->setValue(5*1024*1024);
-    requiredSpaceAspect->setSuffix(tr("MB"));
-    requiredSpaceAspect->setRange(1, std::numeric_limits<int>::max());
+    m_requiredSpaceAspect.setSettingsKey("RemoteLinux.CheckForFreeDiskSpaceStep.RequiredSpace");
+    m_requiredSpaceAspect.setLabel(tr("Required disk space:"));
+    m_requiredSpaceAspect.setDisplayScaleFactor(1024*1024);
+    m_requiredSpaceAspect.setValue(5*1024*1024);
+    m_requiredSpaceAspect.setSuffix(tr("MB"));
+    m_requiredSpaceAspect.setRange(1, std::numeric_limits<int>::max());
 
-    setInternalInitializer([service, pathToCheckAspect, requiredSpaceAspect] {
-        service->setPathToCheck(pathToCheckAspect->value());
-        service->setRequiredSpaceInBytes(requiredSpaceAspect->value());
+    setInternalInitializer([this, service] {
+        service->setPathToCheck(m_pathToCheckAspect.value());
+        service->setRequiredSpaceInBytes(m_requiredSpaceAspect.value());
         return CheckResult::success();
     });
 }

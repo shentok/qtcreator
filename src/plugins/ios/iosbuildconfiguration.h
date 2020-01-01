@@ -46,8 +46,8 @@ private:
 
     void updateQmakeCommand();
 
-    ProjectExplorer::BaseStringAspect *m_signingIdentifier = nullptr;
-    ProjectExplorer::BaseBoolAspect *m_autoManagedSigning = nullptr;
+    ProjectExplorer::BaseStringAspect m_signingIdentifier;
+    ProjectExplorer::BaseBoolAspect m_autoManagedSigning;
 };
 
 class IosBuildConfigurationFactory : public QmakeProjectManager::QmakeBuildConfigurationFactory

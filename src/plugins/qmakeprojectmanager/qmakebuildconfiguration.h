@@ -28,8 +28,10 @@
 #include "qmakeprojectmanager_global.h"
 
 #include <projectexplorer/projectconfigurationaspects.h>
+#include <projectexplorer/buildaspects.h>
 #include <projectexplorer/buildconfiguration.h>
 #include <qtsupport/baseqtversion.h>
+#include <qtsupport/qtbuildaspects.h>
 
 namespace ProjectExplorer { class FileNode; }
 
@@ -146,6 +148,9 @@ private:
     LastKitState m_lastKitState;
 
     QtSupport::BaseQtVersion::QmakeBuildConfigs m_qmakeBuildConfiguration;
+    ProjectExplorer::SeparateDebugInfoAspect m_separateDebugInfoAspect;
+    QtSupport::QmlDebuggingAspect m_qmlDebuggingAspect;
+    QtSupport::QtQuickCompilerAspect m_qtQuickCompilerAspect;
     QmakeProFileNode *m_subNodeBuild = nullptr;
     ProjectExplorer::FileNode *m_fileNodeBuild = nullptr;
     QmakeBuildSystem *m_buildSystem = nullptr;

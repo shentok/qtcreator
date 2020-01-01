@@ -77,6 +77,10 @@ static FilePath defaultBuildDirectory(const FilePath &projectFilePath, const Kit
 
 QbsBuildConfiguration::QbsBuildConfiguration(Target *target, Core::Id id)
     : BuildConfiguration(target, id)
+    , m_configurationName(this)
+    , m_separateDebugInfoAspect(this)
+    , m_qmlDebuggingAspect(this)
+    , m_qtQuickCompilerAspect(this)
 {
     setConfigWidgetHasFrame(true);
 
@@ -110,7 +114,7 @@ QbsBuildConfiguration::QbsBuildConfiguration(Target *target, Core::Id id)
                         + '_' + kit->fileSystemFriendlyName().left(8)
                         + '_' + kitHash.toHex().left(16);
 
-        m_configurationName->setValue(uniqueConfigName);
+        m_configurationName.setValue(uniqueConfigName);
 
         auto bs = new QbsBuildStep(buildSteps());
         bs->setQbsConfiguration(bd);
@@ -121,25 +125,21 @@ QbsBuildConfiguration::QbsBuildConfiguration(Target *target, Core::Id id)
         emit qbsConfigurationChanged();
     });
 
-    m_configurationName = m_aspects.addAspect<BaseStringAspect>();
-    m_configurationName->setLabelText(tr("Configuration name:"));
-    m_configurationName->setSettingsKey("Qbs.configName");
-    m_configurationName->setDisplayStyle(BaseStringAspect::LineEditDisplay);
-    connect(m_configurationName, &BaseStringAspect::changed,
+    m_configurationName.setLabelText(tr("Configuration name:"));
+    m_configurationName.setSettingsKey("Qbs.configName");
+    m_configurationName.setDisplayStyle(BaseStringAspect::LineEditDisplay);
+    connect(&m_configurationName, &BaseStringAspect::changed,
             this, &BuildConfiguration::buildDirectoryChanged);
 
-    const auto separateDebugInfoAspect = m_aspects.addAspect<SeparateDebugInfoAspect>();
-    connect(separateDebugInfoAspect, &SeparateDebugInfoAspect::changed,
+    connect(&m_separateDebugInfoAspect, &SeparateDebugInfoAspect::changed,
             this, &QbsBuildConfiguration::qbsConfigurationChanged);
 
-    const auto qmlDebuggingAspect = m_aspects.addAspect<QtSupport::QmlDebuggingAspect>();
-    qmlDebuggingAspect->setKit(target->kit());
-    connect(qmlDebuggingAspect, &QtSupport::QmlDebuggingAspect::changed,
+    m_qmlDebuggingAspect.setKit(target->kit());
+    connect(&m_qmlDebuggingAspect, &QtSupport::QmlDebuggingAspect::changed,
             this, &QbsBuildConfiguration::qbsConfigurationChanged);
 
-    const auto qtQuickCompilerAspect = m_aspects.addAspect<QtSupport::QtQuickCompilerAspect>();
-    qtQuickCompilerAspect->setKit(target->kit());
-    connect(qtQuickCompilerAspect, &QtSupport::QtQuickCompilerAspect::changed,
+    m_qtQuickCompilerAspect.setKit(target->kit());
+    connect(&m_qtQuickCompilerAspect, &QtSupport::QtQuickCompilerAspect::changed,
             this, &QbsBuildConfiguration::qbsConfigurationChanged);
 
     connect(this, &BuildConfiguration::environmentChanged,
@@ -176,11 +176,11 @@ bool QbsBuildConfiguration::fromMap(const QVariantMap &map)
     if (!BuildConfiguration::fromMap(map))
         return false;
 
-    if (m_configurationName->value().isEmpty()) { // pre-4.4 backwards compatibility
+    if (m_configurationName.value().isEmpty()) { // pre-4.4 backwards compatibility
         const QString profileName = QbsProfileManager::profileNameForKit(target()->kit());
         const QString buildVariant = qbsConfiguration()
                 .value(QLatin1String(Constants::QBS_CONFIG_VARIANT_KEY)).toString();
-        m_configurationName->setValue(profileName + '-' + buildVariant);
+        m_configurationName.setValue(profileName + '-' + buildVariant);
     }
 
     return true;
@@ -256,7 +256,7 @@ QStringList QbsBuildConfiguration::products() const
 
 QString QbsBuildConfiguration::configurationName() const
 {
-    return m_configurationName->value();
+    return m_configurationName.value();
 }
 
 class StepProxy
@@ -394,17 +394,17 @@ bool QbsBuildConfiguration::isQmlDebuggingEnabled() const
 
 TriState QbsBuildConfiguration::qmlDebuggingSetting() const
 {
-    return aspect<QtSupport::QmlDebuggingAspect>()->setting();
+    return m_qmlDebuggingAspect.setting();
 }
 
 TriState QbsBuildConfiguration::qtQuickCompilerSetting() const
 {
-    return aspect<QtSupport::QtQuickCompilerAspect>()->setting();
+    return m_qtQuickCompilerAspect.setting();
 }
 
 TriState QbsBuildConfiguration::separateDebugInfoSetting() const
 {
-    return aspect<SeparateDebugInfoAspect>()->setting();
+    return m_separateDebugInfoAspect.setting();
 }
 
 // ---------------------------------------------------------------------------

@@ -29,7 +29,6 @@
 
 #include <projectexplorer/deploymentdata.h>
 #include <projectexplorer/target.h>
-#include <projectexplorer/runconfigurationaspects.h>
 
 using namespace ProjectExplorer;
 
@@ -37,24 +36,24 @@ namespace RemoteLinux {
 
 GenericDirectUploadStep::GenericDirectUploadStep(BuildStepList *bsl)
     : AbstractRemoteLinuxDeployStep(bsl, stepId())
+    , m_incremental(this)
+    , m_ignoreMissingFiles(this)
 {
     auto service = createDeployService<GenericDirectUploadService>();
 
-    auto incremental = m_aspects.addAspect<BaseBoolAspect>();
-    incremental->setSettingsKey("RemoteLinux.GenericDirectUploadStep.Incremental");
-    incremental->setLabel(tr("Incremental deployment"), BaseBoolAspect::LabelPlacement::AtCheckBox);
-    incremental->setValue(true);
-    incremental->setDefaultValue(true);
+    m_incremental.setSettingsKey("RemoteLinux.GenericDirectUploadStep.Incremental");
+    m_incremental.setLabel(tr("Incremental deployment"), BaseBoolAspect::LabelPlacement::AtCheckBox);
+    m_incremental.setValue(true);
+    m_incremental.setDefaultValue(true);
 
-    auto ignoreMissingFiles = m_aspects.addAspect<BaseBoolAspect>();
-    ignoreMissingFiles->setSettingsKey("RemoteLinux.GenericDirectUploadStep.IgnoreMissingFiles");
-    ignoreMissingFiles->setLabel(tr("Ignore missing files"),
+    m_ignoreMissingFiles.setSettingsKey("RemoteLinux.GenericDirectUploadStep.IgnoreMissingFiles");
+    m_ignoreMissingFiles.setLabel(tr("Ignore missing files"),
                                  BaseBoolAspect::LabelPlacement::AtCheckBox);
-    ignoreMissingFiles->setValue(false);
+    m_ignoreMissingFiles.setValue(false);
 
-    setInternalInitializer([incremental, ignoreMissingFiles, service] {
-        service->setIncrementalDeployment(incremental->value());
-        service->setIgnoreMissingFiles(ignoreMissingFiles->value());
+    setInternalInitializer([this, service] {
+        service->setIncrementalDeployment(m_incremental.value());
+        service->setIgnoreMissingFiles(m_ignoreMissingFiles.value());
         return service->isDeploymentPossible();
     });
 

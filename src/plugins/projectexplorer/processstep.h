@@ -49,9 +49,9 @@ private:
     bool init() override;
     void setupProcessParameters(ProcessParameters *pp);
 
-    ProjectExplorer::BaseStringAspect *m_command;
-    ProjectExplorer::BaseStringAspect *m_arguments;
-    ProjectExplorer::BaseStringAspect *m_workingDirectory;
+    ProjectExplorer::BaseStringAspect m_command;
+    ProjectExplorer::BaseStringAspect m_arguments;
+    ProjectExplorer::BaseStringAspect m_workingDirectory;
 };
 
 } // namespace ProjectExplorer

@@ -28,6 +28,8 @@
 #include "abstractremotelinuxdeploystep.h"
 #include "remotelinux_export.h"
 
+#include <projectexplorer/projectconfigurationaspects.h>
+
 namespace QSsh { class SshConnection; }
 
 namespace RemoteLinux {
@@ -54,6 +56,10 @@ public:
     static QString defaultFlags();
     static RsyncCommandLine rsyncCommand(const QSsh::SshConnection &sshConnection,
                                          const QString &flags);
+
+private:
+    ProjectExplorer::BaseStringAspect m_flags;
+    ProjectExplorer::BaseBoolAspect m_ignoreMissingFiles;
 };
 
 } // namespace RemoteLinux

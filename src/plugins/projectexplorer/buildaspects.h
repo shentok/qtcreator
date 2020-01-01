@@ -36,7 +36,7 @@ class PROJECTEXPLORER_EXPORT BuildDirectoryAspect : public BaseStringAspect
 {
     Q_OBJECT
 public:
-    BuildDirectoryAspect();
+    explicit BuildDirectoryAspect(ProjectConfiguration *parent);
     ~BuildDirectoryAspect() override;
 
     void allowInSourceBuilds(const Utils::FilePath &sourceDir);
@@ -58,7 +58,7 @@ class PROJECTEXPLORER_EXPORT SeparateDebugInfoAspect : public BaseTriStateAspect
 {
     Q_OBJECT
 public:
-    SeparateDebugInfoAspect();
+    explicit SeparateDebugInfoAspect(ProjectConfiguration *parent);
 };
 
 } // namespace ProjectExplorer

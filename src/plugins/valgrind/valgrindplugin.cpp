@@ -90,7 +90,8 @@ private:
 class ValgrindRunConfigurationAspect : public GlobalOrProjectAspect
 {
 public:
-    ValgrindRunConfigurationAspect(Target *)
+    ValgrindRunConfigurationAspect(ProjectConfiguration *parent, Target *)
+        : GlobalOrProjectAspect(parent)
     {
         setProjectSettings(new ValgrindProjectSettings);
         setGlobalSettings(ValgrindGlobalSettings::instance());

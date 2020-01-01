@@ -64,24 +64,23 @@ class EmrunRunConfiguration : public ProjectExplorer::RunConfiguration
 public:
     EmrunRunConfiguration(Target *target, Core::Id id)
             : RunConfiguration(target, id)
+            , m_webBrowserAspect(this, target)
+            , m_effectiveEmrunCall(this)
     {
-        auto webBrowserAspect = m_aspects.addAspect<WebBrowserSelectionAspect>(target);
+        m_effectiveEmrunCall.setLabelText(EmrunRunConfigurationFactory::tr("Effective emrun call:"));
+        m_effectiveEmrunCall.setDisplayStyle(BaseStringAspect::TextEditDisplay);
+        m_effectiveEmrunCall.setReadOnly(true);
 
-        auto effectiveEmrunCall = m_aspects.addAspect<BaseStringAspect>();
-        effectiveEmrunCall->setLabelText(EmrunRunConfigurationFactory::tr("Effective emrun call:"));
-        effectiveEmrunCall->setDisplayStyle(BaseStringAspect::TextEditDisplay);
-        effectiveEmrunCall->setReadOnly(true);
-
-        setUpdater([target, effectiveEmrunCall, webBrowserAspect] {
-            effectiveEmrunCall->setValue(emrunCommand(target,
-                                                      webBrowserAspect->currentBrowser(),
-                                                      "<port>").toUserOutput());
+        setUpdater([this, target] {
+            m_effectiveEmrunCall.setValue(emrunCommand(target,
+                                                       m_webBrowserAspect.currentBrowser(),
+                                                       "<port>").toUserOutput());
         });
 
         update(); // FIXME: Looks spurious
 
         // FIXME: A case for acquaintSiblings?
-        connect(webBrowserAspect, &WebBrowserSelectionAspect::changed,
+        connect(&m_webBrowserAspect, &WebBrowserSelectionAspect::changed,
                 this, &RunConfiguration::update);
         // FIXME: Is wrong after active build config changes, but probably
         // not needed anyway.
@@ -90,6 +89,10 @@ public:
         connect(target->project(), &Project::displayNameChanged,
                 this, &RunConfiguration::update);
     }
+
+private:
+    WebBrowserSelectionAspect m_webBrowserAspect;
+    BaseStringAspect m_effectiveEmrunCall;
 };
 
 class EmrunRunWorker : public SimpleTargetRunner

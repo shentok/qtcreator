@@ -41,7 +41,7 @@ class PROJECTEXPLORER_EXPORT EnvironmentAspect : public ProjectConfigurationAspe
     Q_OBJECT
 
 public:
-    EnvironmentAspect();
+    explicit EnvironmentAspect(ProjectConfiguration *parent);
 
     // The environment including the user's modifications.
     Utils::Environment environment() const;

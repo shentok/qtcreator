@@ -34,7 +34,8 @@ using namespace Utils;
 
 namespace ProjectExplorer {
 
-LocalEnvironmentAspect::LocalEnvironmentAspect(Target *target, bool includeBuildEnvironment)
+LocalEnvironmentAspect::LocalEnvironmentAspect(ProjectConfiguration *parent, Target *target, bool includeBuildEnvironment)
+    : EnvironmentAspect(parent)
 {
     setIsLocal(true);
     addSupportedBaseEnvironment(tr("Clean Environment"), {});
