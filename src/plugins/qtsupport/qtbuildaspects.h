@@ -35,7 +35,7 @@ class QTSUPPORT_EXPORT QmlDebuggingAspect : public ProjectExplorer::BaseTriState
 {
     Q_OBJECT
 public:
-    QmlDebuggingAspect();
+    explicit QmlDebuggingAspect(ProjectExplorer::ProjectConfiguration *parent);
 
     void setKit(const ProjectExplorer::Kit *kit) { m_kit = kit; }
 
@@ -49,7 +49,7 @@ class QTSUPPORT_EXPORT QtQuickCompilerAspect : public ProjectExplorer::BaseTriSt
 {
     Q_OBJECT
 public:
-    QtQuickCompilerAspect();
+    explicit QtQuickCompilerAspect(ProjectExplorer::ProjectConfiguration *parent);
 
     void setKit(const ProjectExplorer::Kit *kit) { m_kit = kit; }
 

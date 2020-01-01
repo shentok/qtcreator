@@ -60,7 +60,7 @@ enum DebuggerLanguageStatus {
 class DebuggerLanguageAspect : public ProjectConfigurationAspect
 {
 public:
-    DebuggerLanguageAspect() = default;
+    explicit DebuggerLanguageAspect(ProjectConfiguration *parent);
 
     void addToLayout(LayoutBuilder &builder) override;
 
@@ -90,6 +90,11 @@ public:
 
     std::function<void(bool)> m_clickCallBack;
 };
+
+DebuggerLanguageAspect::DebuggerLanguageAspect(ProjectConfiguration *parent)
+    : ProjectConfigurationAspect(parent)
+{
+}
 
 void DebuggerLanguageAspect::addToLayout(LayoutBuilder &builder)
 {
@@ -158,8 +163,9 @@ void DebuggerLanguageAspect::setLabel(const QString &label)
     \class Debugger::DebuggerRunConfigurationAspect
 */
 
-DebuggerRunConfigurationAspect::DebuggerRunConfigurationAspect(Target *target)
-    : m_target(target)
+DebuggerRunConfigurationAspect::DebuggerRunConfigurationAspect(ProjectExplorer::ProjectConfiguration *parent, Target *target)
+    : ProjectExplorer::GlobalOrProjectAspect(parent)
+    , m_target(target)
 {
     setId("DebuggerAspect");
     setDisplayName(tr("Debugger settings"));
@@ -178,12 +184,12 @@ DebuggerRunConfigurationAspect::DebuggerRunConfigurationAspect(Target *target)
         return w;
     });
 
-    m_cppAspect = new DebuggerLanguageAspect;
+    m_cppAspect = new DebuggerLanguageAspect(0);
     m_cppAspect->setLabel(tr("Enable C++"));
     m_cppAspect->setSettingsKey("RunConfiguration.UseCppDebugger");
     m_cppAspect->setAutoSettingsKey("RunConfiguration.UseCppDebuggerAuto");
 
-    m_qmlAspect = new DebuggerLanguageAspect;
+    m_qmlAspect = new DebuggerLanguageAspect(0);
     m_qmlAspect->setLabel(tr("Enable QML"));
     m_qmlAspect->setSettingsKey("RunConfiguration.UseQmlDebugger");
     m_qmlAspect->setAutoSettingsKey("RunConfiguration.UseQmlDebuggerAuto");
@@ -201,12 +207,12 @@ DebuggerRunConfigurationAspect::DebuggerRunConfigurationAspect(Target *target)
             m_cppAspect->setValue(true);
     });
 
-    m_multiProcessAspect = new BaseBoolAspect;
+    m_multiProcessAspect = new BaseBoolAspect(0);
     m_multiProcessAspect->setSettingsKey("RunConfiguration.UseMultiProcess");
     m_multiProcessAspect->setLabel(tr("Enable Debugging of Subprocesses"),
                                    BaseBoolAspect::LabelPlacement::AtCheckBox);
 
-    m_overrideStartupAspect = new BaseStringAspect;
+    m_overrideStartupAspect = new BaseStringAspect(0);
     m_overrideStartupAspect->setSettingsKey("RunConfiguration.OverrideDebuggerStartup");
     m_overrideStartupAspect->setDisplayStyle(BaseStringAspect::TextEditDisplay);
     m_overrideStartupAspect->setLabelText(tr("Additional startup commands:"));

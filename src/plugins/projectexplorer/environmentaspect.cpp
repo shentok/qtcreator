@@ -41,7 +41,8 @@ namespace ProjectExplorer {
 // EnvironmentAspect:
 // --------------------------------------------------------------------
 
-EnvironmentAspect::EnvironmentAspect()
+EnvironmentAspect::EnvironmentAspect(ProjectConfiguration *parent)
+    : ProjectConfigurationAspect(parent)
 {
     setDisplayName(tr("Environment"));
     setId("EnvironmentAspect");

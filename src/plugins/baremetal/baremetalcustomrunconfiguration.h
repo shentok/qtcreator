@@ -26,6 +26,7 @@
 #pragma once
 
 #include <projectexplorer/runconfiguration.h>
+#include <projectexplorer/runconfigurationaspects.h>
 
 namespace BareMetal {
 namespace Internal {
@@ -40,8 +41,12 @@ class BareMetalCustomRunConfiguration final
 public:
     explicit BareMetalCustomRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
 
-public:
     ProjectExplorer::Tasks checkForIssues() const final;
+
+private:
+    ProjectExplorer::ExecutableAspect m_exeAspect;
+    ProjectExplorer::ArgumentsAspect m_argumentsAspect;
+    ProjectExplorer::WorkingDirectoryAspect m_workingDirectoryAspect;
 };
 
 // BareMetalCustomRunConfigurationFactory

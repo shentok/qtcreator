@@ -28,7 +28,6 @@
 
 #include "../nimconstants.h"
 
-#include <projectexplorer/projectconfigurationaspects.h>
 #include <projectexplorer/projectexplorerconstants.h>
 #include <utils/qtcassert.h>
 
@@ -42,16 +41,16 @@ namespace Nim {
 
 NimCompilerCleanStep::NimCompilerCleanStep(BuildStepList *parentList)
     : BuildStep(parentList, Constants::C_NIMCOMPILERCLEANSTEP_ID)
+    , m_workingDirectoryAspect(this)
 {
     setDefaultDisplayName(tr("Nim Clean Step"));
     setDisplayName(tr("Nim Clean Step"));
 
-    auto workingDirectory = m_aspects.addAspect<BaseStringAspect>();
-    workingDirectory->setLabelText(tr("Working directory:"));
-    workingDirectory->setDisplayStyle(BaseStringAspect::LineEditDisplay);
+    m_workingDirectoryAspect.setLabelText(tr("Working directory:"));
+    m_workingDirectoryAspect.setDisplayStyle(BaseStringAspect::LineEditDisplay);
 
-    setSummaryUpdater([this, workingDirectory] {
-        workingDirectory->setFilePath(buildConfiguration()->buildDirectory());
+    setSummaryUpdater([this] {
+        m_workingDirectoryAspect.setFilePath(buildConfiguration()->buildDirectory());
         return displayName();
     });
 }

@@ -67,8 +67,9 @@ static QStringList detectedBrowsers(ProjectExplorer::Target *target)
     return result;
 }
 
-WebBrowserSelectionAspect::WebBrowserSelectionAspect(ProjectExplorer::Target *target)
-    : m_availableBrowsers(detectedBrowsers(target))
+WebBrowserSelectionAspect::WebBrowserSelectionAspect(ProjectExplorer::ProjectConfiguration *parent, ProjectExplorer::Target *target)
+    : ProjectExplorer::ProjectConfigurationAspect(parent)
+    , m_availableBrowsers(detectedBrowsers(target))
 {
     if (!m_availableBrowsers.isEmpty())
         m_currentBrowser = m_availableBrowsers.first();

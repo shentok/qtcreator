@@ -70,7 +70,7 @@ public:
     void doRun() override;
 
 private:
-    ProjectExplorer::BaseStringAspect *m_additionalArgumentsAspect = nullptr;
+    ProjectExplorer::BaseStringAspect m_additionalArgumentsAspect;
     bool m_runAutoreconf = false;
 };
 

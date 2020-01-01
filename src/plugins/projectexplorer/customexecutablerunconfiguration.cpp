@@ -29,7 +29,6 @@
 #include "buildconfiguration.h"
 #include "devicesupport/devicemanager.h"
 #include "environmentaspect.h"
-#include "localenvironmentaspect.h"
 #include "project.h"
 #include "runcontrol.h"
 #include "target.h"
@@ -65,29 +64,27 @@ CustomExecutableRunConfiguration::CustomExecutableRunConfiguration(Target *targe
 
 CustomExecutableRunConfiguration::CustomExecutableRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
+    , m_envAspect(this, target)
+    , m_exeAspect(this)
+    , m_argumentsAspect(this)
+    , m_workingDirectoryAspect(this)
+    , m_terminalAspect(this)
 {
-    auto envAspect = m_aspects.addAspect<LocalEnvironmentAspect>(target);
+    m_exeAspect.setSettingsKey("ProjectExplorer.CustomExecutableRunConfiguration.Executable");
+    m_exeAspect.setDisplayStyle(BaseStringAspect::PathChooserDisplay);
+    m_exeAspect.setHistoryCompleter("Qt.CustomExecutable.History");
+    m_exeAspect.setExpectedKind(PathChooser::ExistingCommand);
+    m_exeAspect.setEnvironment(m_envAspect.environment());
 
-    auto exeAspect = m_aspects.addAspect<ExecutableAspect>();
-    exeAspect->setSettingsKey("ProjectExplorer.CustomExecutableRunConfiguration.Executable");
-    exeAspect->setDisplayStyle(BaseStringAspect::PathChooserDisplay);
-    exeAspect->setHistoryCompleter("Qt.CustomExecutable.History");
-    exeAspect->setExpectedKind(PathChooser::ExistingCommand);
-    exeAspect->setEnvironment(envAspect->environment());
-
-    m_aspects.addAspect<ArgumentsAspect>();
-    m_aspects.addAspect<WorkingDirectoryAspect>();
-    m_aspects.addAspect<TerminalAspect>();
-
-    connect(envAspect, &EnvironmentAspect::environmentChanged,
-            this, [exeAspect, envAspect] { exeAspect->setEnvironment(envAspect->environment()); });
+    connect(&m_envAspect, &EnvironmentAspect::environmentChanged,
+            this, [this] { m_exeAspect.setEnvironment(m_envAspect.environment()); });
 
     setDefaultDisplayName(defaultDisplayName());
 }
 
 QString CustomExecutableRunConfiguration::rawExecutable() const
 {
-    return aspect<ExecutableAspect>()->executable().toString();
+    return m_exeAspect.executable().toString();
 }
 
 bool CustomExecutableRunConfiguration::isEnabled() const
@@ -98,11 +95,11 @@ bool CustomExecutableRunConfiguration::isEnabled() const
 Runnable CustomExecutableRunConfiguration::runnable() const
 {
     FilePath workingDirectory =
-            aspect<WorkingDirectoryAspect>()->workingDirectory(macroExpander());
+            m_workingDirectoryAspect.workingDirectory(macroExpander());
 
     Runnable r;
     r.setCommandLine(commandLine());
-    r.environment = aspect<EnvironmentAspect>()->environment();
+    r.environment = m_envAspect.environment();
     r.workingDirectory = workingDirectory.toString();
     r.device = DeviceManager::instance()->defaultDevice(Constants::DESKTOP_DEVICE_TYPE);
 

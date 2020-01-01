@@ -39,7 +39,11 @@ const char DISPLAY_NAME_KEY[] = "ProjectExplorer.ProjectConfiguration.DisplayNam
 
 // ProjectConfigurationAspect
 
-ProjectConfigurationAspect::ProjectConfigurationAspect() = default;
+ProjectConfigurationAspect::ProjectConfigurationAspect(ProjectConfiguration *parent)
+    : QObject(parent)
+{
+    parent->m_aspects.append(this);
+}
 
 ProjectConfigurationAspect::~ProjectConfigurationAspect() = default;
 

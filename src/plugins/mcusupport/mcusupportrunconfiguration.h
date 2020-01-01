@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <projectexplorer/projectconfigurationaspects.h>
 #include <projectexplorer/runconfiguration.h>
 #include <projectexplorer/runcontrol.h>
 
@@ -43,6 +44,9 @@ class FlashAndRunConfiguration : public ProjectExplorer::RunConfiguration
 
 public:
     FlashAndRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
+
+private:
+    ProjectExplorer::BaseStringAspect m_flashAndRunParameters;
 };
 
 ProjectExplorer::RunWorkerFactory::WorkerCreator makeFlashAndRunWorker();

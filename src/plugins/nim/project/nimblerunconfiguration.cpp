@@ -27,8 +27,6 @@
 #include "nimconstants.h"
 #include "nimbleproject.h"
 
-#include <projectexplorer/localenvironmentaspect.h>
-#include <projectexplorer/runconfigurationaspects.h>
 #include <projectexplorer/runcontrol.h>
 #include <projectexplorer/target.h>
 
@@ -42,19 +40,18 @@ using namespace ProjectExplorer;
 
 NimbleRunConfiguration::NimbleRunConfiguration(ProjectExplorer::Target *target, Core::Id id)
     : RunConfiguration(target, id)
+    , m_envAspect(this, target)
+    , m_exeAspect(this)
+    , m_argumentsAspect(this)
+    , m_workingDirectoryAspect(this)
+    , m_terminalAspect(this)
 {
-    m_aspects.addAspect<LocalEnvironmentAspect>(target);
-    m_aspects.addAspect<ExecutableAspect>();
-    m_aspects.addAspect<ArgumentsAspect>();
-    m_aspects.addAspect<WorkingDirectoryAspect>();
-    m_aspects.addAspect<TerminalAspect>();
-
     setUpdater([this] {
         BuildTargetInfo bti = buildTargetInfo();
         setDisplayName(bti.displayName);
         setDefaultDisplayName(bti.displayName);
-        aspect<ExecutableAspect>()->setExecutable(bti.targetFilePath);
-        aspect<WorkingDirectoryAspect>()->setDefaultWorkingDirectory(bti.workingDirectory);
+        m_exeAspect.setExecutable(bti.targetFilePath);
+        m_workingDirectoryAspect.setDefaultWorkingDirectory(bti.workingDirectory);
     });
 
     connect(target, &Target::buildSystemUpdated, this, &RunConfiguration::update);
@@ -90,11 +87,14 @@ QList<RunConfigurationCreationInfo> NimbleRunConfigurationFactory::availableCrea
 
 NimbleTestConfiguration::NimbleTestConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
+    , m_exeAspect(this)
+    , m_argumentsAspect(this)
+    , m_workingDirectoryAspect(this)
+    , m_terminalAspect(this)
 {
-    m_aspects.addAspect<ExecutableAspect>()->setExecutable(Utils::FilePath::fromString(QStandardPaths::findExecutable("nimble")));
-    m_aspects.addAspect<ArgumentsAspect>()->setArguments("test");
-    m_aspects.addAspect<WorkingDirectoryAspect>()->setDefaultWorkingDirectory(project()->projectDirectory());
-    m_aspects.addAspect<TerminalAspect>();
+    m_exeAspect.setExecutable(Utils::FilePath::fromString(QStandardPaths::findExecutable("nimble")));
+    m_argumentsAspect.setArguments("test");
+    m_workingDirectoryAspect.setDefaultWorkingDirectory(project()->projectDirectory());
 
     setDisplayName(tr("Nimble Test"));
     setDefaultDisplayName(tr("Nimble Test"));

@@ -55,7 +55,10 @@ using namespace Utils;
 
 namespace Android {
 
-BaseStringListAspect::BaseStringListAspect(const QString &settingsKey, Core::Id id)
+BaseStringListAspect::BaseStringListAspect(ProjectExplorer::ProjectConfiguration *parent,
+                                           const QString &settingsKey,
+                                           Core::Id id)
+    : ProjectExplorer::ProjectConfigurationAspect(parent)
 {
     setSettingsKey(settingsKey);
     setId(id);
@@ -106,32 +109,31 @@ void BaseStringListAspect::setLabel(const QString &label)
 
 AndroidRunConfiguration::AndroidRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
+    , m_envAspect(this)
+    , m_argumentsAspect(this)
+    , m_amStartArgsAspect(this)
+    , m_warning(this)
+    , m_preStartShellCmdAspect(this)
+    , m_postStartShellCmdAspect(this)
 {
-    auto envAspect = m_aspects.addAspect<EnvironmentAspect>();
-    envAspect->addSupportedBaseEnvironment(tr("Clean Environment"), {});
+    m_envAspect.addSupportedBaseEnvironment(tr("Clean Environment"), {});
 
-    m_aspects.addAspect<ArgumentsAspect>();
+    m_amStartArgsAspect.setId(Constants::ANDROID_AMSTARTARGS);
+    m_amStartArgsAspect.setSettingsKey("Android.AmStartArgsKey");
+    m_amStartArgsAspect.setLabelText(tr("Activity manager start options:"));
+    m_amStartArgsAspect.setDisplayStyle(BaseStringAspect::LineEditDisplay);
+    m_amStartArgsAspect.setHistoryCompleter("Android.AmStartArgs.History");
 
-    auto amStartArgsAspect = m_aspects.addAspect<BaseStringAspect>();
-    amStartArgsAspect->setId(Constants::ANDROID_AMSTARTARGS);
-    amStartArgsAspect->setSettingsKey("Android.AmStartArgsKey");
-    amStartArgsAspect->setLabelText(tr("Activity manager start options:"));
-    amStartArgsAspect->setDisplayStyle(BaseStringAspect::LineEditDisplay);
-    amStartArgsAspect->setHistoryCompleter("Android.AmStartArgs.History");
+    m_warning.setLabelPixmap(Icons::WARNING.pixmap());
+    m_warning.setValue(tr("If the \"am start\" options conflict, the application might not start."));
 
-    auto warning = m_aspects.addAspect<BaseStringAspect>();
-    warning->setLabelPixmap(Icons::WARNING.pixmap());
-    warning->setValue(tr("If the \"am start\" options conflict, the application might not start."));
+    m_preStartShellCmdAspect.setId(Constants::ANDROID_PRESTARTSHELLCMDLIST);
+    m_preStartShellCmdAspect.setSettingsKey("Android.PreStartShellCmdListKey");
+    m_preStartShellCmdAspect.setLabel(tr("Shell commands to run on Android device before application launch."));
 
-    auto preStartShellCmdAspect = m_aspects.addAspect<BaseStringListAspect>();
-    preStartShellCmdAspect->setId(Constants::ANDROID_PRESTARTSHELLCMDLIST);
-    preStartShellCmdAspect->setSettingsKey("Android.PreStartShellCmdListKey");
-    preStartShellCmdAspect->setLabel(tr("Shell commands to run on Android device before application launch."));
-
-    auto postStartShellCmdAspect = m_aspects.addAspect<BaseStringListAspect>();
-    postStartShellCmdAspect->setId(Constants::ANDROID_POSTFINISHSHELLCMDLIST);
-    postStartShellCmdAspect->setSettingsKey("Android.PostStartShellCmdListKey");
-    postStartShellCmdAspect->setLabel(tr("Shell commands to run on Android device after application quits."));
+    m_postStartShellCmdAspect.setId(Constants::ANDROID_POSTFINISHSHELLCMDLIST);
+    m_postStartShellCmdAspect.setSettingsKey("Android.PostStartShellCmdListKey");
+    m_postStartShellCmdAspect.setLabel(tr("Shell commands to run on Android device after application quits."));
 
     setUpdater([this, target] {
         const BuildTargetInfo bti = buildTargetInfo();

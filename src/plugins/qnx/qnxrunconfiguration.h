@@ -26,6 +26,7 @@
 #pragma once
 
 #include <projectexplorer/runconfigurationaspects.h>
+#include <remotelinux/remotelinuxenvironmentaspect.h>
 #include <remotelinux/remotelinuxrunconfiguration.h>
 
 namespace Qnx {
@@ -36,7 +37,7 @@ class QtLibPathAspect : public ProjectExplorer::BaseStringAspect
     Q_OBJECT
 
 public:
-    QtLibPathAspect() = default;
+    QtLibPathAspect(ProjectExplorer::ProjectConfiguration *parent);
 };
 
 class QnxRunConfiguration final : public ProjectExplorer::RunConfiguration
@@ -48,6 +49,14 @@ public:
 
 private:
     ProjectExplorer::Runnable runnable() const override;
+
+    RemoteLinux::RemoteLinuxEnvironmentAspect m_envAspect;
+    ProjectExplorer::ExecutableAspect m_exeAspect;
+    ProjectExplorer::ArgumentsAspect m_argumentsAspect;
+    ProjectExplorer::WorkingDirectoryAspect m_workingDirectoryAspect;
+    ProjectExplorer::SymbolFileAspect m_symbolsAspect;
+    ProjectExplorer::TerminalAspect m_terminalAspect;
+    QtLibPathAspect m_libAspect;
 };
 
 class QnxRunConfigurationFactory final : public ProjectExplorer::RunConfigurationFactory

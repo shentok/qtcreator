@@ -26,10 +26,8 @@
 #include "remotelinuxcustomrunconfiguration.h"
 
 #include "remotelinux_constants.h"
-#include "remotelinuxenvironmentaspect.h"
 #include "remotelinuxx11forwardingaspect.h"
 
-#include <projectexplorer/runconfigurationaspects.h>
 #include <projectexplorer/runcontrol.h>
 #include <projectexplorer/target.h>
 
@@ -43,34 +41,38 @@ namespace Internal {
 
 RemoteLinuxCustomRunConfiguration::RemoteLinuxCustomRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
+    , m_envAspect(this, target)
+    , m_exeAspect(this)
+    , m_argumentsAspect(this)
+    , m_workingDirectoryAspect(this)
+    , m_symbolsAspect(this)
+    , m_terminalAspect()
+    , m_forwardingAspect()
 {
-    auto exeAspect = m_aspects.addAspect<ExecutableAspect>();
-    exeAspect->setSettingsKey("RemoteLinux.CustomRunConfig.RemoteExecutable");
-    exeAspect->setLabelText(tr("Remote executable:"));
-    exeAspect->setExecutablePathStyle(OsTypeLinux);
-    exeAspect->setDisplayStyle(BaseStringAspect::LineEditDisplay);
-    exeAspect->setHistoryCompleter("RemoteLinux.CustomExecutable.History");
-    exeAspect->setExpectedKind(PathChooser::Any);
+    m_exeAspect.setSettingsKey("RemoteLinux.CustomRunConfig.RemoteExecutable");
+    m_exeAspect.setLabelText(tr("Remote executable:"));
+    m_exeAspect.setExecutablePathStyle(OsTypeLinux);
+    m_exeAspect.setDisplayStyle(BaseStringAspect::LineEditDisplay);
+    m_exeAspect.setHistoryCompleter("RemoteLinux.CustomExecutable.History");
+    m_exeAspect.setExpectedKind(PathChooser::Any);
 
-    auto symbolsAspect = m_aspects.addAspect<SymbolFileAspect>();
-    symbolsAspect->setSettingsKey("RemoteLinux.CustomRunConfig.LocalExecutable");
-    symbolsAspect->setLabelText(tr("Local executable:"));
-    symbolsAspect->setDisplayStyle(SymbolFileAspect::PathChooserDisplay);
+    m_symbolsAspect.setSettingsKey("RemoteLinux.CustomRunConfig.LocalExecutable");
+    m_symbolsAspect.setLabelText(tr("Local executable:"));
+    m_symbolsAspect.setDisplayStyle(SymbolFileAspect::PathChooserDisplay);
 
-    m_aspects.addAspect<ArgumentsAspect>();
-    m_aspects.addAspect<WorkingDirectoryAspect>();
     if (HostOsInfo::isAnyUnixHost())
-        m_aspects.addAspect<TerminalAspect>();
-    m_aspects.addAspect<RemoteLinuxEnvironmentAspect>(target);
+        m_terminalAspect.reset(new TerminalAspect(this));
     if (Utils::HostOsInfo::isAnyUnixHost())
-        m_aspects.addAspect<X11ForwardingAspect>();
+        m_forwardingAspect.reset(new X11ForwardingAspect(this));
 
     setDefaultDisplayName(runConfigDefaultDisplayName());
 }
 
+RemoteLinuxCustomRunConfiguration::~RemoteLinuxCustomRunConfiguration()= default;
+
 QString RemoteLinuxCustomRunConfiguration::runConfigDefaultDisplayName()
 {
-    QString remoteExecutable = aspect<ExecutableAspect>()->executable().toString();
+    QString remoteExecutable = m_exeAspect.executable().toString();
     QString display = remoteExecutable.isEmpty()
             ? tr("Custom Executable") : tr("Run \"%1\"").arg(remoteExecutable);
     return  RunConfigurationFactory::decoratedTargetName(display, target());
@@ -79,15 +81,15 @@ QString RemoteLinuxCustomRunConfiguration::runConfigDefaultDisplayName()
 Runnable RemoteLinuxCustomRunConfiguration::runnable() const
 {
     ProjectExplorer::Runnable r = RunConfiguration::runnable();
-    if (const auto * const forwardingAspect = aspect<X11ForwardingAspect>())
-        r.extraData.insert("Ssh.X11ForwardToDisplay", forwardingAspect->display(macroExpander()));
+    if (m_forwardingAspect)
+        r.extraData.insert("Ssh.X11ForwardToDisplay", m_forwardingAspect->display(macroExpander()));
     return r;
 }
 
 Tasks RemoteLinuxCustomRunConfiguration::checkForIssues() const
 {
     Tasks tasks;
-    if (aspect<ExecutableAspect>()->executable().isEmpty()) {
+    if (m_exeAspect.executable().isEmpty()) {
         tasks << createConfigurationIssue(tr("The remote executable must be set in order to run "
                                              "a custom remote run configuration."));
     }

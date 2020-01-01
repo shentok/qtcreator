@@ -25,9 +25,15 @@
 
 #pragma once
 
+#include "remotelinuxrunconfiguration.h"
+
 #include <projectexplorer/runconfiguration.h>
+#include <projectexplorer/runconfigurationaspects.h>
 
 namespace RemoteLinux {
+
+class X11ForwardingAspect;
+
 namespace Internal {
 
 class RemoteLinuxCustomRunConfiguration : public ProjectExplorer::RunConfiguration
@@ -36,12 +42,21 @@ class RemoteLinuxCustomRunConfiguration : public ProjectExplorer::RunConfigurati
 
 public:
     RemoteLinuxCustomRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
+    ~RemoteLinuxCustomRunConfiguration() override;
 
     QString runConfigDefaultDisplayName();
 
 private:
     ProjectExplorer::Runnable runnable() const override;
     ProjectExplorer::Tasks checkForIssues() const override;
+
+    RemoteLinuxEnvironmentAspect m_envAspect;
+    ProjectExplorer::ExecutableAspect m_exeAspect;
+    ProjectExplorer::ArgumentsAspect m_argumentsAspect;
+    ProjectExplorer::WorkingDirectoryAspect m_workingDirectoryAspect;
+    ProjectExplorer::SymbolFileAspect m_symbolsAspect;
+    std::unique_ptr<ProjectExplorer::TerminalAspect> m_terminalAspect;
+    std::unique_ptr<X11ForwardingAspect> m_forwardingAspect;
 };
 
 class RemoteLinuxCustomRunConfigurationFactory

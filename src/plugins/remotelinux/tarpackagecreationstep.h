@@ -77,8 +77,8 @@ private:
 
     DeploymentTimeInfo m_deployTimes;
 
-    ProjectExplorer::BaseBoolAspect *m_incrementalDeploymentAspect = nullptr;
-    ProjectExplorer::BaseBoolAspect *m_ignoreMissingFilesAspect = nullptr;
+    ProjectExplorer::BaseBoolAspect m_incrementalDeploymentAspect;
+    ProjectExplorer::BaseBoolAspect m_ignoreMissingFilesAspect;
     bool m_packagingNeeded = false;
     QList<ProjectExplorer::DeployableFile> m_files;
 };

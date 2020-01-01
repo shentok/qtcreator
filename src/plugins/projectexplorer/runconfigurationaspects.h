@@ -46,7 +46,7 @@ class PROJECTEXPLORER_EXPORT TerminalAspect : public ProjectConfigurationAspect
     Q_OBJECT
 
 public:
-    TerminalAspect();
+    explicit TerminalAspect(ProjectConfiguration *parent);
 
     void addToLayout(LayoutBuilder &builder) override;
 
@@ -72,7 +72,7 @@ class PROJECTEXPLORER_EXPORT WorkingDirectoryAspect : public ProjectConfiguratio
     Q_OBJECT
 
 public:
-    WorkingDirectoryAspect();
+    explicit WorkingDirectoryAspect(ProjectConfiguration *parent);
 
     void addToLayout(LayoutBuilder &builder) override;
     void acquaintSiblings(const ProjectConfigurationAspects &) override;
@@ -102,7 +102,7 @@ class PROJECTEXPLORER_EXPORT ArgumentsAspect : public ProjectConfigurationAspect
     Q_OBJECT
 
 public:
-    ArgumentsAspect();
+    explicit ArgumentsAspect(ProjectConfiguration *parent);
 
     void addToLayout(LayoutBuilder &builder) override;
 
@@ -133,7 +133,7 @@ class PROJECTEXPLORER_EXPORT UseLibraryPathsAspect : public BaseBoolAspect
     Q_OBJECT
 
 public:
-    UseLibraryPathsAspect();
+    explicit UseLibraryPathsAspect(ProjectConfiguration *parent);
 };
 
 class PROJECTEXPLORER_EXPORT UseDyldSuffixAspect : public BaseBoolAspect
@@ -141,7 +141,7 @@ class PROJECTEXPLORER_EXPORT UseDyldSuffixAspect : public BaseBoolAspect
     Q_OBJECT
 
 public:
-    UseDyldSuffixAspect();
+    explicit UseDyldSuffixAspect(ProjectConfiguration *parent);
 };
 
 class PROJECTEXPLORER_EXPORT ExecutableAspect : public ProjectConfigurationAspect
@@ -149,7 +149,7 @@ class PROJECTEXPLORER_EXPORT ExecutableAspect : public ProjectConfigurationAspec
     Q_OBJECT
 
 public:
-    ExecutableAspect();
+    explicit ExecutableAspect(ProjectConfiguration *parent);
     ~ExecutableAspect() override;
 
     Utils::FilePath executable() const;
@@ -182,7 +182,7 @@ class PROJECTEXPLORER_EXPORT SymbolFileAspect : public BaseStringAspect
     Q_OBJECT
 
 public:
-     SymbolFileAspect() = default;
+     explicit SymbolFileAspect(ProjectConfiguration *parent);
 };
 
 } // namespace ProjectExplorer

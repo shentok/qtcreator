@@ -40,7 +40,7 @@ class REMOTELINUX_EXPORT X11ForwardingAspect : public ProjectExplorer::BaseStrin
     Q_OBJECT
 
 public:
-    X11ForwardingAspect();
+    explicit X11ForwardingAspect(ProjectExplorer::ProjectConfiguration *parent);
 
     QString display(const Utils::MacroExpander *expander) const;
 };

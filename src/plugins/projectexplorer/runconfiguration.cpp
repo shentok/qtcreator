@@ -92,7 +92,9 @@ void ISettingsAspect::setConfigWidgetCreator(const ConfigWidgetCreator &configWi
 //
 ///////////////////////////////////////////////////////////////////////
 
-GlobalOrProjectAspect::GlobalOrProjectAspect() = default;
+GlobalOrProjectAspect::GlobalOrProjectAspect(ProjectConfiguration *parent)
+    : ProjectConfigurationAspect(parent)
+{}
 
 GlobalOrProjectAspect::~GlobalOrProjectAspect()
 {
@@ -231,7 +233,7 @@ QWidget *RunConfiguration::createConfigurationWidget()
     auto widget = new QWidget;
     {
         LayoutBuilder builder(widget);
-        for (ProjectConfigurationAspect *aspect : m_aspects) {
+        for (ProjectConfigurationAspect *aspect : aspects()) {
             if (aspect->isVisible())
                 aspect->addToLayout(builder.startNewRow());
         }
@@ -253,7 +255,7 @@ void RunConfiguration::addAspectFactory(const AspectFactory &aspectFactory)
 QMap<Core::Id, QVariantMap> RunConfiguration::aspectData() const
 {
     QMap<Core::Id, QVariantMap> data;
-    for (ProjectConfigurationAspect *aspect : m_aspects)
+    for (ProjectConfigurationAspect *aspect : aspects())
         aspect->toMap(data[aspect->id()]);
     return data;
 }
@@ -534,7 +536,7 @@ RunConfiguration *RunConfigurationFactory::create(Target *target) const
 
     // Add the universal aspects.
     for (const RunConfiguration::AspectFactory &factory : theAspectFactories)
-        rc->m_aspects.append(factory(target));
+        factory(rc, target);
 
     rc->acquaintAspects();
     return rc;

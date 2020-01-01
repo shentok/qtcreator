@@ -29,6 +29,7 @@
 
 #include <projectexplorer/deploymentdata.h>
 #include <projectexplorer/makestep.h>
+#include <projectexplorer/runconfigurationaspects.h>
 
 namespace ProjectExplorer { class BaseStringAspect; }
 namespace Utils { class FilePath; }
@@ -60,9 +61,12 @@ private:
     void updateFullCommandLine();
     void updateFromCustomCommandLineAspect();
 
-    ProjectExplorer::BaseStringAspect *customCommandLineAspect() const;
-
     ProjectExplorer::DeploymentData m_deploymentData;
+    ProjectExplorer::ExecutableAspect m_makeAspect;
+    ProjectExplorer::BaseStringAspect m_installRootAspect;
+    ProjectExplorer::BaseBoolAspect m_cleanInstallRootAspect;
+    ProjectExplorer::BaseStringAspect m_commandLineAspect;
+    ProjectExplorer::BaseStringAspect m_customCommandLineAspect;
     bool m_noInstallTarget = false;
     bool m_isCmakeProject = false;
 };

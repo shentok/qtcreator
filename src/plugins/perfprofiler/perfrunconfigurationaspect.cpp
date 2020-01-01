@@ -32,7 +32,8 @@
 
 namespace PerfProfiler {
 
-PerfRunConfigurationAspect::PerfRunConfigurationAspect(ProjectExplorer::Target *target)
+PerfRunConfigurationAspect::PerfRunConfigurationAspect(ProjectExplorer::ProjectConfiguration *parent, ProjectExplorer::Target *target)
+    : ProjectExplorer::GlobalOrProjectAspect(parent)
 {
     setProjectSettings(new PerfSettings(target));
     setGlobalSettings(Internal::PerfProfilerPlugin::globalSettings());

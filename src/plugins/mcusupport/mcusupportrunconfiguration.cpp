@@ -26,7 +26,6 @@
 #include "mcusupportrunconfiguration.h"
 #include "mcusupportconstants.h"
 
-#include <projectexplorer/projectconfigurationaspects.h>
 #include <projectexplorer/buildconfiguration.h>
 #include <projectexplorer/devicesupport/devicemanager.h>
 #include <projectexplorer/devicesupport/deviceusedportsgatherer.h>
@@ -64,14 +63,14 @@ static QStringList flashAndRunArgs(const Target *target)
 
 FlashAndRunConfiguration::FlashAndRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
+    , m_flashAndRunParameters(this)
 {
-    auto flashAndRunParameters = m_aspects.addAspect<BaseStringAspect>();
-    flashAndRunParameters->setLabelText("Flash and run CMake parameters:");
-    flashAndRunParameters->setDisplayStyle(BaseStringAspect::TextEditDisplay);
-    flashAndRunParameters->setSettingsKey("FlashAndRunConfiguration.Parameters");
+    m_flashAndRunParameters.setLabelText("Flash and run CMake parameters:");
+    m_flashAndRunParameters.setDisplayStyle(BaseStringAspect::TextEditDisplay);
+    m_flashAndRunParameters.setSettingsKey("FlashAndRunConfiguration.Parameters");
 
-    setUpdater([target, flashAndRunParameters] {
-        flashAndRunParameters->setValue(flashAndRunArgs(target).join(' '));
+    setUpdater([this, target] {
+        m_flashAndRunParameters.setValue(flashAndRunArgs(target).join(' '));
     });
 
     update();

@@ -29,6 +29,7 @@
 
 #include "adbcommandswidget.h"
 
+#include <projectexplorer/environmentaspect.h>
 #include <projectexplorer/runconfiguration.h>
 #include <projectexplorer/runconfigurationaspects.h>
 
@@ -39,7 +40,8 @@ class BaseStringListAspect : public ProjectExplorer::ProjectConfigurationAspect
     Q_OBJECT
 
 public:
-    explicit BaseStringListAspect(const QString &settingsKey = QString(),
+    explicit BaseStringListAspect(ProjectExplorer::ProjectConfiguration *parent,
+                                  const QString &settingsKey = QString(),
                                   Core::Id id = Core::Id());
     ~BaseStringListAspect() override;
 
@@ -67,6 +69,14 @@ class ANDROID_EXPORT AndroidRunConfiguration : public ProjectExplorer::RunConfig
     Q_OBJECT
 public:
     explicit AndroidRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
+
+private:
+    ProjectExplorer::EnvironmentAspect m_envAspect;
+    ProjectExplorer::ArgumentsAspect m_argumentsAspect;
+    ProjectExplorer::BaseStringAspect m_amStartArgsAspect;
+    ProjectExplorer::BaseStringAspect m_warning;
+    BaseStringListAspect m_preStartShellCmdAspect;
+    BaseStringListAspect m_postStartShellCmdAspect;
 };
 
 } // namespace Android

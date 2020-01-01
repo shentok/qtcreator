@@ -29,7 +29,6 @@
 #include <projectexplorer/buildsystem.h>
 #include <projectexplorer/buildtargetinfo.h>
 #include <projectexplorer/project.h>
-#include <projectexplorer/runconfigurationaspects.h>
 #include <projectexplorer/target.h>
 
 using namespace ProjectExplorer;
@@ -42,17 +41,16 @@ namespace Internal {
 
 BareMetalRunConfiguration::BareMetalRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
+    , m_exeAspect(this)
+    , m_argumentsAspect(this)
+    , m_workingDirectoryAspect(this)
 {
-    const auto exeAspect = m_aspects.addAspect<ExecutableAspect>();
-    exeAspect->setDisplayStyle(BaseStringAspect::LabelDisplay);
-    exeAspect->setPlaceHolderText(tr("Unknown"));
+    m_exeAspect.setDisplayStyle(BaseStringAspect::LabelDisplay);
+    m_exeAspect.setPlaceHolderText(tr("Unknown"));
 
-    m_aspects.addAspect<ArgumentsAspect>();
-    m_aspects.addAspect<WorkingDirectoryAspect>();
-
-    setUpdater([this, exeAspect] {
+    setUpdater([this] {
         const BuildTargetInfo bti = buildTargetInfo();
-        exeAspect->setExecutable(bti.targetFilePath);
+        m_exeAspect.setExecutable(bti.targetFilePath);
     });
 
     connect(target, &Target::buildSystemUpdated, this, &RunConfiguration::update);

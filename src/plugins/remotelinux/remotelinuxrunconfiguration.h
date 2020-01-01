@@ -27,9 +27,17 @@
 
 #include "remotelinux_export.h"
 
+#include "remotelinuxenvironmentaspect.h"
+
 #include <projectexplorer/runconfiguration.h>
+#include <projectexplorer/runconfigurationaspects.h>
+
+#include <memory>
 
 namespace RemoteLinux {
+
+class X11ForwardingAspect;
+
 namespace Internal {
 
 class RemoteLinuxRunConfiguration final : public ProjectExplorer::RunConfiguration
@@ -38,9 +46,18 @@ class RemoteLinuxRunConfiguration final : public ProjectExplorer::RunConfigurati
 
 public:
     RemoteLinuxRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
+    ~RemoteLinuxRunConfiguration() override;
 
 private:
     ProjectExplorer::Runnable runnable() const override;
+
+    RemoteLinuxEnvironmentAspect m_envAspect;
+    ProjectExplorer::ExecutableAspect m_exeAspect;
+    ProjectExplorer::ArgumentsAspect m_argumentsAspect;
+    ProjectExplorer::WorkingDirectoryAspect m_workingDirectoryAspect;
+    ProjectExplorer::SymbolFileAspect m_symbolsAspect;
+    std::unique_ptr<ProjectExplorer::TerminalAspect> m_terminalAspect;
+    std::unique_ptr<X11ForwardingAspect> m_forwardingAspect;
 };
 
 class RemoteLinuxRunConfigurationFactory final : public ProjectExplorer::RunConfigurationFactory

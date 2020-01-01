@@ -36,7 +36,6 @@
 #include <projectexplorer/kitinformation.h>
 #include <projectexplorer/project.h>
 #include <projectexplorer/projectnodes.h>
-#include <projectexplorer/runconfigurationaspects.h>
 #include <projectexplorer/target.h>
 
 #include <utils/algorithm.h>
@@ -104,25 +103,25 @@ public:
 
 IosRunConfiguration::IosRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
+    , m_executableAspect(this)
+    , m_argumentsAspect(this)
+    , m_deviceTypeAspect(new IosDeviceTypeAspect(this))
 {
-    auto executableAspect = m_aspects.addAspect<ExecutableAspect>();
-    executableAspect->setDisplayStyle(BaseStringAspect::LabelDisplay);
+    m_executableAspect.setDisplayStyle(BaseStringAspect::LabelDisplay);
 
-    m_aspects.addAspect<ArgumentsAspect>();
-
-    m_deviceTypeAspect = m_aspects.addAspect<IosDeviceTypeAspect>(this);
-
-    setUpdater([this, target, executableAspect] {
+    setUpdater([this, target] {
         IDevice::ConstPtr dev = DeviceKitAspect::device(target->kit());
         const QString devName = dev.isNull() ? IosDevice::name() : dev->displayName();
         setDefaultDisplayName(tr("Run on %1").arg(devName));
         setDisplayName(tr("Run %1 on %2").arg(applicationName()).arg(devName));
 
-        executableAspect->setExecutable(localExecutable());
+        m_executableAspect.setExecutable(localExecutable());
 
         m_deviceTypeAspect->updateDeviceType();
     });
 }
+
+IosRunConfiguration::~IosRunConfiguration() = default;
 
 void IosDeviceTypeAspect::deviceChanges()
 {
@@ -304,7 +303,8 @@ void IosDeviceTypeAspect::setDeviceType(const IosDeviceType &deviceType)
 }
 
 IosDeviceTypeAspect::IosDeviceTypeAspect(IosRunConfiguration *runConfiguration)
-    : m_runConfiguration(runConfiguration)
+    : ProjectConfigurationAspect(runConfiguration)
+    , m_runConfiguration(runConfiguration)
 {
     connect(DeviceManager::instance(), &DeviceManager::updated,
             this, &IosDeviceTypeAspect::deviceChanges);

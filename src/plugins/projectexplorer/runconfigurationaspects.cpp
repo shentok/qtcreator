@@ -53,7 +53,8 @@ namespace ProjectExplorer {
     \class ProjectExplorer::TerminalAspect
 */
 
-TerminalAspect::TerminalAspect()
+TerminalAspect::TerminalAspect(ProjectConfiguration *parent)
+    : ProjectConfigurationAspect(parent)
 {
     setDisplayName(tr("Terminal"));
     setId("TerminalAspect");
@@ -133,7 +134,8 @@ bool TerminalAspect::isUserSet() const
     \class ProjectExplorer::WorkingDirectoryAspect
 */
 
-WorkingDirectoryAspect::WorkingDirectoryAspect()
+WorkingDirectoryAspect::WorkingDirectoryAspect(ProjectConfiguration *parent)
+    : ProjectConfigurationAspect(parent)
 {
     setDisplayName(tr("Working Directory"));
     setId("WorkingDirectoryAspect");
@@ -253,7 +255,8 @@ PathChooser *WorkingDirectoryAspect::pathChooser() const
     \class ProjectExplorer::ArgumentsAspect
 */
 
-ArgumentsAspect::ArgumentsAspect()
+ArgumentsAspect::ArgumentsAspect(ProjectConfiguration *parent)
+    : ProjectConfigurationAspect(parent)
 {
     setDisplayName(tr("Arguments"));
     setId("ArgumentsAspect");
@@ -377,7 +380,9 @@ void ArgumentsAspect::addToLayout(LayoutBuilder &builder)
     \class ProjectExplorer::ExecutableAspect
 */
 
-ExecutableAspect::ExecutableAspect()
+ExecutableAspect::ExecutableAspect(ProjectConfiguration *parent)
+    : ProjectConfigurationAspect(parent)
+    , m_executable(0)
 {
     setDisplayName(tr("Executable"));
     setId("ExecutableAspect");
@@ -432,7 +437,7 @@ void ExecutableAspect::setDisplayStyle(BaseStringAspect::DisplayStyle style)
 void ExecutableAspect::makeOverridable(const QString &overridingKey, const QString &useOverridableKey)
 {
     QTC_ASSERT(!m_alternativeExecutable, return);
-    m_alternativeExecutable = new BaseStringAspect;
+    m_alternativeExecutable = new BaseStringAspect(0);
     m_alternativeExecutable->setDisplayStyle(BaseStringAspect::LineEditDisplay);
     m_alternativeExecutable->setLabelText(tr("Alternate executable on device:"));
     m_alternativeExecutable->setSettingsKey(overridingKey);
@@ -498,7 +503,8 @@ void ExecutableAspect::toMap(QVariantMap &map) const
     \class ProjectExplorer::UseLibraryPathsAspect
 */
 
-UseLibraryPathsAspect::UseLibraryPathsAspect()
+UseLibraryPathsAspect::UseLibraryPathsAspect(ProjectConfiguration *parent)
+    : BaseBoolAspect(parent)
 {
     setId("UseLibraryPath");
     setSettingsKey("RunConfiguration.UseLibrarySearchPath");
@@ -518,12 +524,18 @@ UseLibraryPathsAspect::UseLibraryPathsAspect()
     \class ProjectExplorer::UseDyldSuffixAspect
 */
 
-UseDyldSuffixAspect::UseDyldSuffixAspect()
+UseDyldSuffixAspect::UseDyldSuffixAspect(ProjectConfiguration *parent)
+    : BaseBoolAspect(parent)
 {
     setId("UseDyldSuffix");
     setSettingsKey("RunConfiguration.UseDyldImageSuffix");
     setLabel(tr("Use debug version of frameworks (DYLD_IMAGE_SUFFIX=_debug):"),
              LabelPlacement::InExtraLabel);
+}
+
+SymbolFileAspect::SymbolFileAspect(ProjectConfiguration *parent)
+    : BaseStringAspect(parent)
+{
 }
 
 } // namespace ProjectExplorer

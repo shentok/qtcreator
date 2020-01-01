@@ -25,11 +25,18 @@
 
 #pragma once
 
+#include <projectexplorer/localenvironmentaspect.h>
 #include <projectexplorer/runconfiguration.h>
+#include <projectexplorer/runconfigurationaspects.h>
 #include <projectexplorer/runcontrol.h>
+
+#include <memory>
 
 namespace Python {
 namespace Internal {
+
+class InterpreterAspect;
+class MainScriptAspect;
 
 class PythonRunConfiguration : public ProjectExplorer::RunConfiguration
 {
@@ -42,6 +49,7 @@ class PythonRunConfiguration : public ProjectExplorer::RunConfiguration
 
 public:
     PythonRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
+    ~PythonRunConfiguration() override;
     QString interpreter() const;
 
 private:
@@ -50,6 +58,13 @@ private:
     bool supportsDebugger() const;
     QString mainScript() const;
     QString arguments() const;
+
+    std::unique_ptr<InterpreterAspect> m_interpreterAspect;
+    std::unique_ptr<MainScriptAspect> m_scriptAspect;
+    ProjectExplorer::LocalEnvironmentAspect m_envAspect;
+    ProjectExplorer::ArgumentsAspect m_argumentsAspect;
+    ProjectExplorer::WorkingDirectoryAspect m_workingDirectoryAspect;
+    ProjectExplorer::TerminalAspect m_terminalAspect;
 };
 
 class PythonRunConfigurationFactory : public ProjectExplorer::RunConfigurationFactory

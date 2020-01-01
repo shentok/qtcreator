@@ -40,7 +40,8 @@ using namespace ProjectExplorer;
 
 namespace QtSupport {
 
-QmlDebuggingAspect::QmlDebuggingAspect()
+QmlDebuggingAspect::QmlDebuggingAspect(ProjectConfiguration *parent)
+    : ProjectExplorer::BaseTriStateAspect(parent)
 {
     setSettingsKey("EnableQmlDebugging");
     setDisplayName(tr("QML debugging and profiling:"));
@@ -76,7 +77,8 @@ void QmlDebuggingAspect::addToLayout(LayoutBuilder &builder)
     changeHandler();
 }
 
-QtQuickCompilerAspect::QtQuickCompilerAspect()
+QtQuickCompilerAspect::QtQuickCompilerAspect(ProjectExplorer::ProjectConfiguration *parent)
+    : ProjectExplorer::BaseTriStateAspect(parent)
 {
     setSettingsKey("QtQuickCompiler");
     setDisplayName(tr("Qt Quick Compiler:"));

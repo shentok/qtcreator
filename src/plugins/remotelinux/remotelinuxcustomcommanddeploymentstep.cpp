@@ -26,26 +26,24 @@
 #include "remotelinuxcustomcommanddeploymentstep.h"
 #include "remotelinuxcustomcommanddeployservice.h"
 
-#include <projectexplorer/runconfigurationaspects.h>
-
 using namespace ProjectExplorer;
 
 namespace RemoteLinux {
 
 RemoteLinuxCustomCommandDeploymentStep::RemoteLinuxCustomCommandDeploymentStep(BuildStepList *bsl)
     : AbstractRemoteLinuxDeployStep(bsl, stepId())
+    , m_commandLineAspect(this)
 {
     auto service = createDeployService<RemoteLinuxCustomCommandDeployService>();
 
-    auto commandLine = m_aspects.addAspect<BaseStringAspect>();
-    commandLine->setSettingsKey("RemoteLinuxCustomCommandDeploymentStep.CommandLine");
-    commandLine->setLabelText(tr("Command line:"));
-    commandLine->setDisplayStyle(BaseStringAspect::LineEditDisplay);
+    m_commandLineAspect.setSettingsKey("RemoteLinuxCustomCommandDeploymentStep.CommandLine");
+    m_commandLineAspect.setLabelText(tr("Command line:"));
+    m_commandLineAspect.setDisplayStyle(BaseStringAspect::LineEditDisplay);
 
     setDefaultDisplayName(displayName());
 
-    setInternalInitializer([service, commandLine] {
-        service->setCommandLine(commandLine->value().trimmed());
+    setInternalInitializer([this, service] {
+        service->setCommandLine(m_commandLineAspect.value().trimmed());
         return service->isDeploymentPossible();
     });
 }

@@ -41,7 +41,9 @@ static bool displayAlreadySet(const Utils::EnvironmentItems &changes)
     });
 }
 
-RemoteLinuxEnvironmentAspect::RemoteLinuxEnvironmentAspect(ProjectExplorer::Target *target)
+RemoteLinuxEnvironmentAspect::RemoteLinuxEnvironmentAspect(ProjectExplorer::ProjectConfiguration *parent,
+                                                           ProjectExplorer::Target *target)
+    : ProjectExplorer::EnvironmentAspect(parent)
 {
     addSupportedBaseEnvironment(tr("Clean Environment"), {});
     addPreferredBaseEnvironment(tr("System Environment"), [this] { return m_remoteEnvironment; });

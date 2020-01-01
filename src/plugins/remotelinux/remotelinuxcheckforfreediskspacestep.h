@@ -27,6 +27,8 @@
 
 #include "abstractremotelinuxdeploystep.h"
 
+#include <projectexplorer/projectconfigurationaspects.h>
+
 namespace RemoteLinux {
 
 class REMOTELINUX_EXPORT RemoteLinuxCheckForFreeDiskSpaceStep : public AbstractRemoteLinuxDeployStep
@@ -39,6 +41,10 @@ public:
 
     static Core::Id stepId();
     static QString displayName();
+
+private:
+    ProjectExplorer::BaseStringAspect m_pathToCheckAspect;
+    ProjectExplorer::BaseIntegerAspect m_requiredSpaceAspect;
 };
 
 } // namespace RemoteLinux

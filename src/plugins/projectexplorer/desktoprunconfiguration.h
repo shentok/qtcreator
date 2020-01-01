@@ -28,6 +28,11 @@
 #include "runconfigurationaspects.h"
 #include "runcontrol.h"
 
+#include "localenvironmentaspect.h"
+#include "runconfigurationaspects.h"
+
+#include <memory>
+
 namespace ProjectExplorer {
 namespace Internal {
 
@@ -44,6 +49,14 @@ private:
     void updateTargetInformation();
 
     Utils::FilePath executableToRun(const BuildTargetInfo &targetInfo) const;
+
+    LocalEnvironmentAspect m_envAspect;
+    ExecutableAspect m_executableAspect;
+    ArgumentsAspect m_argumentsAspect;
+    WorkingDirectoryAspect m_workingDirectoryAspect;
+    TerminalAspect m_terminalAspect;
+    UseLibraryPathsAspect m_libAspect;
+    std::unique_ptr<UseDyldSuffixAspect> m_dyldAspect;
 
     const Kind m_kind;
 };

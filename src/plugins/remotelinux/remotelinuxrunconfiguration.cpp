@@ -27,14 +27,12 @@
 
 #include "remotelinux_constants.h"
 #include "remotelinuxx11forwardingaspect.h"
-#include "remotelinuxenvironmentaspect.h"
 
 #include <projectexplorer/buildsystem.h>
 #include <projectexplorer/buildtargetinfo.h>
 #include <projectexplorer/deploymentdata.h>
 #include <projectexplorer/kitinformation.h>
 #include <projectexplorer/project.h>
-#include <projectexplorer/runconfigurationaspects.h>
 #include <projectexplorer/runcontrol.h>
 #include <projectexplorer/target.h>
 
@@ -48,46 +46,49 @@ namespace Internal {
 
 RemoteLinuxRunConfiguration::RemoteLinuxRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
+    , m_envAspect(this, target)
+    , m_exeAspect(this)
+    , m_argumentsAspect(this)
+    , m_workingDirectoryAspect(this)
+    , m_symbolsAspect(this)
+    , m_terminalAspect()
+    , m_forwardingAspect()
 {
-    auto exeAspect = m_aspects.addAspect<ExecutableAspect>();
-    exeAspect->setLabelText(tr("Executable on device:"));
-    exeAspect->setExecutablePathStyle(OsTypeLinux);
-    exeAspect->setPlaceHolderText(tr("Remote path not set"));
-    exeAspect->makeOverridable("RemoteLinux.RunConfig.AlternateRemoteExecutable",
+    m_exeAspect.setLabelText(tr("Executable on device:"));
+    m_exeAspect.setExecutablePathStyle(OsTypeLinux);
+    m_exeAspect.setPlaceHolderText(tr("Remote path not set"));
+    m_exeAspect.makeOverridable("RemoteLinux.RunConfig.AlternateRemoteExecutable",
                                "RemoteLinux.RunConfig.UseAlternateRemoteExecutable");
-    exeAspect->setHistoryCompleter("RemoteLinux.AlternateExecutable.History");
+    m_exeAspect.setHistoryCompleter("RemoteLinux.AlternateExecutable.History");
 
-    auto symbolsAspect = m_aspects.addAspect<SymbolFileAspect>();
-    symbolsAspect->setLabelText(tr("Executable on host:"));
-    symbolsAspect->setDisplayStyle(SymbolFileAspect::LabelDisplay);
+    m_symbolsAspect.setLabelText(tr("Executable on host:"));
+    m_symbolsAspect.setDisplayStyle(SymbolFileAspect::LabelDisplay);
 
-    m_aspects.addAspect<ArgumentsAspect>();
-    m_aspects.addAspect<WorkingDirectoryAspect>();
     if (HostOsInfo::isAnyUnixHost())
-        m_aspects.addAspect<TerminalAspect>();
-    m_aspects.addAspect<RemoteLinuxEnvironmentAspect>(target);
+        m_terminalAspect.reset(new TerminalAspect(this));
     if (HostOsInfo::isAnyUnixHost())
-        m_aspects.addAspect<X11ForwardingAspect>();
+        m_forwardingAspect.reset(new X11ForwardingAspect(this));
 
-    setUpdater([this, target, exeAspect, symbolsAspect] {
+    setUpdater([this, target] {
         BuildTargetInfo bti = buildTargetInfo();
         const FilePath localExecutable = bti.targetFilePath;
         DeployableFile depFile = target->deploymentData().deployableForLocalFile(localExecutable);
 
-        exeAspect->setExecutable(FilePath::fromString(depFile.remoteFilePath()));
-        symbolsAspect->setFilePath(localExecutable);
+        m_exeAspect.setExecutable(FilePath::fromString(depFile.remoteFilePath()));
+        m_symbolsAspect.setFilePath(localExecutable);
     });
 
     connect(target, &Target::buildSystemUpdated, this, &RunConfiguration::update);
     connect(target, &Target::kitChanged, this, &RunConfiguration::update);
 }
 
+RemoteLinuxRunConfiguration::~RemoteLinuxRunConfiguration() = default;
+
 Runnable RemoteLinuxRunConfiguration::runnable() const
 {
     Runnable r = RunConfiguration::runnable();
-    const auto * const forwardingAspect = aspect<X11ForwardingAspect>();
-    if (forwardingAspect)
-        r.extraData.insert("Ssh.X11ForwardToDisplay", forwardingAspect->display(macroExpander()));
+    if (m_forwardingAspect)
+        r.extraData.insert("Ssh.X11ForwardToDisplay", m_forwardingAspect->display(macroExpander()));
     return r;
 }
 

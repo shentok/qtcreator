@@ -34,7 +34,8 @@ namespace RemoteLinux {
 
 static QString defaultDisplay() { return QLatin1String(qgetenv("DISPLAY")); }
 
-X11ForwardingAspect::X11ForwardingAspect()
+X11ForwardingAspect::X11ForwardingAspect(ProjectExplorer::ProjectConfiguration *parent)
+    : ProjectExplorer::BaseStringAspect(parent)
 {
     setDisplayName(tr("X11 Forwarding"));
     setDisplayStyle(LineEditDisplay);

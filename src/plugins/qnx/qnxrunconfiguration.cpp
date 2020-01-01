@@ -44,38 +44,42 @@ using namespace Utils;
 namespace Qnx {
 namespace Internal {
 
+QtLibPathAspect::QtLibPathAspect(ProjectConfiguration *parent)
+    : ProjectExplorer::BaseStringAspect(parent)
+{
+}
+
 QnxRunConfiguration::QnxRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
+    , m_envAspect(this, target)
+    , m_exeAspect(this)
+    , m_argumentsAspect(this)
+    , m_workingDirectoryAspect(this)
+    , m_symbolsAspect(this)
+    , m_terminalAspect(this)
+    , m_libAspect(this)
 {
-    auto exeAspect = m_aspects.addAspect<ExecutableAspect>();
-    exeAspect->setLabelText(tr("Executable on device:"));
-    exeAspect->setExecutablePathStyle(OsTypeLinux);
-    exeAspect->setPlaceHolderText(tr("Remote path not set"));
-    exeAspect->makeOverridable("RemoteLinux.RunConfig.AlternateRemoteExecutable",
+    m_exeAspect.setLabelText(tr("Executable on device:"));
+    m_exeAspect.setExecutablePathStyle(OsTypeLinux);
+    m_exeAspect.setPlaceHolderText(tr("Remote path not set"));
+    m_exeAspect.makeOverridable("RemoteLinux.RunConfig.AlternateRemoteExecutable",
                                "RemoteLinux.RunConfig.UseAlternateRemoteExecutable");
-    exeAspect->setHistoryCompleter("RemoteLinux.AlternateExecutable.History");
+    m_exeAspect.setHistoryCompleter("RemoteLinux.AlternateExecutable.History");
 
-    auto symbolsAspect = m_aspects.addAspect<SymbolFileAspect>();
-    symbolsAspect->setLabelText(tr("Executable on host:"));
-    symbolsAspect->setDisplayStyle(SymbolFileAspect::LabelDisplay);
+    m_symbolsAspect.setLabelText(tr("Executable on host:"));
+    m_symbolsAspect.setDisplayStyle(SymbolFileAspect::LabelDisplay);
 
-    m_aspects.addAspect<ArgumentsAspect>();
-    m_aspects.addAspect<WorkingDirectoryAspect>();
-    m_aspects.addAspect<TerminalAspect>();
-    m_aspects.addAspect<RemoteLinuxEnvironmentAspect>(target);
+    m_libAspect.setSettingsKey("Qt4ProjectManager.QnxRunConfiguration.QtLibPath");
+    m_libAspect.setLabelText(tr("Path to Qt libraries on device"));
+    m_libAspect.setDisplayStyle(BaseStringAspect::LineEditDisplay);
 
-    auto libAspect = m_aspects.addAspect<QtLibPathAspect>();
-    libAspect->setSettingsKey("Qt4ProjectManager.QnxRunConfiguration.QtLibPath");
-    libAspect->setLabelText(tr("Path to Qt libraries on device"));
-    libAspect->setDisplayStyle(BaseStringAspect::LineEditDisplay);
-
-    setUpdater([this, target, exeAspect, symbolsAspect] {
+    setUpdater([this, target] {
         const BuildTargetInfo bti = buildTargetInfo();
         const FilePath localExecutable = bti.targetFilePath;
         const DeployableFile depFile = target->deploymentData()
             .deployableForLocalFile(localExecutable);
-        exeAspect->setExecutable(FilePath::fromString(depFile.remoteFilePath()));
-        symbolsAspect->setFilePath(localExecutable);
+        m_exeAspect.setExecutable(FilePath::fromString(depFile.remoteFilePath()));
+        m_symbolsAspect.setFilePath(localExecutable);
     });
 
     connect(target, &Target::buildSystemUpdated, this, &RunConfiguration::update);
@@ -84,7 +88,7 @@ QnxRunConfiguration::QnxRunConfiguration(Target *target, Core::Id id)
 Runnable QnxRunConfiguration::runnable() const
 {
     Runnable r = RunConfiguration::runnable();
-    QString libPath = aspect<QtLibPathAspect>()->value();
+    QString libPath = m_libAspect.value();
     if (!libPath.isEmpty()) {
         r.environment.appendOrSet("LD_LIBRARY_PATH", libPath + "/lib:$LD_LIBRARY_PATH");
         r.environment.appendOrSet("QML_IMPORT_PATH", libPath + "/imports:$QML_IMPORT_PATH");

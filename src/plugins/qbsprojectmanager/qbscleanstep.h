@@ -44,8 +44,8 @@ public:
     explicit QbsCleanStep(ProjectExplorer::BuildStepList *bsl);
     ~QbsCleanStep() override;
 
-    bool dryRun() const { return m_dryRunAspect->value(); }
-    bool keepGoing() const { return m_keepGoingAspect->value(); }
+    bool dryRun() const { return m_dryRunAspect.value(); }
+    bool keepGoing() const { return m_keepGoingAspect.value(); }
 
 private:
     bool init() override;
@@ -59,8 +59,9 @@ private:
     void createTaskAndOutput(ProjectExplorer::Task::TaskType type,
                              const QString &message, const QString &file, int line);
 
-    ProjectExplorer::BaseBoolAspect *m_dryRunAspect = nullptr;
-    ProjectExplorer::BaseBoolAspect *m_keepGoingAspect = nullptr;
+    ProjectExplorer::BaseBoolAspect m_dryRunAspect;
+    ProjectExplorer::BaseBoolAspect m_keepGoingAspect;
+    ProjectExplorer::BaseStringAspect m_effectiveCommandAspect;
 
     QbsBuildSystem *qbsBuildSystem() const;
 

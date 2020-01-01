@@ -27,6 +27,8 @@
 
 #include "abstractremotelinuxdeploystep.h"
 
+#include <projectexplorer/projectconfigurationaspects.h>
+
 namespace RemoteLinux {
 
 class REMOTELINUX_EXPORT RemoteLinuxCustomCommandDeploymentStep
@@ -40,6 +42,9 @@ public:
 
     static Core::Id stepId();
     static QString displayName();
+
+private:
+    ProjectExplorer::BaseStringAspect m_commandLineAspect;
 };
 
 } // namespace RemoteLinux

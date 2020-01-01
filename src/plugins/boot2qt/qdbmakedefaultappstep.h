@@ -27,6 +27,8 @@
 
 #include <remotelinux/abstractremotelinuxdeploystep.h>
 
+#include <projectexplorer/projectconfigurationaspects.h>
+
 namespace Qdb {
 namespace Internal {
 
@@ -39,6 +41,9 @@ public:
 
     static Core::Id stepId();
     static QString stepDisplayName();
+
+private:
+    ProjectExplorer::BaseSelectionAspect m_selection;
 };
 
 } // namespace Internal

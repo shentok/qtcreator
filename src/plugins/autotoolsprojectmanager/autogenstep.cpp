@@ -54,18 +54,19 @@ AutogenStepFactory::AutogenStepFactory()
 
 // AutogenStep
 
-AutogenStep::AutogenStep(BuildStepList *bsl) : AbstractProcessStep(bsl, Constants::AUTOGEN_STEP_ID)
+AutogenStep::AutogenStep(BuildStepList *bsl)
+    : AbstractProcessStep(bsl, Constants::AUTOGEN_STEP_ID)
+    , m_additionalArgumentsAspect(this)
 {
     setDefaultDisplayName(tr("Autogen"));
 
-    m_additionalArgumentsAspect = m_aspects.addAspect<BaseStringAspect>();
-    m_additionalArgumentsAspect->setSettingsKey(
+    m_additionalArgumentsAspect.setSettingsKey(
                 "AutotoolsProjectManager.AutogenStep.AdditionalArguments");
-    m_additionalArgumentsAspect->setLabelText(tr("Arguments:"));
-    m_additionalArgumentsAspect->setDisplayStyle(BaseStringAspect::LineEditDisplay);
-    m_additionalArgumentsAspect->setHistoryCompleter("AutotoolsPM.History.AutogenStepArgs");
+    m_additionalArgumentsAspect.setLabelText(tr("Arguments:"));
+    m_additionalArgumentsAspect.setDisplayStyle(BaseStringAspect::LineEditDisplay);
+    m_additionalArgumentsAspect.setHistoryCompleter("AutotoolsPM.History.AutogenStepArgs");
 
-    connect(m_additionalArgumentsAspect, &ProjectConfigurationAspect::changed, this, [this] {
+    connect(&m_additionalArgumentsAspect, &ProjectConfigurationAspect::changed, this, [this] {
         m_runAutogen = true;
     });
 
@@ -77,7 +78,7 @@ AutogenStep::AutogenStep(BuildStepList *bsl) : AbstractProcessStep(bsl, Constant
         param.setEnvironment(bc->environment());
         param.setWorkingDirectory(bc->target()->project()->projectDirectory());
         param.setCommandLine({FilePath::fromString("./autogen.sh"),
-                              m_additionalArgumentsAspect->value(),
+                              m_additionalArgumentsAspect.value(),
                               CommandLine::Raw});
 
         return param.summary(displayName());
@@ -93,7 +94,7 @@ bool AutogenStep::init()
     pp->setEnvironment(bc->environment());
     pp->setWorkingDirectory(bc->target()->project()->projectDirectory());
     pp->setCommandLine({FilePath::fromString("./autogen.sh"),
-                        m_additionalArgumentsAspect->value(),
+                        m_additionalArgumentsAspect.value(),
                         CommandLine::Raw});
 
     return AbstractProcessStep::init();

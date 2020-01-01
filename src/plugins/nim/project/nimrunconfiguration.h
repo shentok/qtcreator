@@ -25,7 +25,9 @@
 
 #pragma once
 
+#include <projectexplorer/localenvironmentaspect.h>
 #include <projectexplorer/runconfiguration.h>
+#include <projectexplorer/runconfigurationaspects.h>
 
 namespace Nim {
 
@@ -35,6 +37,13 @@ class NimRunConfiguration : public ProjectExplorer::RunConfiguration
 
 public:
     NimRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
+
+private:
+    ProjectExplorer::LocalEnvironmentAspect m_envAspect;
+    ProjectExplorer::ExecutableAspect m_exeAspect;
+    ProjectExplorer::ArgumentsAspect m_argumentsAspect;
+    ProjectExplorer::WorkingDirectoryAspect m_workingDirectoryAspect;
+    ProjectExplorer::TerminalAspect m_terminalAspect;
 };
 
 class NimRunConfigurationFactory : public ProjectExplorer::FixedRunConfigurationFactory

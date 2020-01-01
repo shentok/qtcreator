@@ -27,7 +27,8 @@
 
 #include "projectexplorer_global.h"
 
-#include "projectexplorer/runconfigurationaspects.h"
+#include "localenvironmentaspect.h"
+#include "runconfigurationaspects.h"
 
 namespace ProjectExplorer {
 
@@ -42,6 +43,12 @@ public:
     QString defaultDisplayName() const;
 
 private:
+    LocalEnvironmentAspect m_envAspect;
+    ExecutableAspect m_exeAspect;
+    ArgumentsAspect m_argumentsAspect;
+    WorkingDirectoryAspect m_workingDirectoryAspect;
+    TerminalAspect m_terminalAspect;
+
     Runnable runnable() const override;
     bool isEnabled() const override;
     Tasks checkForIssues() const override;

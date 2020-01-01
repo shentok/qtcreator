@@ -27,8 +27,6 @@
 
 #include "qdbmakedefaultappservice.h"
 
-#include <projectexplorer/runconfigurationaspects.h>
-
 using namespace ProjectExplorer;
 
 namespace Qdb {
@@ -36,18 +34,18 @@ namespace Internal {
 
 QdbMakeDefaultAppStep::QdbMakeDefaultAppStep(BuildStepList *bsl)
     : AbstractRemoteLinuxDeployStep(bsl, stepId())
+    , m_selection(this)
 {
     setDefaultDisplayName(stepDisplayName());
 
     auto service = createDeployService<QdbMakeDefaultAppService>();
 
-    auto selection = m_aspects.addAspect<BaseSelectionAspect>();
-    selection->setSettingsKey("QdbMakeDefaultDeployStep.MakeDefault");
-    selection->addOption(tr("Set this application to start by default"));
-    selection->addOption(tr("Reset default application"));
+    m_selection.setSettingsKey("QdbMakeDefaultDeployStep.MakeDefault");
+    m_selection.addOption(tr("Set this application to start by default"));
+    m_selection.addOption(tr("Reset default application"));
 
-    setInternalInitializer([service, selection] {
-        service->setMakeDefault(selection->value() == 0);
+    setInternalInitializer([this, service] {
+        service->setMakeDefault(m_selection.value() == 0);
         return service->isDeploymentPossible();
     });
 }

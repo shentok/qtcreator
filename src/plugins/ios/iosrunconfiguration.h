@@ -30,7 +30,10 @@
 #include "iossimulator.h"
 
 #include <projectexplorer/runconfiguration.h>
+#include <projectexplorer/runconfigurationaspects.h>
 #include <utils/fileutils.h>
+
+#include <memory>
 
 namespace Ios {
 namespace Internal {
@@ -43,6 +46,7 @@ class IosRunConfiguration : public ProjectExplorer::RunConfiguration
 
 public:
     IosRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
+    ~IosRunConfiguration() override;
 
     QString applicationName() const;
     Utils::FilePath bundleDirectory() const;
@@ -53,7 +57,9 @@ public:
 private:
     bool isEnabled() const final;
 
-    IosDeviceTypeAspect *m_deviceTypeAspect = nullptr;
+    ProjectExplorer::ExecutableAspect m_executableAspect;
+    ProjectExplorer::ArgumentsAspect m_argumentsAspect;
+    std::unique_ptr<IosDeviceTypeAspect> m_deviceTypeAspect;
 };
 
 class IosRunConfigurationFactory : public ProjectExplorer::RunConfigurationFactory

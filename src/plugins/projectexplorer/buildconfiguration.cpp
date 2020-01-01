@@ -72,14 +72,15 @@ class BuildConfigurationPrivate
 public:
     BuildConfigurationPrivate(BuildConfiguration *bc)
         : m_buildSteps(bc, Constants::BUILDSTEPS_BUILD),
-          m_cleanSteps(bc, Constants::BUILDSTEPS_CLEAN)
+          m_cleanSteps(bc, Constants::BUILDSTEPS_CLEAN),
+          m_buildDirectoryAspect(new BuildDirectoryAspect(bc))
     {}
 
     bool m_clearSystemEnvironment = false;
     Utils::EnvironmentItems m_userEnvironmentChanges;
     BuildStepList m_buildSteps;
     BuildStepList m_cleanSteps;
-    BuildDirectoryAspect *m_buildDirectoryAspect = nullptr;
+    BuildDirectoryAspect *const m_buildDirectoryAspect;
     Utils::FilePath m_lastEmittedBuildDirectory;
     mutable Utils::Environment m_cachedEnvironment;
     QString m_configWidgetDisplayName;
@@ -123,7 +124,6 @@ BuildConfiguration::BuildConfiguration(Target *target, Core::Id id)
     connect(ProjectTree::instance(), &ProjectTree::currentProjectChanged,
             this, &BuildConfiguration::updateCacheAndEmitEnvironmentChanged);
 
-    d->m_buildDirectoryAspect = m_aspects.addAspect<BuildDirectoryAspect>();
     d->m_buildDirectoryAspect->setBaseFileName(target->project()->projectDirectory());
     d->m_buildDirectoryAspect->setEnvironment(environment());
     d->m_buildDirectoryAspect->setMacroExpanderProvider([this] { return macroExpander(); });

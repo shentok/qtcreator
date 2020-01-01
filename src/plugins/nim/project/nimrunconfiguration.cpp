@@ -29,8 +29,6 @@
 #include "../nimconstants.h"
 
 #include <projectexplorer/buildsystem.h>
-#include <projectexplorer/localenvironmentaspect.h>
-#include <projectexplorer/runconfigurationaspects.h>
 #include <projectexplorer/runcontrol.h>
 
 #include <QDir>
@@ -43,13 +41,12 @@ namespace Nim {
 
 NimRunConfiguration::NimRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
+    , m_envAspect(this, target)
+    , m_exeAspect(this)
+    , m_argumentsAspect(this)
+    , m_workingDirectoryAspect(this)
+    , m_terminalAspect(this)
 {
-    m_aspects.addAspect<LocalEnvironmentAspect>(target);
-    m_aspects.addAspect<ExecutableAspect>();
-    m_aspects.addAspect<ArgumentsAspect>();
-    m_aspects.addAspect<WorkingDirectoryAspect>();
-    m_aspects.addAspect<TerminalAspect>();
-
     setDisplayName(tr("Current Build Target"));
     setDefaultDisplayName(tr("Current Build Target"));
 
@@ -57,9 +54,9 @@ NimRunConfiguration::NimRunConfiguration(Target *target, Core::Id id)
         auto buildConfiguration = qobject_cast<NimBuildConfiguration *>(activeBuildConfiguration());
         QTC_ASSERT(buildConfiguration, return);
         const QFileInfo outFileInfo = buildConfiguration->outFilePath().toFileInfo();
-        aspect<ExecutableAspect>()->setExecutable(FilePath::fromString(outFileInfo.absoluteFilePath()));
+        m_exeAspect.setExecutable(FilePath::fromString(outFileInfo.absoluteFilePath()));
         const QString workingDirectory = outFileInfo.absoluteDir().absolutePath();
-        aspect<WorkingDirectoryAspect>()->setDefaultWorkingDirectory(FilePath::fromString(workingDirectory));
+        m_workingDirectoryAspect.setDefaultWorkingDirectory(FilePath::fromString(workingDirectory));
     });
 
     // Connect target signals
