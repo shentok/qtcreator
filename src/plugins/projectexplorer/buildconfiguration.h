@@ -119,9 +119,6 @@ signals:
     void enabledChanged();
     void buildTypeChanged();
 
-protected:
-    void setInitializer(const std::function<void(const BuildInfo &info)> &initializer);
-
 private:
     void emitBuildDirectoryChanged();
     Internal::BuildConfigurationPrivate *d = nullptr;
@@ -177,10 +174,13 @@ protected:
         m_buildConfigId = buildConfigId;
     }
 
+    void setInitializer(const std::function<void(const BuildInfo &info)> &initializer);
+
 private:
     bool canHandle(const ProjectExplorer::Target *t) const;
 
     BuildConfigurationCreator m_creator;
+    std::function<void(const BuildInfo &)> m_initializer;
     Core::Id m_buildConfigId;
     Core::Id m_supportedProjectType;
     QList<Core::Id> m_supportedTargetDeviceTypes;
