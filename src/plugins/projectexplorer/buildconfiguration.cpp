@@ -88,6 +88,7 @@ public:
 
     // FIXME: Remove.
     BuildConfiguration::BuildType m_initialBuildType = BuildConfiguration::Unknown;
+    std::function<void(const BuildInfo &)> m_initializer;
 };
 
 } // Internal
@@ -181,9 +182,9 @@ void BuildConfiguration::addConfigWidgets(const std::function<void(NamedWidget *
         adder(subConfigWidget);
 }
 
-void BuildConfigurationFactory::setInitializer(const std::function<void(const BuildInfo &)> &initializer)
+void BuildConfiguration::setInitializer(const std::function<void(const BuildInfo &)> &initializer)
 {
-    m_initializer = initializer;
+    d->m_initializer = initializer;
 }
 
 NamedWidget *BuildConfiguration::createConfigWidget()
@@ -565,8 +566,8 @@ BuildConfiguration *BuildConfigurationFactory::create(Target *parent, const Buil
 
         bc->acquaintAspects();
 
-        if (m_initializer)
-            m_initializer(info);
+        if (bc->d->m_initializer)
+            bc->d->m_initializer(info);
     }
 
     return bc;
