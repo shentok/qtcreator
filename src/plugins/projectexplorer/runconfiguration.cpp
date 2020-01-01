@@ -327,6 +327,11 @@ ProjectNode *RunConfiguration::productNode() const
     });
 }
 
+ProjectConfigurationAspect *RunConfiguration::aspect(Core::Id id) const
+{
+    return aspects().aspect(id);
+}
+
 bool RunConfiguration::fromMap(const QVariantMap &map)
 {
     if (!ProjectConfiguration::fromMap(map))
