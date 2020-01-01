@@ -194,9 +194,6 @@ public:
 
     const ProjectConfigurationAspects &aspects() const { return m_aspects; }
 
-    ProjectConfigurationAspect *aspect(Core::Id id) const;
-    template <typename T> T *aspect() const { return m_aspects.aspect<T>(); }
-
     void acquaintAspects();
 
 signals:

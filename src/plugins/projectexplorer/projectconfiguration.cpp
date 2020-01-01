@@ -260,11 +260,6 @@ bool ProjectConfiguration::fromMap(const QVariantMap &map)
     return true;
 }
 
-ProjectConfigurationAspect *ProjectConfiguration::aspect(Core::Id id) const
-{
-    return m_aspects.aspect(id);
-}
-
 void ProjectConfiguration::acquaintAspects()
 {
     for (ProjectConfigurationAspect *aspect : m_aspects)
