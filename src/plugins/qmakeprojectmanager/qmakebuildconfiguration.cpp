@@ -174,14 +174,14 @@ QmakeBuildConfiguration::QmakeBuildConfiguration(Target *target, Core::Id id)
     connect(target, &Target::parsingFinished, this, &QmakeBuildConfiguration::updateProblemLabel);
     connect(target, &Target::kitChanged, this, &QmakeBuildConfiguration::updateProblemLabel);
 
-    const auto separateDebugInfoAspect = addAspect<SeparateDebugInfoAspect>();
+    const auto separateDebugInfoAspect = m_aspects.addAspect<SeparateDebugInfoAspect>();
     connect(separateDebugInfoAspect, &SeparateDebugInfoAspect::changed, this, [this] {
         emit separateDebugInfoChanged();
         emit qmakeBuildConfigurationChanged();
         qmakeBuildSystem()->scheduleUpdateAllNowOrLater();
     });
 
-    const auto qmlDebuggingAspect = addAspect<QmlDebuggingAspect>();
+    const auto qmlDebuggingAspect = m_aspects.addAspect<QmlDebuggingAspect>();
     qmlDebuggingAspect->setKit(target->kit());
     connect(qmlDebuggingAspect, &QmlDebuggingAspect::changed, this, [this] {
         emit qmlDebuggingChanged();
@@ -189,7 +189,7 @@ QmakeBuildConfiguration::QmakeBuildConfiguration(Target *target, Core::Id id)
         qmakeBuildSystem()->scheduleUpdateAllNowOrLater();
     });
 
-    const auto qtQuickCompilerAspect = addAspect<QtQuickCompilerAspect>();
+    const auto qtQuickCompilerAspect = m_aspects.addAspect<QtQuickCompilerAspect>();
     qtQuickCompilerAspect->setKit(target->kit());
     connect(qtQuickCompilerAspect, &QtQuickCompilerAspect::changed, this, [this] {
         emit useQtQuickCompilerChanged();

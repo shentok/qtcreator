@@ -107,28 +107,28 @@ void BaseStringListAspect::setLabel(const QString &label)
 AndroidRunConfiguration::AndroidRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
 {
-    auto envAspect = addAspect<EnvironmentAspect>();
+    auto envAspect = m_aspects.addAspect<EnvironmentAspect>();
     envAspect->addSupportedBaseEnvironment(tr("Clean Environment"), {});
 
-    addAspect<ArgumentsAspect>();
+    m_aspects.addAspect<ArgumentsAspect>();
 
-    auto amStartArgsAspect = addAspect<BaseStringAspect>();
+    auto amStartArgsAspect = m_aspects.addAspect<BaseStringAspect>();
     amStartArgsAspect->setId(Constants::ANDROID_AMSTARTARGS);
     amStartArgsAspect->setSettingsKey("Android.AmStartArgsKey");
     amStartArgsAspect->setLabelText(tr("Activity manager start options:"));
     amStartArgsAspect->setDisplayStyle(BaseStringAspect::LineEditDisplay);
     amStartArgsAspect->setHistoryCompleter("Android.AmStartArgs.History");
 
-    auto warning = addAspect<BaseStringAspect>();
+    auto warning = m_aspects.addAspect<BaseStringAspect>();
     warning->setLabelPixmap(Icons::WARNING.pixmap());
     warning->setValue(tr("If the \"am start\" options conflict, the application might not start."));
 
-    auto preStartShellCmdAspect = addAspect<BaseStringListAspect>();
+    auto preStartShellCmdAspect = m_aspects.addAspect<BaseStringListAspect>();
     preStartShellCmdAspect->setId(Constants::ANDROID_PRESTARTSHELLCMDLIST);
     preStartShellCmdAspect->setSettingsKey("Android.PreStartShellCmdListKey");
     preStartShellCmdAspect->setLabel(tr("Shell commands to run on Android device before application launch."));
 
-    auto postStartShellCmdAspect = addAspect<BaseStringListAspect>();
+    auto postStartShellCmdAspect = m_aspects.addAspect<BaseStringListAspect>();
     postStartShellCmdAspect->setId(Constants::ANDROID_POSTFINISHSHELLCMDLIST);
     postStartShellCmdAspect->setSettingsKey("Android.PostStartShellCmdListKey");
     postStartShellCmdAspect->setLabel(tr("Shell commands to run on Android device after application quits."));

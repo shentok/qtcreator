@@ -37,7 +37,7 @@ RemoteLinuxCustomCommandDeploymentStep::RemoteLinuxCustomCommandDeploymentStep(B
 {
     auto service = createDeployService<RemoteLinuxCustomCommandDeployService>();
 
-    auto commandLine = addAspect<BaseStringAspect>();
+    auto commandLine = m_aspects.addAspect<BaseStringAspect>();
     commandLine->setSettingsKey("RemoteLinuxCustomCommandDeploymentStep.CommandLine");
     commandLine->setLabelText(tr("Command line:"));
     commandLine->setDisplayStyle(BaseStringAspect::LineEditDisplay);

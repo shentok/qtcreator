@@ -44,7 +44,7 @@ namespace Internal {
 RemoteLinuxCustomRunConfiguration::RemoteLinuxCustomRunConfiguration(Target *target, Core::Id id)
     : RunConfiguration(target, id)
 {
-    auto exeAspect = addAspect<ExecutableAspect>();
+    auto exeAspect = m_aspects.addAspect<ExecutableAspect>();
     exeAspect->setSettingsKey("RemoteLinux.CustomRunConfig.RemoteExecutable");
     exeAspect->setLabelText(tr("Remote executable:"));
     exeAspect->setExecutablePathStyle(OsTypeLinux);
@@ -52,18 +52,18 @@ RemoteLinuxCustomRunConfiguration::RemoteLinuxCustomRunConfiguration(Target *tar
     exeAspect->setHistoryCompleter("RemoteLinux.CustomExecutable.History");
     exeAspect->setExpectedKind(PathChooser::Any);
 
-    auto symbolsAspect = addAspect<SymbolFileAspect>();
+    auto symbolsAspect = m_aspects.addAspect<SymbolFileAspect>();
     symbolsAspect->setSettingsKey("RemoteLinux.CustomRunConfig.LocalExecutable");
     symbolsAspect->setLabelText(tr("Local executable:"));
     symbolsAspect->setDisplayStyle(SymbolFileAspect::PathChooserDisplay);
 
-    addAspect<ArgumentsAspect>();
-    addAspect<WorkingDirectoryAspect>();
+    m_aspects.addAspect<ArgumentsAspect>();
+    m_aspects.addAspect<WorkingDirectoryAspect>();
     if (HostOsInfo::isAnyUnixHost())
-        addAspect<TerminalAspect>();
-    addAspect<RemoteLinuxEnvironmentAspect>(target);
+        m_aspects.addAspect<TerminalAspect>();
+    m_aspects.addAspect<RemoteLinuxEnvironmentAspect>(target);
     if (Utils::HostOsInfo::isAnyUnixHost())
-        addAspect<X11ForwardingAspect>();
+        m_aspects.addAspect<X11ForwardingAspect>();
 
     setDefaultDisplayName(runConfigDefaultDisplayName());
 }

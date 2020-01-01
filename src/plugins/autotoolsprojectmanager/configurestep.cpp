@@ -75,7 +75,7 @@ ConfigureStep::ConfigureStep(BuildStepList *bsl)
 {
     setDefaultDisplayName(tr("Configure"));
 
-    m_additionalArgumentsAspect = addAspect<BaseStringAspect>();
+    m_additionalArgumentsAspect = m_aspects.addAspect<BaseStringAspect>();
     m_additionalArgumentsAspect->setDisplayStyle(BaseStringAspect::LineEditDisplay);
     m_additionalArgumentsAspect->setSettingsKey(
                 "AutotoolsProjectManager.ConfigureStep.AdditionalArguments");

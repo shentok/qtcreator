@@ -56,7 +56,7 @@ AutoreconfStep::AutoreconfStep(BuildStepList *bsl)
 {
     setDefaultDisplayName(tr("Autoreconf"));
 
-    m_additionalArgumentsAspect = addAspect<BaseStringAspect>();
+    m_additionalArgumentsAspect = m_aspects.addAspect<BaseStringAspect>();
     m_additionalArgumentsAspect->setSettingsKey("AutotoolsProjectManager.AutoreconfStep.AdditionalArguments");
     m_additionalArgumentsAspect->setLabelText(tr("Arguments:"));
     m_additionalArgumentsAspect->setValue("--force --install");

@@ -378,10 +378,10 @@ void IosBuildSettingsWidget::updateWarningText()
 IosBuildConfiguration::IosBuildConfiguration(Target *target, Core::Id id)
     : QmakeBuildConfiguration(target, id)
 {
-    m_signingIdentifier = addAspect<BaseStringAspect>();
+    m_signingIdentifier = m_aspects.addAspect<BaseStringAspect>();
     m_signingIdentifier->setSettingsKey(signingIdentifierKey);
 
-    m_autoManagedSigning = addAspect<BaseBoolAspect>();
+    m_autoManagedSigning = m_aspects.addAspect<BaseBoolAspect>();
     m_autoManagedSigning->setDefaultValue(true);
     m_autoManagedSigning->setSettingsKey(autoManagedSigningKey);
 }

@@ -40,13 +40,13 @@ GenericDirectUploadStep::GenericDirectUploadStep(BuildStepList *bsl)
 {
     auto service = createDeployService<GenericDirectUploadService>();
 
-    auto incremental = addAspect<BaseBoolAspect>();
+    auto incremental = m_aspects.addAspect<BaseBoolAspect>();
     incremental->setSettingsKey("RemoteLinux.GenericDirectUploadStep.Incremental");
     incremental->setLabel(tr("Incremental deployment"), BaseBoolAspect::LabelPlacement::AtCheckBox);
     incremental->setValue(true);
     incremental->setDefaultValue(true);
 
-    auto ignoreMissingFiles = addAspect<BaseBoolAspect>();
+    auto ignoreMissingFiles = m_aspects.addAspect<BaseBoolAspect>();
     ignoreMissingFiles->setSettingsKey("RemoteLinux.GenericDirectUploadStep.IgnoreMissingFiles");
     ignoreMissingFiles->setLabel(tr("Ignore missing files"),
                                  BaseBoolAspect::LabelPlacement::AtCheckBox);

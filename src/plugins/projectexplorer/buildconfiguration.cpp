@@ -123,7 +123,7 @@ BuildConfiguration::BuildConfiguration(Target *target, Core::Id id)
     connect(ProjectTree::instance(), &ProjectTree::currentProjectChanged,
             this, &BuildConfiguration::updateCacheAndEmitEnvironmentChanged);
 
-    d->m_buildDirectoryAspect = addAspect<BuildDirectoryAspect>();
+    d->m_buildDirectoryAspect = m_aspects.addAspect<BuildDirectoryAspect>();
     d->m_buildDirectoryAspect->setBaseFileName(target->project()->projectDirectory());
     d->m_buildDirectoryAspect->setEnvironment(environment());
     d->m_buildDirectoryAspect->setMacroExpanderProvider([this] { return macroExpander(); });

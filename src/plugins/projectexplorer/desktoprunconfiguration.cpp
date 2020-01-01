@@ -50,19 +50,19 @@ namespace Internal {
 DesktopRunConfiguration::DesktopRunConfiguration(Target *target, Core::Id id, Kind kind)
     : RunConfiguration(target, id), m_kind(kind)
 {
-    auto envAspect = addAspect<LocalEnvironmentAspect>(target);
+    auto envAspect = m_aspects.addAspect<LocalEnvironmentAspect>(target);
 
-    addAspect<ExecutableAspect>();
-    addAspect<ArgumentsAspect>();
-    addAspect<WorkingDirectoryAspect>();
-    addAspect<TerminalAspect>();
+    m_aspects.addAspect<ExecutableAspect>();
+    m_aspects.addAspect<ArgumentsAspect>();
+    m_aspects.addAspect<WorkingDirectoryAspect>();
+    m_aspects.addAspect<TerminalAspect>();
 
-    auto libAspect = addAspect<UseLibraryPathsAspect>();
+    auto libAspect = m_aspects.addAspect<UseLibraryPathsAspect>();
     connect(libAspect, &UseLibraryPathsAspect::changed,
             envAspect, &EnvironmentAspect::environmentChanged);
 
     if (HostOsInfo::isMacHost()) {
-        auto dyldAspect = addAspect<UseDyldSuffixAspect>();
+        auto dyldAspect = m_aspects.addAspect<UseDyldSuffixAspect>();
         connect(dyldAspect, &UseLibraryPathsAspect::changed,
                 envAspect, &EnvironmentAspect::environmentChanged);
         envAspect->addModifier([dyldAspect](Environment &env) {
