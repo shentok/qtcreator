@@ -152,23 +152,23 @@ ProjectConfigurationAspects::ProjectConfigurationAspects() = default;
 
 ProjectConfigurationAspects::~ProjectConfigurationAspects()
 {
-    qDeleteAll(base());
+    qDeleteAll(m_aspects);
 }
 
 ProjectConfigurationAspect *ProjectConfigurationAspects::aspect(Core::Id id) const
 {
-    return Utils::findOrDefault(base(), Utils::equal(&ProjectConfigurationAspect::id, id));
+    return Utils::findOrDefault(m_aspects, Utils::equal(&ProjectConfigurationAspect::id, id));
 }
 
 void ProjectConfigurationAspects::fromMap(const QVariantMap &map) const
 {
-    for (ProjectConfigurationAspect *aspect : *this)
+    for (ProjectConfigurationAspect *aspect : m_aspects)
         aspect->fromMap(map);
 }
 
 void ProjectConfigurationAspects::toMap(QVariantMap &map) const
 {
-    for (ProjectConfigurationAspect *aspect : *this)
+    for (ProjectConfigurationAspect *aspect : m_aspects)
         aspect->toMap(map);
 }
 

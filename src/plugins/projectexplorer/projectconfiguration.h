@@ -124,10 +124,7 @@ protected:
 };
 
 class PROJECTEXPLORER_EXPORT ProjectConfigurationAspects
-        : private QList<ProjectConfigurationAspect *>
 {
-    using Base = QList<ProjectConfigurationAspect *>;
-
 public:
     ProjectConfigurationAspects();
     ProjectConfigurationAspects(const ProjectConfigurationAspects &) = delete;
@@ -138,7 +135,7 @@ public:
 
     template <typename T> T *aspect() const
     {
-        for (ProjectConfigurationAspect *aspect : *this)
+        for (ProjectConfigurationAspect *aspect : m_aspects)
             if (T *result = qobject_cast<T *>(aspect))
                 return result;
         return nullptr;
@@ -147,13 +144,14 @@ public:
     void fromMap(const QVariantMap &map) const;
     void toMap(QVariantMap &map) const;
 
-    using Base::append;
-    using Base::begin;
-    using Base::end;
+    inline void append(ProjectConfigurationAspect *aspect) { m_aspects.append(aspect); }
+    inline QList<ProjectConfigurationAspect *>::iterator begin() { return m_aspects.begin(); }
+    inline QList<ProjectConfigurationAspect *>::const_iterator begin() const { return m_aspects.begin(); }
+    inline QList<ProjectConfigurationAspect *>::iterator end() { return m_aspects.end(); }
+    inline QList<ProjectConfigurationAspect *>::const_iterator end() const { return m_aspects.end(); }
 
 private:
-    Base &base() { return *this; }
-    const Base &base() const { return *this; }
+    QList<ProjectConfigurationAspect *> m_aspects;
 };
 
 class PROJECTEXPLORER_EXPORT ProjectConfiguration : public QObject
