@@ -901,7 +901,7 @@ MacroExpander *RunControl::macroExpander() const
     return d->macroExpander;
 }
 
-ProjectConfigurationAspect *RunControl::aspect(Core::Id id) const
+ProjectConfigurationAspect *RunControl::aspect3(Core::Id id) const
 {
     return d->runConfiguration ? d->runConfiguration->aspect3(id) : nullptr;
 }
@@ -1133,7 +1133,7 @@ SimpleTargetRunner::SimpleTargetRunner(RunControl *runControl)
     : RunWorker(runControl)
 {
     setId("SimpleTargetRunner");
-    if (auto terminalAspect = runControl->aspect<TerminalAspect>())
+    if (auto terminalAspect = runControl->aspect2<TerminalAspect>())
         m_useTerminal = terminalAspect->useTerminal();
 }
 

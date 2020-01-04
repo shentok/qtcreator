@@ -116,7 +116,7 @@ public:
     {
         setId("LocalPerfRecordWorker");
 
-        auto perfAspect = static_cast<PerfRunConfigurationAspect *>(runControl->aspect(Constants::PerfSettingsId));
+        auto perfAspect = static_cast<PerfRunConfigurationAspect *>(runControl->aspect3(Constants::PerfSettingsId));
         QTC_ASSERT(perfAspect, return);
         PerfSettings *settings = static_cast<PerfSettings *>(perfAspect->currentSettings());
         QTC_ASSERT(settings, return);

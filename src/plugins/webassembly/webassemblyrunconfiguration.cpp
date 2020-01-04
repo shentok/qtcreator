@@ -114,7 +114,7 @@ public:
 
         setStarter([this, runControl, portsGatherer] {
             CommandLine cmd = emrunCommand(runControl->target(),
-                                           runControl->aspect<WebBrowserSelectionAspect>()->currentBrowser(),
+                                           runControl->aspect2<WebBrowserSelectionAspect>()->currentBrowser(),
                                            QString::number(portsGatherer->findEndPoint().port()));
             Runnable r;
             r.setCommandLine(cmd);

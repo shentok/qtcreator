@@ -223,8 +223,8 @@ public:
     Project *project() const;
     Kit *kit() const;
     Utils::MacroExpander *macroExpander() const;
-    ProjectConfigurationAspect *aspect(Core::Id id) const;
-    template <typename T> T *aspect() const {
+    ProjectConfigurationAspect *aspect3(Core::Id id) const;
+    template <typename T> T *aspect2() const {
         return runConfiguration() ? runConfiguration()->aspect2<T>() : nullptr;
     }
 

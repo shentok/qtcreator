@@ -166,7 +166,7 @@ AndroidRunnerWorker::AndroidRunnerWorker(RunWorker *runner, const QString &packa
 
 {
     auto runControl = runner->runControl();
-    auto aspect = runControl->aspect<Debugger::DebuggerRunConfigurationAspect>();
+    auto aspect = runControl->aspect2<Debugger::DebuggerRunConfigurationAspect>();
     Core::Id runMode = runControl->runMode();
     const bool debuggingMode = runMode == ProjectExplorer::Constants::DEBUG_RUN_MODE;
     m_useCppDebugger = debuggingMode && aspect->useCppDebugger();
@@ -197,23 +197,23 @@ AndroidRunnerWorker::AndroidRunnerWorker(RunWorker *runner, const QString &packa
     m_deviceSerialNumber = AndroidManager::deviceSerialNumber(target);
     m_apiLevel = AndroidManager::deviceApiLevel(target);
 
-    m_extraEnvVars = runControl->aspect<EnvironmentAspect>()->environment();
+    m_extraEnvVars = runControl->aspect2<EnvironmentAspect>()->environment();
     qCDebug(androidRunWorkerLog) << "Environment variables for the app"
                                  << m_extraEnvVars.toStringList();
 
     m_extraAppParams = runControl->runnable().commandLineArguments;
 
-    if (auto aspect = runControl->aspect(Constants::ANDROID_AMSTARTARGS))
+    if (auto aspect = runControl->aspect3(Constants::ANDROID_AMSTARTARGS))
         m_amStartExtraArgs = static_cast<BaseStringAspect *>(aspect)->value().split(' ');
 
-    if (auto aspect = runControl->aspect(Constants::ANDROID_PRESTARTSHELLCMDLIST)) {
+    if (auto aspect = runControl->aspect3(Constants::ANDROID_PRESTARTSHELLCMDLIST)) {
         for (const QString &shellCmd : static_cast<BaseStringListAspect *>(aspect)->value())
             m_beforeStartAdbCommands.append(QString("shell %1").arg(shellCmd));
     }
     for (const QString &shellCmd : runner->recordedData(Constants::ANDROID_PRESTARTSHELLCMDLIST).toStringList())
         m_beforeStartAdbCommands.append(QString("shell %1").arg(shellCmd));
 
-    if (auto aspect = runControl->aspect(Constants::ANDROID_POSTFINISHSHELLCMDLIST)) {
+    if (auto aspect = runControl->aspect3(Constants::ANDROID_POSTFINISHSHELLCMDLIST)) {
         for (const QString &shellCmd : static_cast<BaseStringListAspect *>(aspect)->value())
             m_afterFinishAdbCommands.append(QString("shell %1").arg(shellCmd));
     }

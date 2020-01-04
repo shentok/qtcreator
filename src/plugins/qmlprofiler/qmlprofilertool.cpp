@@ -311,7 +311,7 @@ void QmlProfilerTool::finalizeRunControl(QmlProfilerRunner *runWorker)
     d->m_toolBusy = true;
     auto runControl = runWorker->runControl();
     if (auto aspect = static_cast<QmlProfilerRunConfigurationAspect *>(
-                runControl->aspect(Constants::SETTINGS))) {
+                runControl->aspect3(Constants::SETTINGS))) {
         if (auto settings = static_cast<const QmlProfilerSettings *>(aspect->currentSettings())) {
             d->m_profilerConnections->setFlushInterval(settings->flushEnabled() ?
                                                            settings->flushInterval() : 0);

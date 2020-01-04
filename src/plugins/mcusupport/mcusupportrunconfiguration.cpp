@@ -96,7 +96,7 @@ public:
             const Target *target = runControl->target();
             const CommandLine cmd(
                         cmakeFilePath(target),
-                        runControl->aspect<BaseStringAspect>()->value(),
+                        runControl->aspect2<BaseStringAspect>()->value(),
                         CommandLine::Raw);
             Runnable r;
             r.workingDirectory =

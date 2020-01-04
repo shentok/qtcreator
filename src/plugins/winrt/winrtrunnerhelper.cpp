@@ -84,13 +84,13 @@ WinRtRunnerHelper::WinRtRunnerHelper(ProjectExplorer::RunWorker *runWorker, QStr
 
     bool loopbackExemptClient = false;
     bool loopbackExemptServer = false;
-    if (auto aspect = runControl->aspect<ArgumentsAspect>())
+    if (auto aspect = runControl->aspect2<ArgumentsAspect>())
         m_arguments = aspect->arguments(runControl->macroExpander());
-    if (auto aspect = runControl->aspect<UninstallAfterStopAspect>())
+    if (auto aspect = runControl->aspect2<UninstallAfterStopAspect>())
         m_uninstallAfterStop = aspect->value();
-    if (auto aspect = runControl->aspect<LoopbackExemptClientAspect>())
+    if (auto aspect = runControl->aspect2<LoopbackExemptClientAspect>())
         loopbackExemptClient = aspect->value();
-    if (auto aspect = runControl->aspect<LoopbackExemptServerAspect>())
+    if (auto aspect = runControl->aspect2<LoopbackExemptServerAspect>())
         loopbackExemptServer = aspect->value();
     if (loopbackExemptClient && loopbackExemptServer)
         m_loopbackArguments = QStringList{"--loopbackexempt", "clientserver"};
