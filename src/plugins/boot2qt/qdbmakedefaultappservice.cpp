@@ -95,7 +95,7 @@ void QdbMakeDefaultAppService::doDeploy()
     QString remoteExe;
 
     if (ProjectExplorer::RunConfiguration *rc = target()->activeRunConfiguration()) {
-        if (auto exeAspect = rc->aspect<ProjectExplorer::ExecutableAspect>())
+        if (auto exeAspect = rc->aspect2<ProjectExplorer::ExecutableAspect>())
             remoteExe = exeAspect->executable().toString();
     }
 

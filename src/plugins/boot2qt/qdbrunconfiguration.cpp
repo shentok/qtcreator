@@ -47,8 +47,8 @@ FullCommandLineAspect::FullCommandLineAspect(RunConfiguration *rc)
 {
     setLabelText(QdbRunConfiguration::tr("Full command line:"));
 
-    auto exeAspect = rc->aspect<ExecutableAspect>();
-    auto argumentsAspect = rc->aspect<ArgumentsAspect>();
+    auto exeAspect = rc->aspect2<ExecutableAspect>();
+    auto argumentsAspect = rc->aspect2<ArgumentsAspect>();
 
     auto updateCommandLine = [this, rc, exeAspect, argumentsAspect] {
         const QString usedExecutable = exeAspect->executable().toString();

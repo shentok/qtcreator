@@ -183,14 +183,14 @@ RunConfiguration::RunConfiguration(Target *target, Core::Id id)
     });
     expander->registerPrefix("CurrentRun:Env", tr("Variables in the current run environment"),
                              [this](const QString &var) {
-        const auto envAspect = aspect<EnvironmentAspect>();
+        const auto envAspect = aspect2<EnvironmentAspect>();
         return envAspect ? envAspect->environment().expandedValueForKey(var) : QString();
     });
 
     expander->registerVariable(Constants::VAR_CURRENTRUN_WORKINGDIR,
                                tr("The currently active run configuration's working directory"),
                                [this, expander] {
-        const auto wdAspect = aspect<WorkingDirectoryAspect>();
+        const auto wdAspect = aspect2<WorkingDirectoryAspect>();
         return wdAspect ? wdAspect->workingDirectory(expander).toString() : QString();
     });
 
@@ -200,10 +200,10 @@ RunConfiguration::RunConfiguration(Target *target, Core::Id id)
 
     m_commandLineGetter = [this] {
         FilePath executable;
-        if (const auto executableAspect = aspect<ExecutableAspect>())
+        if (const auto executableAspect = aspect2<ExecutableAspect>())
             executable = executableAspect->executable();
         QString arguments;
-        if (const auto argumentsAspect = aspect<ArgumentsAspect>())
+        if (const auto argumentsAspect = aspect2<ArgumentsAspect>())
             arguments = argumentsAspect->arguments(macroExpander());
         return CommandLine{executable, arguments, CommandLine::Raw};
     };
@@ -327,7 +327,7 @@ ProjectNode *RunConfiguration::productNode() const
     });
 }
 
-ProjectConfigurationAspect *RunConfiguration::aspect(Core::Id id) const
+ProjectConfigurationAspect *RunConfiguration::aspect3(Core::Id id) const
 {
     return aspects().aspect(id);
 }
@@ -392,9 +392,9 @@ Runnable RunConfiguration::runnable() const
 {
     Runnable r;
     r.setCommandLine(commandLine());
-    if (auto workingDirectoryAspect = aspect<WorkingDirectoryAspect>())
+    if (auto workingDirectoryAspect = aspect2<WorkingDirectoryAspect>())
         r.workingDirectory = workingDirectoryAspect->workingDirectory(macroExpander()).toString();
-    if (auto environmentAspect = aspect<EnvironmentAspect>())
+    if (auto environmentAspect = aspect2<EnvironmentAspect>())
         r.environment = environmentAspect->environment();
     return r;
 }

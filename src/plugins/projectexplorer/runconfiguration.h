@@ -156,12 +156,12 @@ public:
 
     ProjectExplorer::ProjectNode *productNode() const;
 
-    ProjectConfigurationAspect *aspect(Core::Id id) const;
-    template <typename T> T *aspect() const { return aspects().aspect<T>(); }
+    ProjectConfigurationAspect *aspect3(Core::Id id) const;
+    template <typename T> T *aspect2() const { return aspects().aspect<T>(); }
 
     template <class T = ISettingsAspect> T *currentSettings(Core::Id id) const
     {
-        if (auto a = qobject_cast<GlobalOrProjectAspect *>(aspect(id)))
+        if (auto a = qobject_cast<GlobalOrProjectAspect *>(aspect3(id)))
             return qobject_cast<T *>(a->currentSettings());
         return nullptr;
     }

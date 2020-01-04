@@ -57,7 +57,7 @@ public:
         if (auto debuggable = dynamic_cast<DebuggableTestConfiguration *>(config))
             enableQuick = debuggable->mixedDebugging();
 
-        if (auto debugAspect = aspect<Debugger::DebuggerRunConfigurationAspect>()) {
+        if (auto debugAspect = aspect2<Debugger::DebuggerRunConfigurationAspect>()) {
             debugAspect->setUseQmlDebugger(enableQuick);
             ProjectExplorer::ProjectExplorerPlugin::instance()->updateRunActions();
         }

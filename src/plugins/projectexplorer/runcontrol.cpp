@@ -903,7 +903,7 @@ MacroExpander *RunControl::macroExpander() const
 
 ProjectConfigurationAspect *RunControl::aspect(Core::Id id) const
 {
-    return d->runConfiguration ? d->runConfiguration->aspect(id) : nullptr;
+    return d->runConfiguration ? d->runConfiguration->aspect3(id) : nullptr;
 }
 
 QVariantMap RunControl::settingsData(Core::Id id) const

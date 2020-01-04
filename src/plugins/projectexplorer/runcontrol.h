@@ -225,7 +225,7 @@ public:
     Utils::MacroExpander *macroExpander() const;
     ProjectConfigurationAspect *aspect(Core::Id id) const;
     template <typename T> T *aspect() const {
-        return runConfiguration() ? runConfiguration()->aspect<T>() : nullptr;
+        return runConfiguration() ? runConfiguration()->aspect2<T>() : nullptr;
     }
 
     QString buildKey() const;
