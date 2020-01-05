@@ -68,6 +68,14 @@ RemoteLinuxCustomRunConfiguration::RemoteLinuxCustomRunConfiguration(Target *tar
     setDefaultDisplayName(runConfigDefaultDisplayName());
 }
 
+RunControl *RemoteLinuxCustomRunConfiguration::createRunControl(Core::Id runMode)
+{
+    auto runControl = new RunControl(runMode);
+    runControl->setRunConfiguration(this);
+
+    return runControl;
+}
+
 RemoteLinuxCustomRunConfiguration::~RemoteLinuxCustomRunConfiguration()= default;
 
 QString RemoteLinuxCustomRunConfiguration::runConfigDefaultDisplayName()

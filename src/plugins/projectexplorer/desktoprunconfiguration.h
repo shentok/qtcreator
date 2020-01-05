@@ -40,6 +40,9 @@ class DesktopRunConfiguration : public RunConfiguration
 {
     Q_OBJECT
 
+public:
+    RunControl *createRunControl(Core::Id runMode) override;
+
 protected:
     enum Kind { Qmake, Qbs, CMake }; // FIXME: Remove
 

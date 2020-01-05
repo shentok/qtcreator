@@ -48,6 +48,8 @@ public:
     RemoteLinuxRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
     ~RemoteLinuxRunConfiguration() override;
 
+    ProjectExplorer::RunControl *createRunControl(Core::Id runMode) override;
+
 private:
     ProjectExplorer::Runnable runnable() const override;
 

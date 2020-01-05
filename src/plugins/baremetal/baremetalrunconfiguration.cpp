@@ -29,6 +29,7 @@
 #include <projectexplorer/buildsystem.h>
 #include <projectexplorer/buildtargetinfo.h>
 #include <projectexplorer/project.h>
+#include <projectexplorer/runcontrol.h>
 #include <projectexplorer/target.h>
 
 using namespace ProjectExplorer;
@@ -54,6 +55,14 @@ BareMetalRunConfiguration::BareMetalRunConfiguration(Target *target, Core::Id id
     });
 
     connect(target, &Target::buildSystemUpdated, this, &RunConfiguration::update);
+}
+
+RunControl *BareMetalRunConfiguration::createRunControl(Core::Id runMode)
+{
+    auto runControl = new RunControl(runMode);
+    runControl->setRunConfiguration(this);
+
+    return runControl;
 }
 
 // BareMetalRunConfigurationFactory

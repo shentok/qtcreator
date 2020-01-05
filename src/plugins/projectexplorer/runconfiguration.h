@@ -135,7 +135,7 @@ public:
 
     QWidget *createConfigurationWidget();
 
-    RunControl *createRunControl(Core::Id runMode);
+    virtual RunControl *createRunControl(Core::Id runMode) = 0;
 
     bool isConfigured() const { return checkForIssues().isEmpty(); }
     virtual Tasks checkForIssues() const { return {}; }

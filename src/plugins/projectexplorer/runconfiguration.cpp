@@ -247,14 +247,6 @@ QWidget *RunConfiguration::createConfigurationWidget()
     return detailsWidget;
 }
 
-RunControl *RunConfiguration::createRunControl(Core::Id runMode)
-{
-    auto runControl = new RunControl(runMode);
-    runControl->setRunConfiguration(this);
-
-    return runControl;
-}
-
 void RunConfiguration::addAspectFactory(const AspectFactory &aspectFactory)
 {
     theAspectFactories.push_back(aspectFactory);

@@ -42,6 +42,8 @@ public:
     QmlProjectRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
     ~QmlProjectRunConfiguration() override;
 
+    ProjectExplorer::RunControl *createRunControl(Core::Id runMode) override;
+
 private:
     ProjectExplorer::Runnable runnable() const final;
     QString disabledReason() const final;

@@ -45,6 +45,8 @@ class FlashAndRunConfiguration : public ProjectExplorer::RunConfiguration
 public:
     FlashAndRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
 
+    ProjectExplorer::RunControl *createRunControl(Core::Id runMode) override;
+
 private:
     ProjectExplorer::BaseStringAspect m_flashAndRunParameters;
 };

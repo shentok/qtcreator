@@ -50,6 +50,7 @@ class PythonRunConfiguration : public ProjectExplorer::RunConfiguration
 public:
     PythonRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
     ~PythonRunConfiguration() override;
+    ProjectExplorer::RunControl *createRunControl(Core::Id runMode) override;
     QString interpreter() const;
 
 private:

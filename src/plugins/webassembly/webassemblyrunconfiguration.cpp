@@ -90,6 +90,14 @@ public:
                 this, &RunConfiguration::update);
     }
 
+    RunControl *createRunControl(Core::Id runMode) override
+    {
+        auto runControl = new RunControl(runMode);
+        runControl->setRunConfiguration(this);
+
+        return runControl;
+    }
+
 private:
     WebBrowserSelectionAspect m_webBrowserAspect;
     BaseStringAspect m_effectiveEmrunCall;

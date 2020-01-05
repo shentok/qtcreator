@@ -26,6 +26,7 @@
 #include "winrtrunconfiguration.h"
 #include "winrtconstants.h"
 
+#include <projectexplorer/runcontrol.h>
 #include <projectexplorer/target.h>
 #include <qtsupport/baseqtversion.h>
 #include <qtsupport/qtkitinformation.h>
@@ -78,6 +79,14 @@ WinRtRunConfiguration::WinRtRunConfiguration(Target *target, Core::Id id)
         m_loopbackExemptClientAspect.reset(new LoopbackExemptClientAspect(this));
         m_loopbackExemptServerAspect.reset(new LoopbackExemptServerAspect(this));
     }
+}
+
+RunControl *WinRtRunConfiguration::createRunControl(Core::Id runMode)
+{
+    auto runControl = new RunControl(runMode);
+    runControl->setRunConfiguration(this);
+
+    return runControl;
 }
 
 // WinRtRunConfigurationFactory

@@ -82,6 +82,14 @@ CustomExecutableRunConfiguration::CustomExecutableRunConfiguration(Target *targe
     setDefaultDisplayName(defaultDisplayName());
 }
 
+RunControl *CustomExecutableRunConfiguration::createRunControl(Core::Id runMode)
+{
+    auto runControl = new RunControl(runMode);
+    runControl->setRunConfiguration(this);
+
+    return runControl;
+}
+
 QString CustomExecutableRunConfiguration::rawExecutable() const
 {
     return m_exeAspect.executable().toString();

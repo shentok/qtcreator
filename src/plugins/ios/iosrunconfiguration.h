@@ -48,6 +48,8 @@ public:
     IosRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
     ~IosRunConfiguration() override;
 
+    ProjectExplorer::RunControl *createRunControl(Core::Id runMode) override;
+
     QString applicationName() const;
     Utils::FilePath bundleDirectory() const;
     Utils::FilePath localExecutable() const;

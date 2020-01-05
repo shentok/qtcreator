@@ -64,6 +64,14 @@ public:
         m_testConfig = config;
     }
 
+    ProjectExplorer::RunControl *createRunControl(Core::Id runMode) override
+    {
+        auto runControl = new ProjectExplorer::RunControl(runMode);
+        runControl->setRunConfiguration(this);
+
+        return runControl;
+    }
+
     ProjectExplorer::Runnable runnable() const override
     {
         ProjectExplorer::Runnable r;

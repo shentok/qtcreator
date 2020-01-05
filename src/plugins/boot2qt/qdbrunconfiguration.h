@@ -47,6 +47,7 @@ public:
     QdbRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
 
 private:
+    ProjectExplorer::RunControl *createRunControl(Core::Id runMode) override;
     ProjectExplorer::Tasks checkForIssues() const override;
     QString defaultDisplayName() const;
 

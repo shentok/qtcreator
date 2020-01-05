@@ -63,6 +63,8 @@ class WinRtRunConfiguration : public ProjectExplorer::RunConfiguration
 public:
     WinRtRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
 
+    ProjectExplorer::RunControl *createRunControl(Core::Id runMode) override;
+
 private:
     ProjectExplorer::ArgumentsAspect m_argumentsAspect;
     UninstallAfterStopAspect m_uninstallAfterStopAspect;

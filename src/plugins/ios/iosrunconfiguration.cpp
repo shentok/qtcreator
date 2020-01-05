@@ -36,6 +36,7 @@
 #include <projectexplorer/kitinformation.h>
 #include <projectexplorer/project.h>
 #include <projectexplorer/projectnodes.h>
+#include <projectexplorer/runcontrol.h>
 #include <projectexplorer/target.h>
 
 #include <utils/algorithm.h>
@@ -119,6 +120,14 @@ IosRunConfiguration::IosRunConfiguration(Target *target, Core::Id id)
 
         m_deviceTypeAspect->updateDeviceType();
     });
+}
+
+RunControl *IosRunConfiguration::createRunControl(Core::Id runMode)
+{
+    auto runControl = new RunControl(runMode);
+    runControl->setRunConfiguration(this);
+
+    return runControl;
 }
 
 IosRunConfiguration::~IosRunConfiguration() = default;

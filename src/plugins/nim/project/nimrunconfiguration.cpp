@@ -64,6 +64,14 @@ NimRunConfiguration::NimRunConfiguration(Target *target, Core::Id id)
     update();
 }
 
+RunControl *NimRunConfiguration::createRunControl(Core::Id runMode)
+{
+    auto runControl = new RunControl(runMode);
+    runControl->setRunConfiguration(this);
+
+    return runControl;
+}
+
 // NimRunConfigurationFactory
 
 NimRunConfigurationFactory::NimRunConfigurationFactory() : FixedRunConfigurationFactory(QString())

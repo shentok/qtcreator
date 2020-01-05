@@ -58,6 +58,14 @@ NimbleRunConfiguration::NimbleRunConfiguration(ProjectExplorer::Target *target, 
     update();
 }
 
+RunControl *NimbleRunConfiguration::createRunControl(Core::Id runMode)
+{
+    auto runControl = new RunControl(runMode);
+    runControl->setRunConfiguration(this);
+
+    return runControl;
+}
+
 bool NimbleRunConfiguration::isBuildTargetValid() const
 {
     return Utils::anyOf(target()->applicationTargets(), [this](const BuildTargetInfo &bti) {
@@ -98,6 +106,14 @@ NimbleTestConfiguration::NimbleTestConfiguration(Target *target, Core::Id id)
 
     setDisplayName(tr("Nimble Test"));
     setDefaultDisplayName(tr("Nimble Test"));
+}
+
+RunControl *NimbleTestConfiguration::createRunControl(Core::Id runMode)
+{
+    auto runControl = new RunControl(runMode);
+    runControl->setRunConfiguration(this);
+
+    return runControl;
 }
 
 NimbleTestConfigurationFactory::NimbleTestConfigurationFactory()

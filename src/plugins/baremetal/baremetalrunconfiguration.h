@@ -40,6 +40,8 @@ class BareMetalRunConfiguration final : public ProjectExplorer::RunConfiguration
 public:
     explicit BareMetalRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
 
+    ProjectExplorer::RunControl *createRunControl(Core::Id runMode) override;
+
 private:
     ProjectExplorer::ExecutableAspect m_exeAspect;
     ProjectExplorer::ArgumentsAspect m_argumentsAspect;

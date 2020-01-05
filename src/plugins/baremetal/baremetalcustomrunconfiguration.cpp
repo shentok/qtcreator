@@ -26,6 +26,8 @@
 #include "baremetalcustomrunconfiguration.h"
 #include "baremetalconstants.h"
 
+#include <projectexplorer/runcontrol.h>
+
 using namespace Utils;
 using namespace ProjectExplorer;
 
@@ -47,6 +49,14 @@ BareMetalCustomRunConfiguration::BareMetalCustomRunConfiguration(Target *target,
     m_exeAspect.setExpectedKind(PathChooser::Any);
 
     setDefaultDisplayName(RunConfigurationFactory::decoratedTargetName(tr("Custom Executable"), target));
+}
+
+RunControl *BareMetalCustomRunConfiguration::createRunControl(Core::Id runMode)
+{
+    auto runControl = new RunControl(runMode);
+    runControl->setRunConfiguration(this);
+
+    return runControl;
 }
 
 Tasks BareMetalCustomRunConfiguration::checkForIssues() const

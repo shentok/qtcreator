@@ -41,6 +41,8 @@ class BareMetalCustomRunConfiguration final
 public:
     explicit BareMetalCustomRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
 
+    ProjectExplorer::RunControl *createRunControl(Core::Id runMode) override;
+
     ProjectExplorer::Tasks checkForIssues() const final;
 
 private:

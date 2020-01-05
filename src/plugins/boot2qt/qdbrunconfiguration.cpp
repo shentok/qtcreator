@@ -31,6 +31,7 @@
 #include <projectexplorer/buildtargetinfo.h>
 #include <projectexplorer/deploymentdata.h>
 #include <projectexplorer/project.h>
+#include <projectexplorer/runcontrol.h>
 #include <projectexplorer/target.h>
 
 using namespace ProjectExplorer;
@@ -95,6 +96,14 @@ QdbRunConfiguration::QdbRunConfiguration(Target *target, Core::Id id)
     connect(target, &Target::buildSystemUpdated, this, &RunConfiguration::update);
 
     setDefaultDisplayName(tr("Run on Boot2Qt Device"));
+}
+
+RunControl *QdbRunConfiguration::createRunControl(Core::Id runMode)
+{
+    auto runControl = new RunControl(runMode);
+    runControl->setRunConfiguration(this);
+
+    return runControl;
 }
 
 Tasks QdbRunConfiguration::checkForIssues() const

@@ -45,6 +45,14 @@ using namespace Utils;
 namespace ProjectExplorer {
 namespace Internal {
 
+RunControl *DesktopRunConfiguration::createRunControl(Core::Id runMode)
+{
+    auto runControl = new RunControl(runMode);
+    runControl->setRunConfiguration(this);
+
+    return runControl;
+}
+
 DesktopRunConfiguration::DesktopRunConfiguration(Target *target, Core::Id id, Kind kind)
     : RunConfiguration(target, id)
     , m_envAspect(this, target)

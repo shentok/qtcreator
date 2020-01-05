@@ -44,6 +44,8 @@ public:
     RemoteLinuxCustomRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
     ~RemoteLinuxCustomRunConfiguration() override;
 
+    ProjectExplorer::RunControl *createRunControl(Core::Id runMode) override;
+
     QString runConfigDefaultDisplayName();
 
 private:

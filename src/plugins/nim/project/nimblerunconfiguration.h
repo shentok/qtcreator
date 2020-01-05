@@ -38,6 +38,8 @@ class NimbleRunConfiguration : public ProjectExplorer::RunConfiguration
 public:
     NimbleRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
 
+    ProjectExplorer::RunControl *createRunControl(Core::Id runMode) override;
+
     QString disabledReason() const override;
 
 private:
@@ -65,6 +67,8 @@ class NimbleTestConfiguration : public ProjectExplorer::RunConfiguration
 
 public:
     NimbleTestConfiguration(ProjectExplorer::Target *target, Core::Id id);
+
+    ProjectExplorer::RunControl *createRunControl(Core::Id runMode) override;
 
 private:
     ProjectExplorer::ExecutableAspect m_exeAspect;

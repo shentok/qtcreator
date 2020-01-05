@@ -70,6 +70,8 @@ class ANDROID_EXPORT AndroidRunConfiguration : public ProjectExplorer::RunConfig
 public:
     explicit AndroidRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
 
+    ProjectExplorer::RunControl *createRunControl(Core::Id runMode) override;
+
 private:
     ProjectExplorer::EnvironmentAspect m_envAspect;
     ProjectExplorer::ArgumentsAspect m_argumentsAspect;

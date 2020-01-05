@@ -38,6 +38,8 @@ class NimRunConfiguration : public ProjectExplorer::RunConfiguration
 public:
     NimRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
 
+    ProjectExplorer::RunControl *createRunControl(Core::Id runMode) override;
+
 private:
     ProjectExplorer::LocalEnvironmentAspect m_envAspect;
     ProjectExplorer::ExecutableAspect m_exeAspect;

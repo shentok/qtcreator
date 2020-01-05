@@ -291,6 +291,14 @@ PythonRunConfiguration::PythonRunConfiguration(Target *target, Core::Id id)
 
 PythonRunConfiguration::~PythonRunConfiguration() = default;
 
+RunControl *PythonRunConfiguration::createRunControl(Core::Id runMode)
+{
+    auto runControl = new RunControl(runMode);
+    runControl->setRunConfiguration(this);
+
+    return runControl;
+}
+
 void PythonRunConfiguration::updateLanguageServer()
 {
     using namespace LanguageClient;

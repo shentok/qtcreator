@@ -84,6 +84,14 @@ RemoteLinuxRunConfiguration::RemoteLinuxRunConfiguration(Target *target, Core::I
 
 RemoteLinuxRunConfiguration::~RemoteLinuxRunConfiguration() = default;
 
+RunControl *RemoteLinuxRunConfiguration::createRunControl(Core::Id runMode)
+{
+    auto runControl = new RunControl(runMode);
+    runControl->setRunConfiguration(this);
+
+    return runControl;
+}
+
 Runnable RemoteLinuxRunConfiguration::runnable() const
 {
     Runnable r = RunConfiguration::runnable();

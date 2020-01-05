@@ -47,6 +47,8 @@ class QnxRunConfiguration final : public ProjectExplorer::RunConfiguration
 public:
     QnxRunConfiguration(ProjectExplorer::Target *target, Core::Id id);
 
+    ProjectExplorer::RunControl *createRunControl(Core::Id runMode) override;
+
 private:
     ProjectExplorer::Runnable runnable() const override;
 

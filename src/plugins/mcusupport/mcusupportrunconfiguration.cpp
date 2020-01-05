@@ -78,6 +78,14 @@ FlashAndRunConfiguration::FlashAndRunConfiguration(Target *target, Core::Id id)
     connect(target->project(), &Project::displayNameChanged, this, &RunConfiguration::update);
 }
 
+RunControl *FlashAndRunConfiguration::createRunControl(Core::Id runMode)
+{
+    auto runControl = new RunControl(runMode);
+    runControl->setRunConfiguration(this);
+
+    return runControl;
+}
+
 class FlashAndRunWorker : public SimpleTargetRunner
 {
 public:

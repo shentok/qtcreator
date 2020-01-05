@@ -40,6 +40,8 @@ public:
     CustomExecutableRunConfiguration(Target *target, Core::Id id);
     explicit CustomExecutableRunConfiguration(Target *target);
 
+    RunControl *createRunControl(Core::Id runMode) override;
+
     QString defaultDisplayName() const;
 
 private:

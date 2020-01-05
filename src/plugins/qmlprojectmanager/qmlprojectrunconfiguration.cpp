@@ -325,6 +325,14 @@ QmlProjectRunConfiguration::QmlProjectRunConfiguration(Target *target, Id id)
 
 QmlProjectRunConfiguration::~QmlProjectRunConfiguration() = default;
 
+RunControl *QmlProjectRunConfiguration::createRunControl(Id runMode)
+{
+    auto runControl = new RunControl(runMode);
+    runControl->setRunConfiguration(this);
+
+    return runControl;
+}
+
 Runnable QmlProjectRunConfiguration::runnable() const
 {
     Runnable r;

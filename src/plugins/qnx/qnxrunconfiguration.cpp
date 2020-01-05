@@ -85,6 +85,14 @@ QnxRunConfiguration::QnxRunConfiguration(Target *target, Core::Id id)
     connect(target, &Target::buildSystemUpdated, this, &RunConfiguration::update);
 }
 
+RunControl *QnxRunConfiguration::createRunControl(Core::Id runMode)
+{
+    auto runControl = new RunControl(runMode);
+    runControl->setRunConfiguration(this);
+
+    return runControl;
+}
+
 Runnable QnxRunConfiguration::runnable() const
 {
     Runnable r = RunConfiguration::runnable();

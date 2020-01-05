@@ -34,6 +34,7 @@
 #include <projectexplorer/buildsystem.h>
 #include <projectexplorer/kitinformation.h>
 #include <projectexplorer/project.h>
+#include <projectexplorer/runcontrol.h>
 #include <projectexplorer/target.h>
 
 #include <qtsupport/qtkitinformation.h>
@@ -143,6 +144,14 @@ AndroidRunConfiguration::AndroidRunConfiguration(Target *target, Core::Id id)
     });
 
     connect(target, &Target::buildSystemUpdated, this, &RunConfiguration::update);
+}
+
+RunControl *AndroidRunConfiguration::createRunControl(Core::Id runMode)
+{
+    auto runControl = new RunControl(runMode);
+    runControl->setRunConfiguration(this);
+
+    return runControl;
 }
 
 } // namespace Android
