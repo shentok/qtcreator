@@ -37,7 +37,9 @@ class QmlPreviewRunner : public ProjectExplorer::RunWorker
     Q_OBJECT
 
 public:
-    QmlPreviewRunner(ProjectExplorer::RunControl *runControl, QmlPreviewFileLoader fileLoader,
+    QmlPreviewRunner(ProjectExplorer::RunControl *runControl,
+                     ProjectExplorer::RunConfiguration *runConfiguration,
+                     QmlPreviewFileLoader fileLoader,
                      QmlPreviewFileClassifier fileClassifier, QmlPreviewFpsHandler fpsHandler,
                      float initialZoom, const QString &initialLocale);
 

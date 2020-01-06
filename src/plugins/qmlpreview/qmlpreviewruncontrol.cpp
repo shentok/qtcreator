@@ -42,6 +42,7 @@ namespace QmlPreview {
 static const QString QmlServerUrl = "QmlServerUrl";
 
 QmlPreviewRunner::QmlPreviewRunner(ProjectExplorer::RunControl *runControl,
+                                   ProjectExplorer::RunConfiguration *runConfiguration,
                                    QmlPreviewFileLoader fileLoader,
                                    QmlPreviewFileClassifier fileClassifier,
                                    QmlPreviewFpsHandler fpsHandler,
@@ -73,13 +74,13 @@ QmlPreviewRunner::QmlPreviewRunner(ProjectExplorer::RunControl *runControl,
     });
 
     connect(&m_connectionManager, &Internal::QmlPreviewConnectionManager::restart,
-            runControl, [this, runControl]() {
+            runControl, [runControl, runConfiguration]() {
         if (!runControl->isRunning())
             return;
 
-        connect(runControl, &ProjectExplorer::RunControl::stopped, runControl, [runControl]() {
+        connect(runControl, &ProjectExplorer::RunControl::stopped, runControl, [runConfiguration]() {
             ProjectExplorer::ProjectExplorerPlugin::runRunConfiguration(
-                        runControl->runConfiguration(),
+                        runConfiguration,
                         ProjectExplorer::Constants::QML_PREVIEW_RUN_MODE, true);
         });
 

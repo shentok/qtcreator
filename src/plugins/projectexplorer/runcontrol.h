@@ -217,7 +217,6 @@ public:
     void setApplicationProcessHandle(const Utils::ProcessHandle &handle);
     IDevice::ConstPtr device() const;
 
-    RunConfiguration *runConfiguration() const; // FIXME: Remove.
     // FIXME: Try to cut down to amount of functions.
     Target *target() const;
     Project *project() const;
@@ -264,6 +263,7 @@ signals:
 
 private:
     void setDevice(const IDevice::ConstPtr &device);
+    RunConfiguration *runConfiguration() const; // FIXME: Remove.
 
     friend class RunWorker;
     friend class Internal::RunWorkerPrivate;

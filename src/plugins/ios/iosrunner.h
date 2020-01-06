@@ -41,12 +41,14 @@
 namespace Ios {
 namespace Internal {
 
+class IosRunConfiguration;
+
 class IosRunner : public ProjectExplorer::RunWorker
 {
     Q_OBJECT
 
 public:
-    IosRunner(ProjectExplorer::RunControl *runControl);
+    IosRunner(ProjectExplorer::RunControl *runControl, IosRunConfiguration *runConfig);
     ~IosRunner() override;
 
     void setCppDebugging(bool cppDebug);
@@ -100,7 +102,7 @@ class IosRunSupport : public IosRunner
     Q_OBJECT
 
 public:
-    explicit IosRunSupport(ProjectExplorer::RunControl *runControl);
+    explicit IosRunSupport(ProjectExplorer::RunControl *runControl, IosRunConfiguration *runConfig);
     ~IosRunSupport() override;
 
     void didStartApp(IosToolHandler::OpStatus status);

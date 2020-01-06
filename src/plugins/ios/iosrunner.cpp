@@ -91,12 +91,11 @@ static void stopRunningRunControl(RunControl *runControl)
         activeRunControls[devId] = runControl;
 }
 
-IosRunner::IosRunner(RunControl *runControl)
+IosRunner::IosRunner(RunControl *runControl, IosRunConfiguration *runConfig)
     : RunWorker(runControl)
 {
     setId("IosRunner");
     stopRunningRunControl(runControl);
-    auto runConfig = qobject_cast<IosRunConfiguration *>(runControl->runConfiguration());
     m_bundleDir = runConfig->bundleDirectory().toString();
     m_device = DeviceKitAspect::device(runControl->target()->kit());
     m_deviceType = runConfig->deviceType();
@@ -353,8 +352,8 @@ Utils::Port IosRunner::qmlServerPort() const
 // IosRunner
 //
 
-IosRunSupport::IosRunSupport(RunControl *runControl)
-    : IosRunner(runControl)
+IosRunSupport::IosRunSupport(RunControl *runControl, IosRunConfiguration *runConfig)
+    : IosRunner(runControl, runConfig)
 {
     setId("IosRunSupport");
     runControl->setIcon(Icons::RUN_SMALL_TOOLBAR);
