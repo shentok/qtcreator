@@ -326,16 +326,13 @@ void TargetSetupPage::setProjectPath(const FilePath &path)
         initializePage();
 }
 
-void TargetSetupPage::setProjectImporter(ProjectImporter *importer)
+void TargetSetupPage::setProjectImporter(std::unique_ptr<ProjectImporter> &&importer)
 {
-    if (importer == m_importer)
-        return;
-
     if (m_widgetsWereSetUp)
         reset(); // Reset before changing the importer!
 
-    m_importer = importer;
-    m_importWidget->setVisible(m_importer);
+    m_importer = std::move(importer);
+    m_importWidget->setVisible(m_importer.get());
 
     if (m_widgetsWereSetUp)
         initializePage();

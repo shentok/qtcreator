@@ -201,6 +201,7 @@ public:
     Core::Context m_projectLanguages;
     QVariantMap m_pluginSettings;
     std::unique_ptr<Internal::UserFileAccessor> m_accessor;
+    Project::ProjectImporterCreator m_ProjectImporterCreator;
 
     QString m_displayName;
 
@@ -980,9 +981,14 @@ ProjectNode *Project::findNodeForBuildKey(const QString &buildKey) const
     });
 }
 
-ProjectImporter *Project::projectImporter() const
+Project::ProjectImporterCreator Project::projectImporterCreator() const
 {
-    return nullptr;
+    return d->m_ProjectImporterCreator;
+}
+
+void Project::setProjectImporterCreator(const ProjectImporterCreator &creator)
+{
+    d->m_ProjectImporterCreator = creator;
 }
 
 void Project::setCanBuildProducts()

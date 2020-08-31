@@ -124,18 +124,13 @@ QbsProject::QbsProject(const FilePath &fileName)
     setProjectLanguages(Context(ProjectExplorer::Constants::CXX_LANGUAGE_ID));
     setCanBuildProducts();
     setDisplayName(fileName.toFileInfo().completeBaseName());
+    setProjectImporterCreator([](const Utils::FilePath &projectFilePath) {
+        return std::make_unique<QbsProjectImporter>(projectFilePath);
+    });
 }
 
 QbsProject::~QbsProject()
 {
-    delete m_importer;
-}
-
-ProjectImporter *QbsProject::projectImporter() const
-{
-    if (!m_importer)
-        m_importer = new QbsProjectImporter(projectFilePath());
-    return m_importer;
 }
 
 void QbsProject::configureAsExampleProject(Kit *kit)

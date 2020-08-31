@@ -161,7 +161,9 @@ void TargetSetupPageWrapper::addTargetSetupPage()
     m_targetSetupPage->setProjectPath(m_project->projectFilePath());
     m_targetSetupPage->setTasksGenerator(
         [this](const Kit *k) { return m_project->projectIssues(k); });
-    m_targetSetupPage->setProjectImporter(m_project->projectImporter());
+    m_targetSetupPage->setProjectImporter(m_project->projectImporterCreator()
+                                          ? m_project->projectImporterCreator()(m_project->projectFilePath())
+                                          : nullptr);
     m_targetSetupPage->initializePage();
     m_targetSetupPage->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     m_setupPageContainer->addWidget(m_targetSetupPage);

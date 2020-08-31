@@ -139,7 +139,8 @@ public:
     bool needsBuildConfigurations() const;
     virtual void configureAsExampleProject(ProjectExplorer::Kit *kit);
 
-    virtual ProjectImporter *projectImporter() const;
+    using ProjectImporterCreator = std::function<std::unique_ptr<ProjectImporter> (const Utils::FilePath &)>;
+    ProjectImporterCreator projectImporterCreator() const;
 
     // The build system is able to report all executables that can be built, independent
     // of configuration.
@@ -216,6 +217,7 @@ protected:
                                                    const QString &description);
 
     void setBuildSystemCreator(const std::function<BuildSystem *(Target *)> &creator);
+    void setProjectImporterCreator(const ProjectImporterCreator &creator);
 
 private:
     void addTarget(std::unique_ptr<Target> &&target);

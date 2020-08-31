@@ -45,8 +45,6 @@ public:
 
     ProjectExplorer::Tasks projectIssues(const ProjectExplorer::Kit *k) const final;
 
-    ProjectExplorer::ProjectImporter *projectImporter() const final;
-
 protected:
     bool setupTarget(ProjectExplorer::Target *t) final;
 
@@ -54,8 +52,6 @@ private:
     ProjectExplorer::DeploymentKnowledge deploymentKnowledge() const override;
     ProjectExplorer::MakeInstallCommand makeInstallCommand(const ProjectExplorer::Target *target,
                                                            const QString &installRoot) override;
-
-    mutable Internal::CMakeProjectImporter *m_projectImporter = nullptr;
 
     friend class CMakeBuildSystem;
 };

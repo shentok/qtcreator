@@ -38,6 +38,8 @@
 #include <QString>
 #include <QMap>
 
+#include <memory>
+
 QT_FORWARD_DECLARE_CLASS(QSpacerItem)
 
 namespace Utils { class FilePath; }
@@ -68,7 +70,7 @@ public:
     // Call these before initializePage!
     void setTasksGenerator(const TasksGenerator &tasksGenerator);
     void setProjectPath(const Utils::FilePath &dir);
-    void setProjectImporter(ProjectImporter *importer);
+    void setProjectImporter(std::unique_ptr<ProjectImporter> &&importer);
     bool importLineEditHasFocus() const;
 
     /// Sets whether the targetsetupage uses a scrollarea
@@ -125,7 +127,7 @@ private:
                                         Internal::TargetSetupWidget *fallback = nullptr) const;
 
     TasksGenerator m_tasksGenerator;
-    QPointer<ProjectImporter> m_importer;
+    std::unique_ptr<ProjectImporter> m_importer;
     QLayout *m_baseLayout = nullptr;
     Utils::FilePath m_projectPath;
     QString m_defaultShadowBuildLocation;

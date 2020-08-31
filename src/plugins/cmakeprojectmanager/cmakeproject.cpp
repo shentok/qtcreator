@@ -63,11 +63,13 @@ CMakeProject::CMakeProject(const FilePath &fileName)
     setCanBuildProducts();
     setKnowsAllBuildExecutables(false);
     setHasMakeInstallEquivalent(true);
+    setProjectImporterCreator([](const Utils::FilePath &projectFilePath) {
+        return std::make_unique<CMakeProjectImporter>(projectFilePath);
+    });
 }
 
 CMakeProject::~CMakeProject()
 {
-    delete m_projectImporter;
 }
 
 Tasks CMakeProject::projectIssues(const Kit *k) const
@@ -80,14 +82,6 @@ Tasks CMakeProject::projectIssues(const Kit *k) const
         result.append(createProjectTask(Task::TaskType::Warning, tr("No compilers set in kit.")));
 
     return result;
-}
-
-
-ProjectImporter *CMakeProject::projectImporter() const
-{
-    if (!m_projectImporter)
-        m_projectImporter = new CMakeProjectImporter(projectFilePath());
-    return m_projectImporter;
 }
 
 bool CMakeProject::setupTarget(Target *t)

@@ -27,7 +27,6 @@
 #include "mesonprojectimporter.h"
 
 #include "projectexplorer/project.h"
-#include "projectexplorer/projectimporter.h"
 #include "projectexplorer/task.h"
 #include "utils/fileutils.h"
 #include <QObject>
@@ -42,14 +41,11 @@ public:
     ~MesonProject() final = default;
 
     ProjectExplorer::Tasks projectIssues(const ProjectExplorer::Kit *k) const final;
-    ProjectExplorer::ProjectImporter *projectImporter() const final;
 
 private:
     ProjectExplorer::DeploymentKnowledge deploymentKnowledge() const override;
     ProjectExplorer::MakeInstallCommand makeInstallCommand(const ProjectExplorer::Target *target,
                                                            const QString &installRoot) override;
-
-    mutable std::unique_ptr<MesonProjectImporter> m_projectImporter;
 };
 
 } // namespace Internal

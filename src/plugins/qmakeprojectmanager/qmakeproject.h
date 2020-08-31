@@ -65,15 +65,11 @@ public:
 
     void configureAsExampleProject(ProjectExplorer::Kit *kit) final;
 
-    ProjectExplorer::ProjectImporter *projectImporter() const final;
-
 protected:
     RestoreResult fromMap(const QVariantMap &map, QString *errorMessage) final;
 
 private:
     ProjectExplorer::DeploymentKnowledge deploymentKnowledge() const override;
-
-    mutable ProjectExplorer::ProjectImporter *m_projectImporter = nullptr;
 };
 
 // FIXME: This export here is only there to appease the current version

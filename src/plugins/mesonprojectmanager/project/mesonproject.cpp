@@ -45,6 +45,9 @@ MesonProject::MesonProject(const Utils::FilePath &path)
     setCanBuildProducts();
     setKnowsAllBuildExecutables(true);
     setHasMakeInstallEquivalent(true);
+    setProjectImporterCreator([](const Utils::FilePath &projectFilePath) {
+        return std::make_unique<MesonProjectImporter>(projectFilePath);
+    });
 }
 
 ProjectExplorer::Tasks MesonProject::projectIssues(const ProjectExplorer::Kit *k) const
@@ -61,13 +64,6 @@ ProjectExplorer::Tasks MesonProject::projectIssues(const ProjectExplorer::Kit *k
         result.append(createProjectTask(ProjectExplorer::Task::TaskType::Warning,
                                         tr("No compilers set in kit.")));
     return result;
-}
-
-ProjectExplorer::ProjectImporter *MesonProject::projectImporter() const
-{
-    if (m_projectImporter)
-        m_projectImporter = std::make_unique<MesonProjectImporter>(projectFilePath());
-    return m_projectImporter.get();
 }
 
 ProjectExplorer::DeploymentKnowledge MesonProject::deploymentKnowledge() const
