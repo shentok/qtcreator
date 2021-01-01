@@ -28,9 +28,6 @@
 #include "testconfiguration.h"
 #include "testtreeitem.h"
 
-#include <cplusplus/Icons.h>
-#include <cpptools/cppmodelmanager.h>
-#include <cpptools/cpptoolsreuse.h>
 #include <texteditor/texteditor.h>
 #include <utils/utilsicons.h>
 
@@ -318,22 +315,6 @@ bool TestTreeItem::isGroupable() const
     return true;
 }
 
-QSet<QString> TestTreeItem::internalTargets() const
-{
-    auto cppMM = CppTools::CppModelManager::instance();
-    const QList<CppTools::ProjectPart::Ptr> projectParts = cppMM->projectPart(m_filePath);
-    // if we have no project parts it's most likely a header with declarations only and CMake based
-    if (projectParts.isEmpty())
-        return TestTreeItem::dependingInternalTargets(cppMM, m_filePath);
-    QSet<QString> targets;
-    for (const CppTools::ProjectPart::Ptr &part : projectParts) {
-        targets.insert(part->buildSystemTarget);
-        if (part->buildTargetType != ProjectExplorer::BuildTargetType::Executable)
-            targets.unite(TestTreeItem::dependingInternalTargets(cppMM, m_filePath));
-    }
-    return targets;
-}
-
 void TestTreeItem::copyBasicDataFrom(const TestTreeItem *other)
 {
     if (!other)
@@ -370,29 +351,6 @@ inline bool TestTreeItem::modifyName(const QString &name)
 ITestFramework *TestTreeItem::framework() const
 {
     return m_framework;
-}
-
-/*
- * try to find build system target that depends on the given file - if the file is no header
- * try to find the corresponding header and use this instead to find the respective target
- */
-QSet<QString> TestTreeItem::dependingInternalTargets(CppTools::CppModelManager *cppMM,
-                                                     const QString &file)
-{
-    QSet<QString> result;
-    QTC_ASSERT(cppMM, return result);
-    const CPlusPlus::Snapshot snapshot = cppMM->snapshot();
-    QTC_ASSERT(snapshot.contains(file), return result);
-    bool wasHeader;
-    const QString correspondingFile
-            = CppTools::correspondingHeaderOrSource(file, &wasHeader, CppTools::CacheUsage::ReadOnly);
-    const Utils::FilePaths dependingFiles = snapshot.filesDependingOn(
-                wasHeader ? file : correspondingFile);
-    for (const Utils::FilePath &fn : dependingFiles) {
-        for (const CppTools::ProjectPart::Ptr &part : cppMM->projectPart(fn))
-            result.insert(part->buildSystemTarget);
-    }
-    return result;
 }
 
 } // namespace Autotest
