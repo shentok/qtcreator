@@ -110,8 +110,7 @@ static QString quickTestSrcDir(const CppTools::CppModelManager *cppMM,
     return QString();
 }
 
-static QString quickTestName(const CPlusPlus::Document::Ptr &doc,
-                             const CPlusPlus::Snapshot &snapshot)
+QString QuickTestParser::quickTestName(const CPlusPlus::Document::Ptr &doc) const
 {
     const QList<CPlusPlus::Document::MacroUse> macros = doc->macroUses();
 
@@ -121,20 +120,20 @@ static QString quickTestName(const CPlusPlus::Document::Ptr &doc,
         const QByteArray name = macro.macro().name();
         if (QuickTestUtils::isQuickTestMacro(name)) {
             CPlusPlus::Document::Block arg = macro.arguments().at(0);
-            return QLatin1String(CppParser::getFileContent(doc->fileName())
+            return QLatin1String(getFileContent(doc->fileName())
                                  .mid(int(arg.bytesBegin()), int(arg.bytesEnd() - arg.bytesBegin())));
         }
     }
 
     // check for using quick_test_main() directly
     const QString fileName = doc->fileName();
-    const QByteArray &fileContent = CppParser::getFileContent(fileName);
-    CPlusPlus::Document::Ptr document = snapshot.preprocessedDocument(fileContent, fileName);
+    const QByteArray &fileContent = getFileContent(fileName);
+    CPlusPlus::Document::Ptr document = m_cppSnapshot.preprocessedDocument(fileContent, fileName);
     if (document.isNull())
         return QString();
     document->check();
     CPlusPlus::AST *ast = document->translationUnit()->ast();
-    QuickTestAstVisitor astVisitor(document, snapshot);
+    QuickTestAstVisitor astVisitor(document, m_cppSnapshot);
     astVisitor.accept(ast);
     return astVisitor.testBaseName();
 }
@@ -231,7 +230,7 @@ bool QuickTestParser::handleQtQuickTest(QFutureInterface<TestParseResultPtr> fut
                                         ITestFramework *framework)
 {
     const CppTools::CppModelManager *modelManager = CppTools::CppModelManager::instance();
-    if (quickTestName(document, m_cppSnapshot).isEmpty())
+    if (quickTestName(document).isEmpty())
         return false;
 
     const QString cppFileName = document->fileName();
