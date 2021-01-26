@@ -190,11 +190,11 @@ QList<TestConfiguration *> TestTreeModel::getTestsForFile(const Utils::FilePath 
     return result;
 }
 
-QList<TestTreeItem *> TestTreeModel::testItemsByName(TestTreeItem *root, const QString &testName)
+static QList<TestTreeItem *> testItemsByName(TestTreeItem *root, const QString &testName)
 {
     QList<TestTreeItem *> result;
 
-    root->forFirstLevelChildren([&testName, &result, this](TestTreeItem *node) {
+    root->forFirstLevelChildren([&testName, &result](TestTreeItem *node) {
         if (node->type() == TestTreeItem::TestSuite || node->type() == TestTreeItem::TestCase) {
             if (node->name() == testName) {
                 result << node;
@@ -218,7 +218,7 @@ QList<TestTreeItem *> TestTreeModel::testItemsByName(const QString &testName)
 {
     QList<TestTreeItem *> result;
     for (Utils::TreeItem *frameworkRoot : *rootItem())
-        result << testItemsByName(static_cast<TestTreeItem *>(frameworkRoot), testName);
+        result << Autotest::testItemsByName(static_cast<TestTreeItem *>(frameworkRoot), testName);
 
     return result;
 }

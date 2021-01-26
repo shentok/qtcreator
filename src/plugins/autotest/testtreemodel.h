@@ -108,7 +108,6 @@ private:
     void revalidateCheckState(TestTreeItem *item);
     void setupParsingConnections();
     void filterAndInsert(TestTreeItem *item, TestTreeItem *root, bool groupingEnabled);
-    QList<TestTreeItem *> testItemsByName(TestTreeItem *root, const QString &testName);
 
     Internal::TestCodeParser *m_parser = nullptr;
     Internal::ItemDataCache<Qt::CheckState> *m_checkStateCache = nullptr; // not owned
