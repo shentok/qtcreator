@@ -90,7 +90,7 @@ public:
     AutotestPluginPrivate();
     ~AutotestPluginPrivate() override;
 
-    TestNavigationWidgetFactory *m_navigationWidgetFactory = nullptr;
+    TestNavigationWidgetFactory m_navigationWidgetFactory;
     TestResultsPane *m_resultsPane = nullptr;
     QMap<QString, ChoicePair> m_runconfigCache;
 
@@ -140,7 +140,6 @@ AutotestPluginPrivate::AutotestPluginPrivate()
     m_frameworkManager.registerTestFramework(new CatchFramework);
 
     m_frameworkManager.synchronizeSettings(ICore::settings());
-    m_navigationWidgetFactory = new TestNavigationWidgetFactory;
     m_resultsPane = TestResultsPane::instance();
 
     auto panelFactory = new ProjectExplorer::ProjectPanelFactory();
@@ -176,7 +175,6 @@ AutotestPluginPrivate::~AutotestPluginPrivate()
         s_projectSettings.clear();
     }
 
-    delete m_navigationWidgetFactory;
     delete m_resultsPane;
 }
 
