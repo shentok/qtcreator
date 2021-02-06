@@ -86,7 +86,7 @@ void ColorSettings::createTheme()
 {
     QString name = QInputDialog::getText(this, tr("Create New Color Theme"), tr("Theme ID"));
     if (!name.isEmpty()) {
-        if (m_colorThemes.keys().contains(name)) {
+        if (m_colorThemes.contains(name)) {
             QMessageBox::warning(this, tr("Cannot Create Theme"), tr("Theme %1 is already available.").arg(name));
         } else {
             m_ui.m_colorThemeView->reset();

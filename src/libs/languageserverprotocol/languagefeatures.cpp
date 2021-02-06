@@ -540,7 +540,7 @@ PrepareRenameResult::PrepareRenameResult(const QJsonValue &val)
         emplace<std::nullptr_t>(nullptr);
     } else if (val.isObject()) {
         const QJsonObject object = val.toObject();
-        if (object.keys().contains(rangeKey))
+        if (object.contains(rangeKey))
             emplace<PlaceHolderResult>(PlaceHolderResult(object));
         else
             emplace<Range>(Range(object));
