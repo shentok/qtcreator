@@ -54,7 +54,7 @@ public:
 
 protected:
     void scheduleTask(const Task &task, int outputLines, int skippedLines = 0);
-    void setDetailsFormat(Task &task, const LinkSpecs &linkSpecs = {});
+    static void setDetailsFormat(Task &task, const LinkSpecs &linkSpecs = {});
 
 private:
     void runPostPrintActions() override;
