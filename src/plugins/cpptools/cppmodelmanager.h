@@ -228,12 +228,6 @@ public:
     Core::IFindFilter *symbolsFindFilter() const;
     Core::ILocatorFilter *currentDocumentFilter() const;
 
-    /*
-     * try to find build system target that depends on the given file - if the file is no header
-     * try to find the corresponding header and use this instead to find the respective target
-     */
-    QSet<QString> dependingInternalTargets(const QString &file) const;
-
     QSet<QString> internalTargets(const QString &filePath) const;
 
     void renameIncludes(const QString &oldFileName, const QString &newFileName);
@@ -280,6 +274,12 @@ private:
     void recalculateProjectPartMappings();
     void watchForCanceledProjectIndexer(const QFuture<void> &future,
                                         ProjectExplorer::Project *project);
+
+    /*
+     * try to find build system target that depends on the given file - if the file is no header
+     * try to find the corresponding header and use this instead to find the respective target
+     */
+    QSet<QString> dependingInternalTargets(const QString &file) const;
 
     void replaceSnapshot(const CPlusPlus::Snapshot &newSnapshot);
     void removeFilesFromSnapshot(const QSet<QString> &removedFiles);
