@@ -210,6 +210,12 @@ CompileTask::CompileTask(TaskType type, const QString &desc, const FilePath &fil
     : Task(type, desc, file, line, ProjectExplorer::Constants::TASK_CATEGORY_COMPILE)
 {}
 
+CompileTask::CompileTask(TaskType type, const QString &desc, const FilePath &file, int line, const QVector<QTextLayout::FormatRange> formats)
+    : Task(type, desc, file, line, ProjectExplorer::Constants::TASK_CATEGORY_COMPILE)
+{
+    this->formats = formats;
+}
+
 // BuildSystemTask
 
 BuildSystemTask::BuildSystemTask(Task::TaskType type, const QString &desc, const FilePath &file, int line)

@@ -114,6 +114,12 @@ public:
                  const QString &description,
                  const Utils::FilePath &file = {},
                  int line = -1);
+
+    CompileTask(TaskType type,
+                const QString &description,
+                const Utils::FilePath &file,
+                int line,
+                const QVector<QTextLayout::FormatRange> formats);
 };
 
 class PROJECTEXPLORER_EXPORT BuildSystemTask : public Task

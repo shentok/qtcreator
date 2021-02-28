@@ -142,6 +142,14 @@ void ProjectExplorerPlugin::testClangOutputParser_data()
     QTest::addColumn<Tasks >("tasks");
     QTest::addColumn<QString>("outputLines");
 
+    auto formatRange = [](int start, int length, const QString &anchorHref = QString())
+    {
+        QTextCharFormat format;
+        format.setAnchorHref(anchorHref);
+
+        return QTextLayout::FormatRange{start, length, format};
+    };
+
     QTest::newRow("pass-through stdout")
             << QString::fromLatin1("Sometext") << OutputParserTester::STDOUT
             << QString::fromLatin1("Sometext\n") << QString()
@@ -187,7 +195,9 @@ void ProjectExplorerPlugin::testClangOutputParser_data()
                    "class Q_CORE_EXPORT QSysInfo {\n"
                    "      ^",
                    FilePath::fromUserInput("..\\..\\..\\QtSDK1.1\\Desktop\\Qt\\4.7.3\\mingw\\include/QtCore/qglobal.h"),
-                   1425)}
+                   1425,
+                   QVector<QTextLayout::FormatRange>()
+                       << formatRange(61, 278))}
             << QString();
 
         QTest::newRow("note")
@@ -203,7 +213,9 @@ void ProjectExplorerPlugin::testClangOutputParser_data()
                                    "#    define Q_CORE_EXPORT Q_DECL_IMPORT\n"
                                    "                          ^",
                                    FilePath::fromUserInput("..\\..\\..\\QtSDK1.1\\Desktop\\Qt\\4.7.3\\mingw\\include/QtCore/qglobal.h"),
-                                   1289))
+                                   1289,
+                                   QVector<QTextLayout::FormatRange>()
+                                       << formatRange(19, 167)))
                 << QString();
 
         QTest::newRow("fatal error")
@@ -219,7 +231,11 @@ void ProjectExplorerPlugin::testClangOutputParser_data()
                                    "#include <bits/c++config.h>\n"
                                    "         ^",
                                    FilePath::fromUserInput("/usr/include/c++/4.6/utility"),
-                                   68))
+                                   68,
+                                   QVector<QTextLayout::FormatRange>()
+                                       << formatRange(34, 0)
+                                       << formatRange(34, 28, "olpfile:///usr/include/c++/4.6/utility::68::-1")
+                                       << formatRange(62, 93)))
                 << QString();
 
         QTest::newRow("line confusion")
@@ -235,7 +251,11 @@ void ProjectExplorerPlugin::testClangOutputParser_data()
                                    "            int x = option->rect.x() + horizontal ? 2 : 6;\n"
                                    "                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^",
                                    FilePath::fromUserInput("/home/code/src/creator/src/plugins/coreplugin/manhattanstyle.cpp"),
-                                   567))
+                                   567,
+                                   QVector<QTextLayout::FormatRange>()
+                                       << formatRange(74, 0)
+                                       << formatRange(74, 64, "olpfile:///home/code/src/creator/src/plugins/coreplugin/manhattanstyle.cpp::567::-1")
+                                       << formatRange(138, 202)))
                 << QString();
 
         QTest::newRow("code sign error")

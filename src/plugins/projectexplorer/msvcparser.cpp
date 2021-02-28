@@ -291,6 +291,14 @@ void ProjectExplorerPlugin::testMsvcOutputParsers_data()
     QTest::addColumn<Tasks >("tasks");
     QTest::addColumn<QString>("outputLines");
 
+    auto formatRange = [](int start, int length, const QString &anchorHref = QString())
+    {
+        QTextCharFormat format;
+        format.setAnchorHref(anchorHref);
+
+        return QTextLayout::FormatRange{start, length, format};
+    };
+
     QTest::newRow("pass-through stdout")
             << "Sometext" << OutputParserTester::STDOUT
             << "Sometext\n" << ""
@@ -417,7 +425,10 @@ void ProjectExplorerPlugin::testMsvcOutputParsers_data()
                                "    _Traits=std::_Tmap_traits<int,double,std::less<int>,std::allocator<std::pair<const int,double>>,false>\n"
                                "]\n"
                                "No constructor could take the source type, or constructor overload resolution was ambiguous",
-                               FilePath::fromUserInput("..\\untitled\\main.cpp"), 19))
+                               FilePath::fromUserInput("..\\untitled\\main.cpp"),
+                               19,
+                               QVector<QTextLayout::FormatRange>()
+                                   << formatRange(85, 207)))
             << "";
 
     QTest::newRow("Linker error 1")
@@ -483,7 +494,10 @@ void ProjectExplorerPlugin::testMsvcOutputParsers_data()
                         "    _OutIt=unsigned short *,\n"
                         "    _InIt=const unsigned char *\n"
                         "]",
-                        FilePath::fromUserInput("symbolgroupvalue.cpp"), 2314))
+                        FilePath::fromUserInput("symbolgroupvalue.cpp"),
+                        2314,
+                        QVector<QTextLayout::FormatRange>()
+                            << formatRange(141, 69)))
             << "";
 
     QTest::newRow("Ambiguous symbol")
